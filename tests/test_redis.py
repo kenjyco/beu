@@ -10,7 +10,7 @@ except ConnectionError:
     REDIS_CONNECTED = False
 
 
-@pytest.mark.skipif(REDIS_CONNECTED == False, reason='Not connected to redis')
+@pytest.mark.skipif(REDIS_CONNECTED is False, reason='Not connected to redis')
 class TestRedis:
     def test_redis_test_db_is_empty(self):
         assert beu.REDIS.keys() == []
