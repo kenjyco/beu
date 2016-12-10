@@ -6,7 +6,7 @@ from redis import ConnectionError
 try:
     beu.REDIS.info()
     REDIS_CONNECTED = True
-except ConnectionError:
+except (ConnectionError, AttributeError):
     REDIS_CONNECTED = False
 
 

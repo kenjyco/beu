@@ -33,4 +33,5 @@ def get_setting(name, default='', section=APP_ENV):
     return val
 
 
-REDIS = StrictRedis.from_url(get_setting('redis_url'))
+REDIS_URL = get_setting('redis_url')
+REDIS = StrictRedis.from_url(REDIS_URL) if REDIS_URL is not '' else None
