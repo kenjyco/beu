@@ -1,5 +1,5 @@
 # Don't set anything in this file if `~/.beu_path` does not exist
-[[ ! -f $HOME/.beu_path ]] return 1
+[[ ! -f $HOME/.beu_path ]] && return 1
 BEU_PATH="$(cat $HOME/.beu_path)"
 
 beu() {
