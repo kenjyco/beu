@@ -7,9 +7,9 @@ beu() {
 }
 
 beu-ipython() {
-    PYTHONPATH=$BEU_PATH $BEU_PATH/venv/bin/ipython
+    PYTHONPATH=$BEU_PATH $BEU_PATH/venv/bin/ipython $@
 }
 
 beu-test() {
-    PYTHONPATH=$BEU_PATH $BEU_PATH/venv/bin/py.test -vs $BEU_PATH/tests
+    PYTHONPATH=$BEU_PATH $BEU_PATH/venv/bin/py.test -vs $@ $BEU_PATH/tests
 }
