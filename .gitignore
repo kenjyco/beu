@@ -1,0 +1,5 @@
+*.sw[po]
+*.py[cod]
+*.ini
+venv/
+.cache/
