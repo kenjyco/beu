@@ -7,4 +7,4 @@ class TestEnv:
 
     def test_redis_url_ends_with_9(self):
         redis_url = beu.get_setting('redis_url')
-        assert redis_url is not None and redis_url.endswith('9')
+        assert redis_url is not '' and redis_url.endswith('9')

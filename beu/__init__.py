@@ -12,11 +12,11 @@ _config = configparser.ConfigParser()
 _config.read(SETTINGS_FILE)
 
 
-def get_setting(name, section=APP_ENV):
+def get_setting(name, default='', section=APP_ENV):
     try:
         val = _config[section][name]
     except KeyError:
-        return None
+        return default
     else:
         if val.lower() == 'true':
             val = True
