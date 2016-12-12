@@ -40,3 +40,4 @@ def utc_now_float_string(fmt='%Y%m%d%H%M%S.%f'):
 
 REDIS_URL = get_setting('redis_url')
 REDIS = StrictRedis.from_url(REDIS_URL) if REDIS_URL is not '' else None
+from beu.redthing import RedThing
