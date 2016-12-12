@@ -1,6 +1,7 @@
 import configparser
 import os.path
 from os import getenv
+from datetime import datetime
 from redis import StrictRedis
 
 
@@ -31,6 +32,10 @@ def get_setting(name, default='', section=APP_ENV):
                 except ValueError:
                     pass
     return val
+
+
+def utc_now_float_string(fmt='%Y%m%d%H%M%S.%f'):
+    return datetime.utcnow().strftime(fmt)
 
 
 REDIS_URL = get_setting('redis_url')
