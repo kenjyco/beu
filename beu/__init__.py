@@ -38,6 +38,11 @@ def utc_now_float_string(fmt='%Y%m%d%H%M%S.%f'):
     return datetime.utcnow().strftime(fmt)
 
 
+def zshow(key, start=0, end=-1, desc=False, withscores=True):
+    """Wrapper to REDIS.zrange"""
+    return REDIS.zrange(key, 0, -1, withscores=1)
+
+
 REDIS_URL = get_setting('redis_url')
 REDIS = StrictRedis.from_url(REDIS_URL) if REDIS_URL is not '' else None
 from beu.redthing import RedThing

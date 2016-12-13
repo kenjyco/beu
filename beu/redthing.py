@@ -69,3 +69,9 @@ class RedThing(object):
             pipe.zincrby(base, str(data.get(attr, '')), 1)
         result = pipe.execute()
         return key
+
+    def show_keyspace(self):
+        return [
+            (key, beu.REDIS.type(key))
+            for key in beu.REDIS.scan_iter('{}*'.format(self._base_key))
+        ]
