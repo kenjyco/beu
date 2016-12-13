@@ -67,7 +67,7 @@ class RedThing(object):
             key_name = self._make_key(base, data.get(attr, ''))
             pipe.zadd(key_name, now, key)
             pipe.zincrby(base, str(data.get(attr, '')), 1)
-        result = pipe.execute()
+        pipe.execute()
         return key
 
     def show_keyspace(self):
