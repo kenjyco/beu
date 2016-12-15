@@ -32,7 +32,7 @@ class RedThing(object):
             raise Exception(msg.format(invalid))
 
         self._base_key = self._make_key(namespace, name)
-        self._index_keys = {
+        self._index_base_keys = {
             attr: self._make_key(self._base_key, attr)
             for attr in index_fields
         }
@@ -63,7 +63,7 @@ class RedThing(object):
         pipe = beu.REDIS.pipeline()
         pipe.zadd(self._make_key(self._base_key, 'id'), now, key)
         pipe.hmset(key, data)
-        for attr, base in self._index_keys.items():
+        for attr, base in self._index_base_keys.items():
             key_name = self._make_key(base, data.get(attr, ''))
             pipe.zadd(key_name, now, key)
             pipe.zincrby(base, str(data.get(attr, '')), 1)
