@@ -75,3 +75,25 @@ class RedThing(object):
             (key, beu.REDIS.type(key))
             for key in beu.REDIS.scan_iter('{}*'.format(self._base_key))
         ]
+
+    def index_field_info(self, index_field, n=25):
+        """Return a list of redis keys and counts for top values of index_field"""
+        results = []
+        base_key = self._index_base_keys.get(index_field)
+        if base_key:
+            results = [
+                (self._make_key(base_key, beu.decode(name)), count)
+                for name, count in beu.zshow(base_key, end=n-1)
+            ]
+        return results
+
+    def newest_top_indexed(self, index_field, n=25, recent_count=5):
+        """Return a list of dicts with info about the top... """
+        return [
+            {
+                'count': count,
+                'index': index,
+                'newest': beu.zshow(index, end=recent_count-1)
+            }
+            for index, count in self.index_field_info(index_field, n)
+        ]
