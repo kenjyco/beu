@@ -44,6 +44,12 @@ def zshow(key, start=0, end=-1, desc=True, withscores=True):
     return REDIS.zrange(key, start, end, withscores=withscores, desc=desc)
 
 
+def decode(obj, encoding='utf-8'):
+    try:
+        return obj.decode(encoding)
+    except (AttributeError, UnicodeDecodeError):
+        return obj
+
 def user_input(prompt='input: '):
     """Prompt user for input
 
