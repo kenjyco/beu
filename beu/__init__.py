@@ -39,9 +39,9 @@ def utc_now_float_string(fmt='%Y%m%d%H%M%S.%f'):
     return datetime.utcnow().strftime(fmt)
 
 
-def zshow(key, start=0, end=-1, desc=False, withscores=True):
+def zshow(key, start=0, end=-1, desc=True, withscores=True):
     """Wrapper to REDIS.zrange"""
-    return REDIS.zrange(key, start, end, withscores=1, desc=desc)
+    return REDIS.zrange(key, start, end, withscores=withscores, desc=desc)
 
 
 def user_input(prompt='input: '):
