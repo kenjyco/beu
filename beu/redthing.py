@@ -81,12 +81,11 @@ class RedThing(object):
             elif num_fields > 1:
                 data = dict(zip(fields, beu.REDIS.hmget(hash_key, *fields)))
             else:
-                data = beu.REDIS.hgetall(hash_key)
-                for k, v in data.items():
-                    kd = beu.decode(k)
-                    if k != kd:
-                        data[kd] = v
-                        del(data[k])
+                _data = beu.REDIS.hgetall(hash_key)
+                data = {
+                    beu.decode(k): v
+                    for k, v in _data.items()
+                }
         except ResponseError:
             data = {}
 
