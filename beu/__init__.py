@@ -14,24 +14,29 @@ _config = configparser.ConfigParser()
 _config.read(SETTINGS_FILE)
 
 
+def from_string(val):
+    if val.lower() == 'true':
+        val = True
+    elif val.lower() == 'false':
+        val = False
+    else:
+        try:
+            val = float(val)
+        except ValueError:
+            try:
+                val = int(val)
+            except ValueError:
+                pass
+    return val
+
+
 def get_setting(name, default='', section=APP_ENV):
     try:
         val = _config[section][name]
     except KeyError:
         return default
     else:
-        if val.lower() == 'true':
-            val = True
-        elif val.lower() == 'false':
-            val = False
-        else:
-            try:
-                val = float(val)
-            except ValueError:
-                try:
-                    val = int(val)
-                except ValueError:
-                    pass
+        val = from_string(val)
     return val
 
 
@@ -49,6 +54,7 @@ def decode(obj, encoding='utf-8'):
         return obj.decode(encoding)
     except (AttributeError, UnicodeDecodeError):
         return obj
+
 
 def user_input(prompt='input: '):
     """Prompt user for input
