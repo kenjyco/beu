@@ -104,6 +104,10 @@ class RedThing(object):
             for key in beu.REDIS.scan_iter('{}*'.format(self._base_key))
         ]
 
+    def clear_keyspace(self):
+        for key in beu.REDIS.scan_iter('{}*'.format(self._base_key)):
+            beu.REDIS.delete(key)
+
     def index_field_info(self, index_field, n=25):
         """Return a list of redis keys and counts for top values of index_field"""
         results = []
