@@ -2,6 +2,7 @@ import gzip
 import pickle
 import ujson
 import beu
+from redis import ResponseError
 
 
 class RedThing(object):
@@ -70,6 +71,33 @@ class RedThing(object):
             pipe.zincrby(base, str(data.get(attr, '')), 1)
         pipe.execute()
         return key
+
+    def get(self, hash_key, *fields):
+        """Wrapper to beu.REDIS.hget/hmget/hgetall"""
+        num_fields = len(fields)
+        try:
+            if num_fields == 1:
+                data = {fields[0]: beu.REDIS.hget(hash_key, fields[0])}
+            elif num_fields > 1:
+                data = dict(zip(fields, beu.REDIS.hmget(hash_key, *fields)))
+            else:
+                data = beu.REDIS.hgetall(hash_key)
+                for k, v in data.items():
+                    kd = beu.decode(k)
+                    if k != kd:
+                        data[kd] = v
+                        del(data[k])
+        except ResponseError:
+            data = {}
+
+        for field in data.keys():
+            if field in self._json_fields:
+                data[field] = ujson.loads(gzip.decompress(data[field]))
+            elif field in self._pickle_fields:
+                data[field] = pickle.loads(gzip.decompress(data[field]))
+            else:
+                data[field] = beu.from_string(beu.decode(data[field]))
+        return data
 
     def show_keyspace(self):
         return [
