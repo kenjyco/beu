@@ -1,5 +1,6 @@
-import json
+import gzip
 import pickle
+import ujson
 import beu
 
 
@@ -55,11 +56,11 @@ class RedThing(object):
         for field in self._json_fields:
             val = data.get(field)
             if val is not None:
-                data[field] = json.dumps(val)
+                data[field] = gzip.compress(bytes(ujson.dumps(val), 'utf-8'))
         for field in self._pickle_fields:
             val = data.get(field)
             if val is not None:
-                data[field] = pickle.dumps(val)
+                data[field] = gzip.compress(pickle.dumps(val))
         pipe = beu.REDIS.pipeline()
         pipe.zadd(self._make_key(self._base_key, 'id'), now, key)
         pipe.hmset(key, data)
