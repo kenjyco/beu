@@ -67,7 +67,7 @@ class RedThing(object):
         pipe.hmset(key, data)
         for attr, base in self._index_base_keys.items():
             key_name = self._make_key(base, data.get(attr, ''))
-            pipe.zadd(key_name, now, key)
+            pipe.sadd(key_name, key)
             pipe.zincrby(base, str(data.get(attr, '')), 1)
         pipe.execute()
         return key
@@ -114,14 +114,3 @@ class RedThing(object):
                 for name, count in beu.zshow(base_key, end=n-1)
             ]
         return results
-
-    def newest_top_indexed(self, index_field, n=25, recent_count=5):
-        """Return a list of dicts with info about the top... """
-        return [
-            {
-                'count': count,
-                'index': index,
-                'newest': beu.zshow(index, end=recent_count-1)
-            }
-            for index, count in self.index_field_info(index_field, n)
-        ]
