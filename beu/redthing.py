@@ -44,7 +44,7 @@ class RedThing(object):
 
     def _get_next_key(self):
         pipe = beu.REDIS.pipeline()
-        key = self._make_key(self._base_key, 'next_id')
+        key = self._make_key(self._base_key, '_next_id')
         pipe.setnx(key, 1)
         pipe.get(key)
         pipe.incr(key)
@@ -63,7 +63,7 @@ class RedThing(object):
             if val is not None:
                 data[field] = gzip.compress(pickle.dumps(val))
         pipe = beu.REDIS.pipeline()
-        pipe.zadd(self._make_key(self._base_key, 'id'), now, key)
+        pipe.zadd(self._make_key(self._base_key, '_id'), now, key)
         pipe.hmset(key, data)
         for attr, base in self._index_base_keys.items():
             key_name = self._make_key(base, data.get(attr, ''))
