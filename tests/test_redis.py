@@ -13,4 +13,4 @@ except (ConnectionError, AttributeError):
 @pytest.mark.skipif(REDIS_CONNECTED is False, reason='Not connected to redis')
 class TestRedis:
     def test_redis_test_db_is_empty(self):
-        assert beu.REDIS.keys() == []
+        assert beu.REDIS.dbsize() == 0
