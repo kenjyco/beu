@@ -54,6 +54,9 @@ class RedThing(object):
     def size(self):
         return beu.REDIS.zcard(self._id_zset_key)
 
+    def recent_keys(self, n=5):
+        return beu.zshow(self._id_zset_key, end=n)
+
     def add(self, **data):
         key = self._get_next_key()
         now = beu.utc_now_float_string()
