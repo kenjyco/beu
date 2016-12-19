@@ -37,16 +37,17 @@ class RedThing(object):
             attr: self._make_key(self._base_key, attr)
             for attr in index_fields
         }
+        self._next_id_string_key = self._make_key(self._base_key, '_next_id')
+        self._id_zset_key = self._make_key(self._base_key, '_id')
 
     def _make_key(self, *parts):
         return ':'.join([str(part) for part in parts])
 
     def _get_next_key(self):
         pipe = beu.REDIS.pipeline()
-        key = self._make_key(self._base_key, '_next_id')
-        pipe.setnx(key, 1)
-        pipe.get(key)
-        pipe.incr(key)
+        pipe.setnx(self._next_id_string_key, 1)
+        pipe.get(self._next_id_string_key)
+        pipe.incr(self._next_id_string_key)
         result = pipe.execute()
         return self._make_key(self._base_key, int(result[1]))
 
@@ -62,7 +63,7 @@ class RedThing(object):
             if val is not None:
                 data[field] = pickle.dumps(val)
         pipe = beu.REDIS.pipeline()
-        pipe.zadd(self._make_key(self._base_key, '_id'), now, key)
+        pipe.zadd(self._id_zset_key, now, key)
         pipe.hmset(key, data)
         for attr, base in self._index_base_keys.items():
             key_name = self._make_key(base, data.get(attr, ''))
