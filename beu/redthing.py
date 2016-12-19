@@ -51,6 +51,9 @@ class RedThing(object):
         result = pipe.execute()
         return self._make_key(self._base_key, int(result[1]))
 
+    def size(self):
+        return beu.REDIS.zcard(self._id_zset_key)
+
     def add(self, **data):
         key = self._get_next_key()
         now = beu.utc_now_float_string()
