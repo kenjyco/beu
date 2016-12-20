@@ -127,3 +127,18 @@ class RedThing(object):
                 for name, count in beu.zshow(base_key, end=n-1)
             ]
         return results
+
+    def top_index_keys(self, n=10):
+        """Return top n index keys per field, ordered by most diverse field"""
+        data = []
+        for index_field, base_key, base_key_total in sorted([
+            (index_field, base_key, beu.REDIS.zcard(base_key))
+            for index_field, base_key in self._index_base_keys.items()
+        ], key=lambda x: x[2], reverse=True):
+            for index_key, index_key_total in self.index_field_info(index_field, n):
+                data.append({
+                    'field': index_field,
+                    'index_key': index_key,
+                    'total': int(index_key_total),
+                })
+        return data
