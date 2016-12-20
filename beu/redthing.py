@@ -105,10 +105,13 @@ class RedThing(object):
         return data
 
     def show_keyspace(self):
-        return [
-            (key, beu.REDIS.type(key))
-            for key in beu.REDIS.scan_iter('{}*'.format(self._base_key))
-        ]
+        if self.size() <= 50:
+            return [
+                (beu.decode(key), beu.decode(beu.REDIS.type(key)))
+                for key in beu.REDIS.scan_iter('{}*'.format(self._base_key))
+            ]
+        else:
+            print('Keyspace is too large')
 
     def clear_keyspace(self):
         for key in beu.REDIS.scan_iter('{}*'.format(self._base_key)):
