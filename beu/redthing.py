@@ -123,7 +123,7 @@ class RedThing(object):
         base_key = self._index_base_keys.get(index_field)
         if base_key:
             results = [
-                (self._make_key(base_key, beu.decode(name)), count)
+                (self._make_key(base_key, beu.decode(name)), int(count))
                 for name, count in beu.zshow(base_key, end=n-1)
             ]
         return results
