@@ -105,7 +105,7 @@ class TestRedThing:
             assert 'a' in set_key_name
             assert rt3._base_key in set_key_name
             assert count >= 1
-            assert beu.REDIS.type(set_key_name)
+            assert beu.REDIS.type(set_key_name) == b'set'
 
         set_key_name, count = random.choice(index_info)
         hash_id = beu.REDIS.srandmember(set_key_name)
