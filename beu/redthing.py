@@ -34,8 +34,8 @@ class RedThing(object):
 
         self._base_key = self._make_key(namespace, name)
         self._index_base_keys = {
-            attr: self._make_key(self._base_key, attr)
-            for attr in index_fields
+            index_field: self._make_key(self._base_key, index_field)
+            for index_field in index_fields
         }
         self._next_id_string_key = self._make_key(self._base_key, '_next_id')
         self._id_zset_key = self._make_key(self._base_key, '_id')
@@ -71,10 +71,10 @@ class RedThing(object):
         pipe = beu.REDIS.pipeline()
         pipe.zadd(self._id_zset_key, now, key)
         pipe.hmset(key, data)
-        for attr, base in self._index_base_keys.items():
-            key_name = self._make_key(base, data.get(attr, ''))
+        for index_field, base_key in self._index_base_keys.items():
+            key_name = self._make_key(base_key, data.get(index_field, ''))
             pipe.sadd(key_name, key)
-            pipe.zincrby(base, str(data.get(attr, '')), 1)
+            pipe.zincrby(base_key, str(data.get(index_field, '')), 1)
         pipe.execute()
         return key
 
@@ -137,7 +137,7 @@ class RedThing(object):
         ], key=lambda x: x[2], reverse=True):
             for index_key, index_key_total in self.index_field_info(index_field, n):
                 data.append({
-                    'field': index_field,
+                    'index_field': index_field,
                     'index_key': index_key,
                     'total': int(index_key_total),
                 })
