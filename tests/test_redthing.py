@@ -52,6 +52,11 @@ def rt3():
     return beu.RedThing('test', 'rt3', index_fields=['a'], json_fields=['data'])
 
 
+@pytest.fixture
+def rt4():
+    return beu.RedThing('test', 'rt4', index_fields=['a', 'b', 'c'])
+
+
 @pytest.mark.skipif(DBSIZE != 0, reason='Database is not empty')
 @pytest.mark.skipif(REDIS_CONNECTED is False, reason='Not connected to redis')
 class TestRedThing:
@@ -60,9 +65,11 @@ class TestRedThing:
         _rt1 = rt1()
         _rt2 = rt2()
         _rt3 = rt3()
+        _rt4 = rt4()
         _rt1.clear_keyspace()
         _rt2.clear_keyspace()
         _rt3.clear_keyspace()
+        _rt4.clear_keyspace()
 
     def test_add_and_get(self, rt1):
         data = generate_rt1_data()
@@ -100,13 +107,35 @@ class TestRedThing:
 
         assert rt3.size() == 20
 
+    def test_find(self, rt4):
+        rt4.add(a='red', b='circle', c='striped')
+        rt4.add(a='red', b='square', c='plain')
+        rt4.add(a='green', b='triangle', c='spotted')
+        rt4.add(a='yellow', b='triangle', c='spotted')
+        rt4.add(a='yellow', b='triangle', c='spotted')
+        rt4.add(a='red', b='triangle', c='plain')
+        rt4.add(a='red', b='square', c='spotted')
+        rt4.add(a='green', b='square', c='striped')
+        rt4.add(a='blue', b='circle', c='striped')
+        rt4.add(a='blue', b='square', c='plain')
 
-    def test_base_key(self, rt1, rt2, rt3):
+        assert len(rt4.find()) == 10
+        assert len(rt4.find(n=5)) == 5
+        assert len(rt4.find('a:blue')) == 2
+        assert len(rt4.find('a:red', 'a:yellow')) == 6
+        assert len(rt4.find('a:red', 'a:yellow', n=3)) == 3
+        assert len(rt4.find('b:triangle', 'c:spotted')) == 3
+        assert len(rt4.find('b:triangle', 'b:square', 'c:striped', 'c:plain')) == 4
+        assert len(rt4.find('a:red', 'b:triangle', 'b:square', 'c:spotted', 'c:plain')) == 3
+
+    def test_base_key(self, rt1, rt2, rt3, rt4):
         rt1._base_key == 'test:rt1'
         rt2._base_key == 'test:rt2'
         rt3._base_key == 'test:rt3'
+        rt4._base_key == 'test:rt4'
 
-    def test_keyspace_in_use(self, rt1, rt2, rt3):
+    def test_keyspace_in_use(self, rt1, rt2, rt3, rt4):
         assert rt1.size() > 0
         assert rt2.size() > 0
         assert rt3.size() > 0
+        assert rt4.size() > 0
