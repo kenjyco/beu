@@ -22,6 +22,8 @@ def from_string(val):
     else:
         try:
             val = float(val)
+            if val.is_integer():
+                val = int(val)
         except ValueError:
             try:
                 val = int(val)

@@ -139,6 +139,6 @@ class RedThing(object):
                 data.append({
                     'index_field': index_field,
                     'index_key': index_key,
-                    'total': int(index_key_total),
+                    'total': index_key_total,
                 })
         return data
