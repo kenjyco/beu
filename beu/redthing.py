@@ -111,12 +111,12 @@ class RedThing(object):
         return data
 
     def find(self, *terms, start=0, end=float('inf'), n=100):
-        """Return hash_ids that match the terms
+        """Return hash_ids that match the terms (most recent first)
 
         - terms: each term is a string 'index_field:value'
         - start: utc timestamp float
         - end: utc timestamp float
-        - n: ma
+        - n: max number of results
         """
         base_find_key = self._make_key(self._base_key, '_find')
         next_id_key = self._make_key(base_find_key, '_next_id')
@@ -150,10 +150,10 @@ class RedThing(object):
             last_key = get_next_tmp_key()
             tmp_keys.append(last_key)
             beu.REDIS.zinterstore(last_key, (intersect_key, self._id_zset_key), aggregate='MAX')
-
-            results = beu.REDIS.zrevrangebyscore(last_key, end, start, withscores=True)
         else:
-            results = beu.REDIS.zrevrangebyscore(self._id_zset_key, end, start, withscores=True)
+            last_key = self._id_zset_key
+
+        results = beu.REDIS.zrevrangebyscore(last_key, end, start, withscores=True, start=0, num=n)
 
         for tmp_key in tmp_keys:
             beu.REDIS.delete(tmp_key)
