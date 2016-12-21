@@ -117,28 +117,15 @@ class RedThing(object):
         for key in beu.REDIS.scan_iter('{}*'.format(self._base_key)):
             beu.REDIS.delete(key)
 
-    def index_field_info(self, index_field, n=25):
-        """Return a list of redis keys and counts for top values of index_field"""
-        results = []
-        base_key = self._index_base_keys.get(index_field)
-        if base_key:
-            results = [
-                (self._make_key(base_key, beu.decode(name)), int(count))
-                for name, count in beu.zshow(base_key, end=n-1)
-            ]
-        return results
+    def index_field_info(self, n=10):
+        """Return list of 2-item tuples (index_field:value, count)
 
-    def top_index_keys(self, n=10):
-        """Return top n index keys per field, ordered by most diverse field"""
-        data = []
-        for index_field, base_key, base_key_total in sorted([
-            (index_field, base_key, beu.REDIS.zcard(base_key))
-            for index_field, base_key in self._index_base_keys.items()
-        ], key=lambda x: x[2], reverse=True):
-            for index_key, index_key_total in self.index_field_info(index_field, n):
-                data.append({
-                    'index_field': index_field,
-                    'index_key': index_key,
-                    'total': index_key_total,
-                })
-        return data
+        - n: include top n per index type
+        """
+        results = []
+        for index_field, base_key in sorted(self._index_base_keys.items()):
+            results.extend([
+                (':'.join([index_field, beu.decode(name)]), int(count))
+                for name, count in beu.zshow(base_key, end=n-1)
+            ])
+        return results

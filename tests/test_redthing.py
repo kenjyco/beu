@@ -94,22 +94,12 @@ class TestRedThing:
         retrieved = rt3.get(hash_id)
         assert retrieved == data
 
-    def test_add_multiple_and_get_index_field_info(self, rt3):
+    def test_add_multiple_and_size(self, rt3):
         for _ in range(19):
             rt3.add(**generate_rt23_data())
 
         assert rt3.size() == 20
 
-        index_info = rt3.index_field_info('a')
-        for set_key_name, count in index_info:
-            assert 'a' in set_key_name
-            assert rt3._base_key in set_key_name
-            assert count >= 1
-            assert beu.REDIS.type(set_key_name) == b'set'
-
-        set_key_name, count = random.choice(index_info)
-        hash_id = beu.REDIS.srandmember(set_key_name)
-        assert rt3.get(hash_id, 'a') == {'a': set_key_name.split(':')[-1]}
 
     def test_base_key(self, rt1, rt2, rt3):
         rt1._base_key == 'test:rt1'
