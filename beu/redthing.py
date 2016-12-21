@@ -43,13 +43,18 @@ class RedThing(object):
     def _make_key(self, *parts):
         return ':'.join([str(part) for part in parts])
 
-    def _get_next_key(self):
+    def _get_next_key(self, next_id_string_key=None, base_key=None):
+        if next_id_string_key is None:
+            next_id_string_key = self._next_id_string_key
+            base_key = self._base_key
+        if base_key is None:
+            base_key = ':'.join(next_id_string_key.split(':')[:-1])
         pipe = beu.REDIS.pipeline()
-        pipe.setnx(self._next_id_string_key, 1)
-        pipe.get(self._next_id_string_key)
-        pipe.incr(self._next_id_string_key)
+        pipe.setnx(next_id_string_key, 1)
+        pipe.get(next_id_string_key)
+        pipe.incr(next_id_string_key)
         result = pipe.execute()
-        return self._make_key(self._base_key, int(result[1]))
+        return self._make_key(base_key, int(result[1]))
 
     def size(self):
         return beu.REDIS.zcard(self._id_zset_key)
