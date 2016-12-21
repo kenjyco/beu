@@ -1,6 +1,7 @@
 import pickle
 import ujson
 import beu
+from collections import defaultdict
 from redis import ResponseError
 
 
@@ -108,6 +109,55 @@ class RedThing(object):
             else:
                 data[field] = beu.from_string(beu.decode(data[field]))
         return data
+
+    def find(self, *terms, start=0, end=float('inf'), n=100):
+        """Return hash_ids that match the terms
+
+        - terms: each term is a string 'index_field:value'
+        - start: utc timestamp float
+        - end: utc timestamp float
+        - n: ma
+        """
+        base_find_key = self._make_key(self._base_key, '_find')
+        next_id_key = self._make_key(base_find_key, '_next_id')
+        to_intersect = []
+        tmp_keys = []
+        d = defaultdict(list)
+        get_next_tmp_key = lambda: self._get_next_key(next_id_key, base_find_key)
+        for term in terms:
+            index_field, value = term.split(':')
+            d[index_field].append(term)
+        for index_field, grouped_terms in d.items():
+            if len(grouped_terms) > 1:
+                # Compute the union of all index_keys for the same field
+                tmp_key = get_next_tmp_key()
+                tmp_keys.append(tmp_key)
+                beu.REDIS.sunionstore(
+                    tmp_key,
+                    *[
+                        self._make_key(self._base_key, term)
+                        for term in grouped_terms
+                    ]
+                )
+                to_intersect.append(tmp_key)
+            else:
+                to_intersect.append(self._make_key(self._base_key, grouped_terms[0]))
+
+        if to_intersect:
+            intersect_key = get_next_tmp_key()
+            tmp_keys.append(intersect_key)
+            beu.REDIS.sinterstore(intersect_key, *to_intersect)
+            last_key = get_next_tmp_key()
+            tmp_keys.append(last_key)
+            beu.REDIS.zinterstore(last_key, (intersect_key, self._id_zset_key), aggregate='MAX')
+
+            results = beu.REDIS.zrevrangebyscore(last_key, end, start, withscores=True)
+        else:
+            results = beu.REDIS.zrevrangebyscore(self._id_zset_key, end, start, withscores=True)
+
+        for tmp_key in tmp_keys:
+            beu.REDIS.delete(tmp_key)
+        return results
 
     def show_keyspace(self):
         if self.size() <= 50:
