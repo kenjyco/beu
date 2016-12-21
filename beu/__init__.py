@@ -66,7 +66,7 @@ def user_input(prompt='input: '):
     try:
         return input(prompt)
     except (EOFError, KeyboardInterrupt):
-        print
+        print()
         return ''
 
 
@@ -107,7 +107,7 @@ def make_selections(items, prompt='', wrap=True, item_format=''):
         else:
             print(line)
 
-    print
+    print()
     indices = user_input(prompt)
     if not indices:
         return []
