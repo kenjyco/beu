@@ -107,7 +107,7 @@ class RedThing(object):
                 data[field] = beu.from_string(beu.decode(data[field]))
         return data
 
-    def find(self, *terms, start=0, end=float('inf'), n=100):
+    def find(self, *terms, start=0, end=float('inf'), n=20):
         """Return hash_ids that match the terms (most recent first)
 
         - terms: each term is a string 'index_field:value'
