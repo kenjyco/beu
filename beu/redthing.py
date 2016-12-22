@@ -104,7 +104,8 @@ class RedThing(object):
             elif field in self._pickle_fields:
                 data[field] = pickle.loads(data[field])
             else:
-                data[field] = beu.from_string(beu.decode(data[field]))
+                val = beu.decode(data[field])
+                data[field] = beu.from_string(val) if val is not None else None
         return data
 
     def find(self, *terms, start=0, end=float('inf'), n=20):
