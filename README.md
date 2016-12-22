@@ -1,15 +1,18 @@
 beu
 ===
 
-## Setup and test
+## Clone, setup, and run tests
 
 ```
+% git clone https://github.com/kenjyco/beu && cd beu
 % ./dev-setup.bash
 % cp settings.ini.sample settings.ini
-% source venv/bin/activate
-% py.test -vs tests/
+% source scripts/beu.sh
+% beu-test
 ```
 
-## Demo
+## Load up example and experiment in the shell
 
-[![asciinema](https://asciinema.org/a/6vygel0sb5jlgy99zi66wqcja.png)](https://asciinema.org/a/6vygel0sb5jlgy99zi66wqcja?autoplay=1)
+> `% beu-ipython -i examples/events.py`
+
+[![asciinema](https://asciinema.org/a/bay13yriek54hdlc5282j9a6x.png)](https://asciinema.org/a/bay13yriek54hdlc5282j9a6x?autoplay=1)
