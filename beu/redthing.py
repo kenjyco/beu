@@ -157,6 +157,62 @@ class RedThing(object):
             beu.REDIS.delete(tmp_key)
         return results
 
+    def delete(self, hash_id, pipe=None):
+        """Delete a specific hash_id's data and remove from indexes it is in
+
+        - hash_id: hash_id to remove
+        - pipe: if a redis pipeline object is passed in, just add more
+          operations to the pipe
+        """
+        score = beu.REDIS.zscore(self._id_zset_key, hash_id)
+        if score is None:
+            return
+        if pipe is not None:
+            execute = False
+        else:
+            pipe = beu.REDIS.pipeline()
+            execute = True
+
+        indexed_data = self.get(hash_id, *self._index_base_keys.keys())
+        pipe.delete(hash_id)
+        for k, v in indexed_data.items():
+            old_index_key = self._make_key(self._base_key, k, v)
+            pipe.srem(old_index_key, hash_id)
+            pipe.zincrby(self._index_base_keys[k], v, -1)
+
+        if execute:
+            pipe.zrem(self._id_zset_key, hash_id)
+            return pipe.execute()
+
+    def delete_to(self, score):
+        """Delete all items with a score (timestamp) between 0 and score"""
+        pipe = beu.REDIS.pipeline()
+        for hash_id in beu.REDIS.zrangebyscore(self._id_zset_key, 0, score):
+            self.delete(hash_id, pipe)
+        pipe.zremrangebyscore(self._id_zset_key, 0, score)
+        return pipe.execute()[-1]
+
+    def update(self, hash_id, **data):
+        """Update data at a particular hash_id"""
+        score = beu.REDIS.zscore(self._id_zset_key, hash_id)
+        if score is None or data == {}:
+            return
+        now = beu.utc_now_float_string()
+        pipe = beu.REDIS.pipeline()
+        indexed_data = self.get(hash_id, *self._index_base_keys.keys())
+        for k, v in indexed_data.items():
+            if k in data and data[k] != v:
+                old_index_key = self._make_key(self._base_key, k, v)
+                index_key = self._make_key(self._base_key, k, data[k])
+                pipe.srem(old_index_key, hash_id)
+                pipe.zincrby(self._index_base_keys[k], v, -1)
+                pipe.sadd(index_key, hash_id)
+                pipe.zincrby(self._index_base_keys[k], data[k], 1)
+        pipe.hmset(hash_id, data)
+        pipe.zadd(self._id_zset_key, now, hash_id)
+        pipe.execute()
+        return hash_id
+
     def show_keyspace(self):
         if self.size() <= 50:
             return [
