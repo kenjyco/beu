@@ -2,6 +2,7 @@ import pickle
 import ujson
 import beu
 from collections import defaultdict
+from functools import partial
 from redis import ResponseError
 
 
@@ -108,13 +109,17 @@ class RedThing(object):
                 data[field] = beu.from_string(val) if val is not None else None
         return data
 
-    def find(self, *terms, start=0, end=float('inf'), n=20):
-        """Return hash_ids that match the terms (most recent first)
+    def find(self, *terms, start=0, end=float('inf'), n=20, desc=True,
+            get_fields=[], all_fields=False):
+        """Return a generator of dicts that match the search terms
 
         - terms: each term is a string 'index_field:value'
         - start: utc timestamp float
         - end: utc timestamp float
         - n: max number of results
+        - desc: if True, return results in descending order
+        - get_fields: list of fields to get for each matching hash_id
+        - all_fields: if True, return all fields of each matching hash_id
         """
         base_find_key = self._make_key(self._base_key, '_find')
         next_id_key = self._make_key(base_find_key, '_next_id')
@@ -151,11 +156,27 @@ class RedThing(object):
         else:
             last_key = self._id_zset_key
 
-        results = beu.REDIS.zrevrangebyscore(last_key, end, start, withscores=True, start=0, num=n)
+        if desc:
+            range_func = partial(beu.REDIS.zrevrangebyscore, last_key, end, start, start=0, num=n)
+        else:
+            range_func = partial(beu.REDIS.zrangebyscore, last_key, start, end, start=0, num=n)
+
+        i = 1
+        for hash_id, timestamp in range_func(withscores=True):
+            if all_fields:
+                d = self.get(hash_id)
+            elif get_fields:
+                d = self.get(hash_id, *get_fields)
+            else:
+                d = {}
+            d['_id'] = beu.decode(hash_id)
+            d['_ts'] = timestamp
+            d['_pos'] = i
+            yield d
+            i += 1
 
         for tmp_key in tmp_keys:
             beu.REDIS.delete(tmp_key)
-        return results
 
     def delete(self, hash_id, pipe=None):
         """Delete a specific hash_id's data and remove from indexes it is in
