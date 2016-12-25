@@ -1,6 +1,7 @@
 import configparser
 import os.path
 import textwrap
+import pytz
 from os import getenv
 from datetime import datetime
 from redis import StrictRedis
@@ -42,8 +43,33 @@ def get_setting(name, default='', section=APP_ENV):
     return val
 
 
+def dt_to_float_string(dt, fmt='%Y%m%d%H%M%S.%f'):
+    return dt.strftime(fmt)
+
+
 def utc_now_float_string(fmt='%Y%m%d%H%M%S.%f'):
-    return datetime.utcnow().strftime(fmt)
+    return dt_to_float_string(datetime.utcnow(), fmt)
+
+
+def date_string_to_utc_float_string(date_string, timezone=None):
+    dt = None
+    s = None
+    for fmt in [
+        '%Y-%m-%d %H:%M:%S', '%Y-%m-%d %H:%M', '%Y-%m-%d %H', '%Y-%m-%d', '%Y-%m'
+    ]:
+        try:
+            dt = datetime.strptime(date_string, fmt)
+        except ValueError:
+            continue
+        else:
+            break
+
+    if dt:
+        if timezone:
+            tz = pytz.timezone(timezone)
+            dt = tz.localize(dt).astimezone(pytz.utc)
+        s = dt_to_float_string(dt)
+    return s
 
 
 def zshow(key, start=0, end=-1, desc=True, withscores=True):
