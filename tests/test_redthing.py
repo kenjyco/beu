@@ -119,14 +119,14 @@ class TestRedThing:
         rt4.add(a='blue', b='circle', c='striped')
         rt4.add(a='blue', b='square', c='plain')
 
-        assert len(rt4.find()) == 10
-        assert len(rt4.find(n=5)) == 5
-        assert len(rt4.find('a:blue')) == 2
-        assert len(rt4.find('a:red', 'a:yellow')) == 6
-        assert len(rt4.find('a:red', 'a:yellow', n=3)) == 3
-        assert len(rt4.find('b:triangle', 'c:spotted')) == 3
-        assert len(rt4.find('b:triangle', 'b:square', 'c:striped', 'c:plain')) == 4
-        assert len(rt4.find('a:red', 'b:triangle', 'b:square', 'c:spotted', 'c:plain')) == 3
+        assert len(list(rt4.find())) == 10
+        assert len(list(rt4.find(n=5))) == 5
+        assert len(list(rt4.find('a:blue'))) == 2
+        assert len(list(rt4.find('a:red', 'a:yellow'))) == 6
+        assert len(list(rt4.find('a:red', 'a:yellow', n=3))) == 3
+        assert len(list(rt4.find('b:triangle', 'c:spotted'))) == 3
+        assert len(list(rt4.find('b:triangle', 'b:square', 'c:striped', 'c:plain'))) == 4
+        assert len(list(rt4.find('a:red', 'b:triangle', 'b:square', 'c:spotted', 'c:plain'))) == 3
 
     def test_base_key(self, rt1, rt2, rt3, rt4):
         rt1._base_key == 'test:rt1'
