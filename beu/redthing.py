@@ -172,7 +172,7 @@ class RedThing(object):
         else:
             range_func = partial(beu.REDIS.zrangebyscore, last_key, start, end, start=0, num=n)
 
-        i = 1
+        i = 0
         for hash_id, timestamp in range_func(withscores=True):
             if all_fields:
                 d = self.get(hash_id)
