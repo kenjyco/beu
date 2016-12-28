@@ -121,12 +121,12 @@ class TestRedThing:
 
         assert len(list(rt4.find())) == 10
         assert len(list(rt4.find(n=5))) == 5
-        assert len(list(rt4.find('a:blue'))) == 2
-        assert len(list(rt4.find('a:red', 'a:yellow'))) == 6
+        assert next(rt4.find('a:blue', count=True)) == 2
+        assert next(rt4.find('a:red', 'a:yellow', count=True)) == 6
         assert len(list(rt4.find('a:red', 'a:yellow', n=3))) == 3
-        assert len(list(rt4.find('b:triangle', 'c:spotted'))) == 3
-        assert len(list(rt4.find('b:triangle', 'b:square', 'c:striped', 'c:plain'))) == 4
-        assert len(list(rt4.find('a:red', 'b:triangle', 'b:square', 'c:spotted', 'c:plain'))) == 3
+        assert next(rt4.find('b:triangle', 'c:spotted', count=True)) == 3
+        assert next(rt4.find('b:triangle', 'b:square', 'c:striped', 'c:plain', count=True)) == 4
+        assert next(rt4.find('a:red', 'b:triangle', 'b:square', 'c:spotted', 'c:plain', count=True)) == 3
 
     def test_delete(self, rt4):
         reds = list(rt4.find('a:red'))

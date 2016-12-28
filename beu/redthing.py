@@ -110,7 +110,7 @@ class RedThing(object):
         return data
 
     def find(self, *terms, start=0, end=float('inf'), n=20, desc=True,
-            get_fields=[], all_fields=False):
+            get_fields=[], all_fields=False, count=False):
         """Return a generator of dicts that match the search terms
 
         - terms: each term is a string 'index_field:value'
@@ -120,6 +120,7 @@ class RedThing(object):
         - desc: if True, return results in descending order
         - get_fields: list of fields to get for each matching hash_id
         - all_fields: if True, return all fields of each matching hash_id
+        - count: if True, only yield the total number of results
         """
         base_find_key = self._make_key(self._base_key, '_find')
         next_id_key = self._make_key(base_find_key, '_next_id')
@@ -153,8 +154,18 @@ class RedThing(object):
             last_key = get_next_tmp_key()
             tmp_keys.append(last_key)
             beu.REDIS.zinterstore(last_key, (intersect_key, self._id_zset_key), aggregate='MAX')
+            for tmp_key in tmp_keys[:-1]:
+                beu.REDIS.delete(tmp_key)
+            tmp_keys = [tmp_keys[-1]]
         else:
             last_key = self._id_zset_key
+
+        if count:
+            val = beu.REDIS.zcard(last_key)
+            for tmp_key in tmp_keys:
+                beu.REDIS.delete(tmp_key)
+            yield val
+            return
 
         if desc:
             range_func = partial(beu.REDIS.zrevrangebyscore, last_key, end, start, start=0, num=n)
