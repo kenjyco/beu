@@ -112,7 +112,7 @@ class RedThing(object):
 
     def find(self, *terms, start=0, end=float('inf'), n=20, desc=True,
              get_fields=[], all_fields=False, count=False, ts_fmt=None,
-             ts_tz=None):
+             ts_tz=None, admin_fmt=False):
         """Return a generator of dicts that match the search terms
 
         - terms: each term is a string 'index_field:value'
@@ -125,6 +125,7 @@ class RedThing(object):
         - count: if True, only yield the total number of results
         - ts_fmt: strftime format for the returned timestamps (_ts field)
         - ts_tz: a timezone to convert the timestamp to before formatting
+        - admin_fmt: if True, use format and timezone defined in settings file
         """
         base_find_key = self._make_key(self._base_key, '_find')
         next_id_key = self._make_key(base_find_key, '_next_id')
@@ -182,7 +183,11 @@ class RedThing(object):
         else:
             range_func = partial(beu.REDIS.zrangebyscore, last_key, start, end, start=0, num=n)
 
-        if ts_tz and ts_fmt:
+        if admin_fmt:
+            format_timestamp = partial(
+                beu.utc_float_to_pretty, fmt=beu.ADMIN_DATE_FMT, timezone=beu.ADMIN_TIMEZONE
+            )
+        elif ts_tz and ts_fmt:
             format_timestamp = partial(beu.utc_float_to_pretty, fmt=ts_fmt, timezone=ts_tz)
         elif ts_fmt:
             format_timestamp = partial(beu.utc_float_to_pretty, fmt=ts_fmt)
