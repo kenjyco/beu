@@ -11,7 +11,7 @@ ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_DIR = os.path.dirname(ROOT_DIR)
 SETTINGS_FILE = os.path.join(PROJECT_DIR, 'settings.ini')
 APP_ENV = getenv('APP_ENV', 'dev')
-_config = configparser.ConfigParser()
+_config = configparser.RawConfigParser()
 _config.read(SETTINGS_FILE)
 
 
@@ -157,6 +157,8 @@ def make_selections(items, prompt='', wrap=True, item_format=''):
     return selected
 
 
+ADMIN_TIMEZONE = get_setting('admin_timezone')
+ADMIN_DATE_FMT = get_setting('admin_date_fmt')
 REDIS_URL = get_setting('redis_url')
 REDIS = StrictRedis.from_url(REDIS_URL) if REDIS_URL is not '' else None
 from beu.redthing import RedThing
