@@ -3,7 +3,7 @@ import os.path
 import textwrap
 import pytz
 from os import getenv
-from datetime import datetime
+from datetime import datetime, timezone as dt_timezone
 from redis import StrictRedis
 
 
@@ -49,6 +49,16 @@ def dt_to_float_string(dt, fmt='%Y%m%d%H%M%S.%f'):
 
 def utc_now_float_string(fmt='%Y%m%d%H%M%S.%f'):
     return dt_to_float_string(datetime.utcnow(), fmt)
+
+
+def utc_float_to_pretty(f, fmt=None, timezone=None):
+    if not fmt:
+        return f
+    dt = datetime.strptime(str(f), '%Y%m%d%H%M%S.%f')
+    if timezone:
+        dt = dt.replace(tzinfo=dt_timezone.utc)
+        dt = dt.astimezone(pytz.timezone(timezone))
+    return dt.strftime(fmt)
 
 
 def date_string_to_utc_float_string(date_string, timezone=None):
