@@ -58,6 +58,7 @@ class RedThing(object):
         result = pipe.execute()
         return self._make_key(base_key, int(result[1]))
 
+    @property
     def size(self):
         return beu.REDIS.zcard(self._id_zset_key)
 
@@ -246,7 +247,7 @@ class RedThing(object):
         return hash_id
 
     def show_keyspace(self):
-        if self.size() <= 50:
+        if self.size <= 50:
             return [
                 (beu.decode(key), beu.decode(beu.REDIS.type(key)))
                 for key in beu.REDIS.scan_iter('{}*'.format(self._base_key))

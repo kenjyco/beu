@@ -105,7 +105,7 @@ class TestRedThing:
         for _ in range(19):
             rt3.add(**generate_rt23_data())
 
-        assert rt3.size() == 20
+        assert rt3.size == 20
 
     def test_find(self, rt4):
         rt4.add(a='red', b='circle', c='striped')
@@ -130,7 +130,7 @@ class TestRedThing:
 
     def test_delete(self, rt4):
         reds = list(rt4.find('a:red'))
-        assert rt4.size() == 10
+        assert rt4.size == 10
         assert len(reds) == 4
         assert beu.REDIS.zscore('test:rt4:a', 'red') == 4.0
         a_red_id = reds[0]['_id']
@@ -140,7 +140,7 @@ class TestRedThing:
         rt4.delete(a_red_id)
         reds = list(rt4.find('a:red'))
         assert beu.REDIS.zscore('test:rt4:a', 'red') == 3.0
-        assert rt4.size() == 9
+        assert rt4.size == 9
         assert len(reds) == 3
         assert beu.REDIS.zscore('test:rt4:b', b_field) == b_count - 1
         assert rt4.get(a_red_id) == {}
@@ -150,7 +150,7 @@ class TestRedThing:
         assert beu.REDIS.zscore('test:rt4:a', 'red') == 3.0
         assert beu.REDIS.zscore('test:rt4:a', 'blue') == 2.0
         assert len(reds) == 3
-        assert rt4.size() == 9
+        assert rt4.size == 9
         a_red_id = reds[0]['_id']
         rt4.update(a_red_id, a='blue')
         reds = list(rt4.find('a:red'))
@@ -165,7 +165,7 @@ class TestRedThing:
         rt4._base_key == 'test:rt4'
 
     def test_keyspace_in_use(self, rt1, rt2, rt3, rt4):
-        assert rt1.size() > 0
-        assert rt2.size() > 0
-        assert rt3.size() > 0
-        assert rt4.size() > 0
+        assert rt1.size > 0
+        assert rt2.size > 0
+        assert rt3.size > 0
+        assert rt4.size > 0
