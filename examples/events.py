@@ -50,3 +50,11 @@ def generate_and_add_events(n):
     final_used_memory = beu.REDIS.info()['used_memory_human']
     print('Added {} events in {} seconds'.format(n, end - start))
     print('Memory usage went from {} to {}'.format(initial_used_memory, final_used_memory))
+
+
+if QueryEvent.size == 0:
+    generate_and_add_events(15)
+
+print('\nQueryEvent size:', QueryEvent.size)
+print('\nTop 3 index values per index:')
+pprint(QueryEvent.index_field_info(3))
