@@ -76,7 +76,11 @@ def utc_ago_float_string(num_unit, fmt='%Y%m%d%H%M%S.%f'):
 
 def utc_float_to_pretty(f, fmt=None, timezone=None):
     if not fmt:
-        return f
+        if ADMIN_DATE_FMT:
+            fmt = ADMIN_DATE_FMT
+            timezone = ADMIN_TIMEZONE
+        else:
+            return f
     dt = datetime.strptime(str(f), '%Y%m%d%H%M%S.%f')
     if timezone:
         dt = dt.replace(tzinfo=dt_timezone.utc)
