@@ -156,23 +156,20 @@ class RedThing(object):
             intersect_key = get_next_tmp_key()
             tmp_keys.append(intersect_key)
             beu.REDIS.sinterstore(intersect_key, *to_intersect)
-            if not count:
-                last_key = get_next_tmp_key()
-                tmp_keys.append(last_key)
-                beu.REDIS.zinterstore(last_key, (intersect_key, self._id_zset_key), aggregate='MAX')
-                for tmp_key in tmp_keys[:-1]:
-                    beu.REDIS.delete(tmp_key)
-                tmp_keys = [tmp_keys[-1]]
-            else:
-                last_key = intersect_key
+            last_key = get_next_tmp_key()
+            tmp_keys.append(last_key)
+            beu.REDIS.zinterstore(last_key, (intersect_key, self._id_zset_key), aggregate='MAX')
+            for tmp_key in tmp_keys[:-1]:
+                beu.REDIS.delete(tmp_key)
+            tmp_keys = [tmp_keys[-1]]
         else:
             last_key = self._id_zset_key
 
         if count:
-            try:
+            if start > 0 or end < float('inf'):
+                val = beu.REDIS.zcount(last_key, start, end)
+            else:
                 val = beu.REDIS.zcard(last_key)
-            except ResponseError:
-                val = beu.REDIS.scard(last_key)
             for tmp_key in tmp_keys:
                 beu.REDIS.delete(tmp_key)
             yield val
