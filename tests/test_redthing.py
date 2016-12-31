@@ -57,7 +57,7 @@ def rt4():
     return beu.RedThing('test', 'rt4', index_fields=['a', 'b', 'c'])
 
 
-@pytest.mark.skipif(DBSIZE != 0, reason='Database is not empty')
+@pytest.mark.skipif(DBSIZE != 0, reason='Database is not empty, has {} item(s)'.format(DBSIZE))
 @pytest.mark.skipif(REDIS_CONNECTED is False, reason='Not connected to redis')
 class TestRedThing:
     @classmethod
@@ -165,6 +165,7 @@ class TestRedThing:
         rt4._base_key == 'test:rt4'
 
     def test_keyspace_in_use(self, rt1, rt2, rt3, rt4):
+        assert beu.REDIS.dbsize() > 0
         assert rt1.size > 0
         assert rt2.size > 0
         assert rt3.size > 0
