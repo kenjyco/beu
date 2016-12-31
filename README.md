@@ -15,4 +15,4 @@ beu
 
 > `% beu-ipython -i examples/events.py`
 
-[![asciinema](https://asciinema.org/a/bay13yriek54hdlc5282j9a6x.png)](https://asciinema.org/a/bay13yriek54hdlc5282j9a6x?autoplay=1)
+[![asciinema](https://asciinema.org/a/ae9q30pttaxzm891pr6kybnop.png)](https://asciinema.org/a/ae9q30pttaxzm891pr6kybnop?autoplay=1)
