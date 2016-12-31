@@ -37,7 +37,12 @@ def get_setting(name, default='', section=APP_ENV):
     try:
         val = _config[section][name]
     except KeyError:
-        return default
+        try:
+            val = _config['default'][name]
+        except KeyError:
+            return default
+        else:
+            val = from_string(val)
     else:
         val = from_string(val)
     return val
