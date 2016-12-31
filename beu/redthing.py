@@ -276,11 +276,11 @@ class RedThing(object):
         return hash_id
 
     def show_keyspace(self):
-        if self.size <= 50:
-            return [
+        if self.size <= 500:
+            return sorted([
                 (beu.decode(key), beu.decode(beu.REDIS.type(key)))
                 for key in beu.REDIS.scan_iter('{}*'.format(self._base_key))
-            ]
+            ])
         else:
             print('Keyspace is too large')
 
