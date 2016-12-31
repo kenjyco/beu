@@ -74,7 +74,9 @@ def utc_ago_float_string(num_unit, fmt='%Y%m%d%H%M%S.%f'):
     return val
 
 
-def utc_float_to_pretty(f, fmt=None, timezone=None):
+def utc_float_to_pretty(f=None, fmt=None, timezone=None):
+    if not f:
+        f = float(utc_now_float_string())
     if not fmt:
         if ADMIN_DATE_FMT:
             fmt = ADMIN_DATE_FMT
