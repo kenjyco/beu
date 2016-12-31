@@ -16,3 +16,37 @@ beu
 > `% beu-ipython -i examples/events.py`
 
 [![asciinema](https://asciinema.org/a/ae9q30pttaxzm891pr6kybnop.png)](https://asciinema.org/a/ae9q30pttaxzm891pr6kybnop?autoplay=1)
+
+## Settings, environments, testing, and debugging
+
+[beu.sh]: https://github.com/kenjyco/beu/blob/master/scripts/beu.sh
+[dev-setup.bash]: https://github.com/kenjyco/beu/blob/master/dev-setup.bash
+
+> Note: the [scripts/beu.sh][beu.sh] script provides **`beu-test`** and
+> **`beu-ipython`** shell functions when sourced, as long as [dev-setup.bash][]
+> was used to install.
+
+When using `beu-test`, tests will stop running on the first failure and drop you
+into a `pdb++` debugger session.
+
+- use `(l)ist` to list context lines
+- use `(n)ext` to move on to the next statement
+- use `(s)tep` to step into a function
+- use `(c)ontinue` to continue to next break point (i.e. `set_trace()` lines in
+  your code)
+- use `sticky` to toggle sticky mode (to constantly show the currently executing
+  code as you move through with the debugger)
+- use `pp` to pretty print a variable or statement
+
+If the redis server at `redis_url` (in the test section of settings.ini) is not
+running or is not empty, redis server tests will be skipped.
+
+Use the `APP_ENV` environment variable to specify which section of the
+`settings.ini` file your settings will be loaded from. Any settings in the
+`default` section can be overwritten if explicity set in another section.
+
+- if no `APP_ENV` is explicitly set, `dev` is assumed
+- the `APP_ENV` setting is overwritten to be `test` no matter what was set when
+  calling `py.test` tests
+
+[![asciinema](https://asciinema.org/a/ctqwly2exssjrg3a9v17xm64h.png)](https://asciinema.org/a/ctqwly2exssjrg3a9v17xm64h?autoplay=1)
