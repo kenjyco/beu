@@ -54,11 +54,14 @@ def generate_and_add_events(n):
     print('Memory usage went from {} to {}'.format(initial_used_memory, final_used_memory))
 
 
-def slow_trickle_events(sleeptime=.234, show=False):
+def slow_trickle_events(sleeptime=.234, show=False, randomsleep=False):
+    sleeper = lambda: time.sleep(sleeptime)
+    if randomsleep:
+        sleeper = lambda: time.sleep(random.random())
     while True:
         try:
             generate_event(send=True, show=show)
-            time.sleep(sleeptime)
+            sleeper()
         except KeyboardInterrupt:
             break
 
