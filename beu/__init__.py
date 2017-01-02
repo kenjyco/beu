@@ -72,8 +72,8 @@ def utc_ago_float_string(num_unit, fmt='%Y%m%d%H%M%S.%f'):
     val = None
     num, unit = num_unit.split('.')
     _trans = {
-        'se': 'seconds', 'mi': 'minutes', 'ho': 'hours',
-        'da': 'days', 'we': 'weeks'
+        'se': 'seconds', 'mi': 'minutes', 'ho': 'hours', 'hr': 'hours',
+        'da': 'days', 'we': 'weeks', 'wk': 'weeks'
     }
     try:
         kwargs = {_trans[unit.lower()[:2]]: int(num)}
