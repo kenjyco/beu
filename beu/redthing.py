@@ -144,7 +144,6 @@ class RedThing(object):
         tmp_keys = []
         d = defaultdict(list)
         terms = beu.string_to_set(terms)
-        get_fields = beu.string_to_set(get_fields)
         for term in terms:
             index_field, value = term.split(':')
             d[index_field].append(term)
@@ -217,7 +216,7 @@ class RedThing(object):
             if all_fields:
                 d = self.get(hash_id)
             elif get_fields:
-                d = self.get(hash_id, ','.join(get_fields))
+                d = self.get(hash_id, get_fields)
             else:
                 d = {}
             d['_id'] = beu.decode(hash_id)
