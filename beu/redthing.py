@@ -118,7 +118,7 @@ class RedThing(object):
     def find(self, terms='', start=0, end=float('inf'), n=20, desc=True,
              get_fields='', all_fields=False, count=False, ts_fmt=None,
              ts_tz=None, admin_fmt=False, since='', until=''):
-        """Return a generator of dicts that match the search terms
+        """Return a list of dicts that match the search terms
 
         - terms: string of 'index_field:value' pairs separated by any of , ; |
         - start: utc timestamp float
@@ -128,7 +128,7 @@ class RedThing(object):
         - get_fields: string of field names to get for each matching hash_id
           separated by any of , ; |
         - all_fields: if True, return all fields of each matching hash_id
-        - count: if True, only yield the total number of results
+        - count: if True, only return the total number of results
         - ts_fmt: strftime format for the returned timestamps (_ts field)
         - ts_tz: a timezone to convert the timestamp to before formatting
         - admin_fmt: if True, use format and timezone defined in settings file
@@ -191,8 +191,7 @@ class RedThing(object):
                 val = beu.REDIS.zcard(last_key)
             for tmp_key in tmp_keys:
                 beu.REDIS.delete(tmp_key)
-            yield val
-            return
+            return val
 
         if desc:
             range_func = partial(beu.REDIS.zrevrangebyscore, last_key, end, start, start=0, num=n)
@@ -211,6 +210,7 @@ class RedThing(object):
             format_timestamp = lambda x: x
 
         i = 0
+        results = []
         for hash_id, timestamp in range_func(withscores=True):
             if all_fields:
                 d = self.get(hash_id)
@@ -221,11 +221,13 @@ class RedThing(object):
             d['_id'] = beu.decode(hash_id)
             d['_ts'] = format_timestamp(timestamp)
             d['_pos'] = i
-            yield d
+            results.append(d)
             i += 1
 
         for tmp_key in tmp_keys:
             beu.REDIS.delete(tmp_key)
+
+        return results
 
     def delete(self, hash_id, pipe=None):
         """Delete a specific hash_id's data and remove from indexes it is in

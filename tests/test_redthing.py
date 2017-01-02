@@ -119,17 +119,17 @@ class TestRedThing:
         rt4.add(a='blue', b='circle', c='striped')
         rt4.add(a='blue', b='square', c='plain')
 
-        assert len(list(rt4.find())) == 10
-        assert len(list(rt4.find(n=5))) == 5
-        assert next(rt4.find('a:blue', count=True)) == 2
-        assert next(rt4.find('a:red,a:yellow', count=True)) == 6
-        assert len(list(rt4.find('a:red,a:yellow', n=3))) == 3
-        assert next(rt4.find('b:triangle,c:spotted', count=True)) == 3
-        assert next(rt4.find('b:triangle,b:square,c:striped,c:plain', count=True)) == 4
-        assert next(rt4.find('a:red,b:triangle,b:square,c:spotted,c:plain', count=True)) == 3
+        assert len(rt4.find()) == 10
+        assert len(rt4.find(n=5)) == 5
+        assert rt4.find('a:blue', count=True) == 2
+        assert rt4.find('a:red,a:yellow', count=True) == 6
+        assert len(rt4.find('a:red,a:yellow', n=3)) == 3
+        assert rt4.find('b:triangle,c:spotted', count=True) == 3
+        assert rt4.find('b:triangle,b:square,c:striped,c:plain', count=True) == 4
+        assert rt4.find('a:red,b:triangle,b:square,c:spotted,c:plain', count=True) == 3
 
     def test_delete(self, rt4):
-        reds = list(rt4.find('a:red'))
+        reds = rt4.find('a:red')
         assert rt4.size == 10
         assert len(reds) == 4
         assert beu.REDIS.zscore('test:rt4:a', 'red') == 4.0
@@ -138,7 +138,7 @@ class TestRedThing:
         b_field = a_red['b']
         b_count = beu.REDIS.zscore('test:rt4:b', b_field)
         rt4.delete(a_red_id)
-        reds = list(rt4.find('a:red'))
+        reds = rt4.find('a:red')
         assert beu.REDIS.zscore('test:rt4:a', 'red') == 3.0
         assert rt4.size == 9
         assert len(reds) == 3
@@ -146,14 +146,14 @@ class TestRedThing:
         assert rt4.get(a_red_id) == {}
 
     def test_update(self, rt4):
-        reds = list(rt4.find('a:red'))
+        reds = rt4.find('a:red')
         assert beu.REDIS.zscore('test:rt4:a', 'red') == 3.0
         assert beu.REDIS.zscore('test:rt4:a', 'blue') == 2.0
         assert len(reds) == 3
         assert rt4.size == 9
         a_red_id = reds[0]['_id']
         rt4.update(a_red_id, a='blue')
-        reds = list(rt4.find('a:red'))
+        reds = rt4.find('a:red')
         assert beu.REDIS.zscore('test:rt4:a', 'blue') == 3.0
         assert len(reds) == 2
         assert rt4.get(a_red_id)['a'] == 'blue'
