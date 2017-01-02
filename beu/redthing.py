@@ -215,7 +215,7 @@ class RedThing(object):
             if all_fields:
                 d = self.get(hash_id)
             elif get_fields:
-                d = self.get(hash_id, *get_fields)
+                d = self.get(hash_id, ','.join(get_fields))
             else:
                 d = {}
             d['_id'] = beu.decode(hash_id)
