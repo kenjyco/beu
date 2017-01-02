@@ -16,7 +16,7 @@ except FileNotFoundError:
     words = fake_dict_keys[:] * 50
 
 
-def generate_event(send=True):
+def generate_event(send=True, show=False):
     event_data = {
         'name': random.choice(['google', 'yahoo', 'askjeeves', 'altavista']),
         'type': random.choice([
@@ -37,6 +37,8 @@ def generate_event(send=True):
     event_id = None
     if send:
         event_id = QueryEvent.add(**event_data)
+    if show:
+        pprint(event_data)
 
     return (event_id, event_data)
 
@@ -50,6 +52,19 @@ def generate_and_add_events(n):
     final_used_memory = beu.REDIS.info()['used_memory_human']
     print('Added {} events in {} seconds'.format(n, end - start))
     print('Memory usage went from {} to {}'.format(initial_used_memory, final_used_memory))
+
+
+def slow_trickle_events(sleeptime=.234, show=False):
+    while True:
+        try:
+            generate_event(send=True, show=show)
+            time.sleep(sleeptime)
+        except KeyboardInterrupt:
+            break
+
+
+def now():
+    print(beu.utc_float_to_pretty())
 
 
 if QueryEvent.size == 0:
