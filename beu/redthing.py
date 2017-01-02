@@ -132,8 +132,8 @@ class RedThing(object):
         - ts_fmt: strftime format for the returned timestamps (_ts field)
         - ts_tz: a timezone to convert the timestamp to before formatting
         - admin_fmt: if True, use format and timezone defined in settings file
-        - since: a 'num.unit' string (i.e. 15.seconds, 2.weeks, etc)
-        - until: a 'num.unit' string (i.e. 15.seconds, 2.weeks, etc)
+        - since: a 'num:unit' string (i.e. 15:seconds, 1.5:weeks, etc)
+        - until: a 'num:unit' string (i.e. 15:seconds, 1.5:weeks, etc)
         """
         base_find_key = self._make_key(self._base_key, '_find')
         next_id_key = self._make_key(base_find_key, '_next_id')

@@ -65,19 +65,19 @@ def utc_now_float_string(fmt='%Y%m%d%H%M%S.%f'):
 def utc_ago_float_string(num_unit, fmt='%Y%m%d%H%M%S.%f'):
     """Return a float_string representing a UTC datetime in the past
 
-    - num_unit: a string 'num.unit' (i.e. 15.seconds, 2.weeks, etc)
+    - num_unit: a string 'num:unit' (i.e. 15:seconds, 1.5:weeks, etc)
 
     Valid units are: (se)conds, (mi)nutes, (ho)urs, (da)ys, (we)eks
     """
     val = None
-    num, unit = num_unit.split('.')
+    num, unit = num_unit.split(':')
     _trans = {
         'se': 'seconds', 'mi': 'minutes', 'ho': 'hours', 'hr': 'hours',
         'da': 'days', 'we': 'weeks', 'wk': 'weeks'
     }
     try:
-        kwargs = {_trans[unit.lower()[:2]]: int(num)}
-    except (KeyError, ValueError):
+        kwargs = {_trans[unit.lower()[:2]]: float(num)}
+    except (KeyError, ValueError) as e:
         pass
     else:
         td = timedelta(**kwargs)
