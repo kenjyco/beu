@@ -1,3 +1,4 @@
+import re
 import configparser
 import os.path
 import textwrap
@@ -46,6 +47,11 @@ def get_setting(name, default='', section=APP_ENV):
     else:
         val = from_string(val)
     return val
+
+
+def string_to_set(s):
+    """Return a set of strings from s where items are separated by any of , ; |"""
+    return set(re.split(r'\s*[,;\|]\s*', s)) - set([''])
 
 
 def dt_to_float_string(dt, fmt='%Y%m%d%H%M%S.%f'):

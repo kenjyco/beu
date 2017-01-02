@@ -83,12 +83,17 @@ class RedThing(object):
         pipe.execute()
         return key
 
-    def get(self, hash_key, *fields):
-        """Wrapper to beu.REDIS.hget/hmget/hgetall"""
+    def get(self, hash_key, fields=''):
+        """Wrapper to beu.REDIS.hget/hmget/hgetall
+
+        - fields: string of field names to get separated by any of , ; |
+        """
+        fields = beu.string_to_set(fields)
         num_fields = len(fields)
         try:
             if num_fields == 1:
-                data = {fields[0]: beu.REDIS.hget(hash_key, fields[0])}
+                field = fields.pop()
+                data = {field: beu.REDIS.hget(hash_key, field)}
             elif num_fields > 1:
                 data = dict(zip(fields, beu.REDIS.hmget(hash_key, *fields)))
             else:
@@ -110,17 +115,18 @@ class RedThing(object):
                 data[field] = beu.from_string(val) if val is not None else None
         return data
 
-    def find(self, *terms, start=0, end=float('inf'), n=20, desc=True,
-             get_fields=[], all_fields=False, count=False, ts_fmt=None,
+    def find(self, terms='', start=0, end=float('inf'), n=20, desc=True,
+             get_fields='', all_fields=False, count=False, ts_fmt=None,
              ts_tz=None, admin_fmt=False, since='', until=''):
         """Return a generator of dicts that match the search terms
 
-        - terms: each term is a string 'index_field:value'
+        - terms: string of 'index_field:value' pairs separated by any of , ; |
         - start: utc timestamp float
         - end: utc timestamp float
         - n: max number of results
         - desc: if True, return results in descending order
-        - get_fields: list of fields to get for each matching hash_id
+        - get_fields: string of field names to get for each matching hash_id
+          separated by any of , ; |
         - all_fields: if True, return all fields of each matching hash_id
         - count: if True, only yield the total number of results
         - ts_fmt: strftime format for the returned timestamps (_ts field)
@@ -135,6 +141,8 @@ class RedThing(object):
         tmp_keys = []
         d = defaultdict(list)
         get_next_tmp_key = lambda: self._get_next_key(next_id_key, base_find_key)
+        terms = beu.string_to_set(terms)
+        get_fields = beu.string_to_set(get_fields)
         for term in terms:
             index_field, value = term.split(':')
             d[index_field].append(term)
@@ -235,7 +243,7 @@ class RedThing(object):
             pipe = beu.REDIS.pipeline()
             execute = True
 
-        indexed_data = self.get(hash_id, *self._index_base_keys.keys())
+        indexed_data = self.get(hash_id, ','.join(self._index_base_keys.keys()))
         pipe.delete(hash_id)
         for k, v in indexed_data.items():
             old_index_key = self._make_key(self._base_key, k, v)
@@ -261,7 +269,7 @@ class RedThing(object):
             return
         now = beu.utc_now_float_string()
         pipe = beu.REDIS.pipeline()
-        indexed_data = self.get(hash_id, *self._index_base_keys.keys())
+        indexed_data = self.get(hash_id, ','.join(self._index_base_keys.keys()))
         for k, v in indexed_data.items():
             if k in data and data[k] != v:
                 old_index_key = self._make_key(self._base_key, k, v)

@@ -80,7 +80,7 @@ class TestRedThing:
     def test_add_and_get_some(self, rt1):
         data = generate_rt1_data()
         hash_id = rt1.add(**data)
-        retrieved = rt1.get(hash_id, 'x', 'y')
+        retrieved = rt1.get(hash_id, 'x,y')
         assert retrieved == {k: v for k, v in data.items() if k in ('x', 'y')}
 
     def test_add_and_get_one(self, rt1):
@@ -122,11 +122,11 @@ class TestRedThing:
         assert len(list(rt4.find())) == 10
         assert len(list(rt4.find(n=5))) == 5
         assert next(rt4.find('a:blue', count=True)) == 2
-        assert next(rt4.find('a:red', 'a:yellow', count=True)) == 6
-        assert len(list(rt4.find('a:red', 'a:yellow', n=3))) == 3
-        assert next(rt4.find('b:triangle', 'c:spotted', count=True)) == 3
-        assert next(rt4.find('b:triangle', 'b:square', 'c:striped', 'c:plain', count=True)) == 4
-        assert next(rt4.find('a:red', 'b:triangle', 'b:square', 'c:spotted', 'c:plain', count=True)) == 3
+        assert next(rt4.find('a:red,a:yellow', count=True)) == 6
+        assert len(list(rt4.find('a:red,a:yellow', n=3))) == 3
+        assert next(rt4.find('b:triangle,c:spotted', count=True)) == 3
+        assert next(rt4.find('b:triangle,b:square,c:striped,c:plain', count=True)) == 4
+        assert next(rt4.find('a:red,b:triangle,b:square,c:spotted,c:plain', count=True)) == 3
 
     def test_delete(self, rt4):
         reds = list(rt4.find('a:red'))
