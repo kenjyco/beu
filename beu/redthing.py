@@ -41,6 +41,8 @@ class RedThing(object):
         }
         self._next_id_string_key = self._make_key(self._base_key, '_next_id')
         self._id_zset_key = self._make_key(self._base_key, '_id')
+        self._find_base_key = self._make_key(self._base_key, '_find')
+        self._next_find_id_string_key = self._make_key(self._find_base_key, '_next_id')
 
     def _make_key(self, *parts):
         return ':'.join([str(part) for part in parts])
@@ -57,6 +59,9 @@ class RedThing(object):
         pipe.incr(next_id_string_key)
         result = pipe.execute()
         return self._make_key(base_key, int(result[1]))
+
+    def _get_next_find_key(self):
+        return self._get_next_key(self._next_find_id_string_key, self._find_base_key)
 
     @property
     def size(self):
@@ -135,12 +140,9 @@ class RedThing(object):
         - since: a 'num:unit' string (i.e. 15:seconds, 1.5:weeks, etc)
         - until: a 'num:unit' string (i.e. 15:seconds, 1.5:weeks, etc)
         """
-        base_find_key = self._make_key(self._base_key, '_find')
-        next_id_key = self._make_key(base_find_key, '_next_id')
         to_intersect = []
         tmp_keys = []
         d = defaultdict(list)
-        get_next_tmp_key = lambda: self._get_next_key(next_id_key, base_find_key)
         terms = beu.string_to_set(terms)
         get_fields = beu.string_to_set(get_fields)
         for term in terms:
@@ -149,7 +151,7 @@ class RedThing(object):
         for index_field, grouped_terms in d.items():
             if len(grouped_terms) > 1:
                 # Compute the union of all index_keys for the same field
-                tmp_key = get_next_tmp_key()
+                tmp_key = self._get_next_find_key()
                 tmp_keys.append(tmp_key)
                 beu.REDIS.sunionstore(
                     tmp_key,
@@ -163,10 +165,10 @@ class RedThing(object):
                 to_intersect.append(self._make_key(self._base_key, grouped_terms[0]))
 
         if to_intersect:
-            intersect_key = get_next_tmp_key()
+            intersect_key = self._get_next_find_key()
             tmp_keys.append(intersect_key)
             beu.REDIS.sinterstore(intersect_key, *to_intersect)
-            last_key = get_next_tmp_key()
+            last_key = self._get_next_find_key()
             tmp_keys.append(last_key)
             beu.REDIS.zinterstore(last_key, (intersect_key, self._id_zset_key), aggregate='MAX')
             for tmp_key in tmp_keys[:-1]:
