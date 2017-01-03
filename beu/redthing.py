@@ -337,3 +337,33 @@ class RedThing(object):
                 for name, count in beu.zshow(base_key, end=n-1)
             ])
         return results
+
+    def clear_find_stats(self):
+        pipe = beu.REDIS.pipeline()
+        for key in beu.REDIS.scan_iter('{}*'.format(self._find_base_key)):
+            pipe.delete(key)
+        pipe.execute()
+
+    def find_stats(self, n=10):
+        count_stats = []
+        size_stats = []
+        results = {}
+        for name, num in beu.REDIS.hgetall(self._find_stats_hash_key).items():
+            name, _type = beu.decode(name).split('--')
+            if _type == 'count':
+                count_stats.append((name, int(beu.decode(num))))
+            elif _type == 'last_size':
+                size_stats.append((name, int(beu.decode(num))))
+        count_stats.sort(key=lambda x: x[1], reverse=True)
+        size_stats.sort(key=lambda x: x[1], reverse=True)
+        results['counts'] = count_stats
+        results['sizes'] = size_stats
+        results['timestamps'] = []
+        newest = beu.zshow(self._find_searches_zset_key, end=3*(n-1))
+        for name, ts in newest:
+            results['timestamps'].append((
+                beu.decode(name),
+                ts,
+                beu.utc_float_to_pretty(ts, fmt=beu.ADMIN_DATE_FMT, timezone=beu.ADMIN_TIMEZONE)
+            ))
+        return results
