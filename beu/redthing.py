@@ -367,7 +367,7 @@ class RedThing(object):
             pipe.delete(key)
         pipe.execute()
 
-    def find_stats(self, n=10):
+    def find_stats(self, n=5):
         count_stats = []
         size_stats = []
         results = {}
@@ -379,8 +379,8 @@ class RedThing(object):
                 size_stats.append((name, int(beu.decode(num))))
         count_stats.sort(key=lambda x: x[1], reverse=True)
         size_stats.sort(key=lambda x: x[1], reverse=True)
-        results['counts'] = count_stats
-        results['sizes'] = size_stats
+        results['counts'] = count_stats[:n]
+        results['sizes'] = size_stats[:n]
         results['timestamps'] = []
         newest = beu.zshow(self._find_searches_zset_key, end=3*(n-1))
         for name, ts in newest:
