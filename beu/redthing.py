@@ -148,7 +148,8 @@ class RedThing(object):
 
     def find(self, terms='', start=0, end=float('inf'), n=20, desc=True,
              get_fields='', all_fields=False, count=False, ts_fmt=None,
-             ts_tz=None, admin_fmt=False, since='', until=''):
+             ts_tz=None, admin_fmt=False, start_ts='', end_ts='', since='',
+             until=''):
         """Return a list of dicts that match the search terms
 
         - terms: string of 'index_field:value' pairs separated by any of , ; |
@@ -163,6 +164,10 @@ class RedThing(object):
         - ts_fmt: strftime format for the returned timestamps (_ts field)
         - ts_tz: a timezone to convert the timestamp to before formatting
         - admin_fmt: if True, use format and timezone defined in settings file
+        - start_ts: a timestamp with form between YYYY and YYYY-MM-DD HH:MM:SS.f
+          (in the timezone specified in ts_tz or ADMIN_TIMEZONE)
+        - end_ts: a timestamp with form between YYYY and YYYY-MM-DD HH:MM:SS.f
+          (in the timezone specified in ts_tz or ADMIN_TIMEZONE)
         - since: a 'num:unit' string (i.e. 15:seconds, 1.5:weeks, etc)
         - until: a 'num:unit' string (i.e. 15:seconds, 1.5:weeks, etc)
 
@@ -228,6 +233,13 @@ class RedThing(object):
             for tmp_key in tmp_keys[:-1]:
                 beu.REDIS.delete(tmp_key)
             tmp_keys = [tmp_keys[-1]]
+
+        if start_ts or end_ts:
+            tz = ts_tz or beu.ADMIN_TIMEZONE
+            if start_ts:
+                start = float(beu.date_string_to_utc_float_string(start_ts, tz))
+            if end_ts:
+                end = float(beu.date_string_to_utc_float_string(end_ts, tz))
 
         if count:
             if since or until:
