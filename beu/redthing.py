@@ -65,9 +65,32 @@ class RedThing(object):
     def _get_next_find_key(self):
         return self._get_next_key(self._next_find_id_string_key, self._find_base_key)
 
+    def _get_by_position(self, pos):
+        data = {}
+        x = beu.REDIS.zrange(self._id_zset_key, pos, pos, withscores=True)
+        if x:
+            hash_id, ts = x[0]
+            data = self.get(hash_id)
+            data['_id'] = beu.decode(hash_id)
+            data['_ts_raw'] = ts
+            data['_ts_admin'] = beu.utc_float_to_pretty(
+                ts,
+                fmt=beu.ADMIN_DATE_FMT,
+                timezone=beu.ADMIN_TIMEZONE
+            )
+        return data
+
     @property
     def size(self):
         return beu.REDIS.zcard(self._id_zset_key)
+
+    @property
+    def last(self):
+        return self._get_by_position(-1)
+
+    @property
+    def first(self):
+        return self._get_by_position(0)
 
     def add(self, **data):
         key = self._get_next_key()
