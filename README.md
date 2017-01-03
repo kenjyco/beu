@@ -11,20 +11,20 @@ beu
 % beu-test
 ```
 
-## Load up example and experiment in the shell
-
-> `% beu-ipython -i examples/events.py`
-
-[![asciinema](https://asciinema.org/a/ae9q30pttaxzm891pr6kybnop.png)](https://asciinema.org/a/ae9q30pttaxzm891pr6kybnop?autoplay=1)
-
-## Settings, environments, testing, and debugging
-
 [beu.sh]: https://github.com/kenjyco/beu/blob/master/scripts/beu.sh
 [dev-setup.bash]: https://github.com/kenjyco/beu/blob/master/dev-setup.bash
 
-> Note: the [scripts/beu.sh][beu.sh] script provides **`beu-test`** and
-> **`beu-ipython`** shell functions when sourced, as long as [dev-setup.bash][]
-> was used to install.
+> Note: the [scripts/beu.sh][beu.sh] script provides **`beu-test`**,
+> **`beu-ipython`**, and **`beu-example`** shell functions when sourced, as long
+> as [dev-setup.bash][] was used to install.
+
+## Load up example and experiment in the shell
+
+> `% beu-example`
+
+[![asciinema](https://asciinema.org/a/dw2nutldbxgsfbsu15r179fs2.png)](https://asciinema.org/a/dw2nutldbxgsfbsu15r179fs2?autoplay=1)
+
+## Settings, environments, testing, and debugging
 
 When using `beu-test`, tests will stop running on the first failure and drop you
 into a `pdb++` debugger session.
