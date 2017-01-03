@@ -58,17 +58,26 @@ def dt_to_float_string(dt, fmt='%Y%m%d%H%M%S.%f'):
     return dt.strftime(fmt)
 
 
+def float_string_to_dt(float_string, fmt='%Y%m%d%H%M%S.%f'):
+    return datetime.strptime(float_string, fmt)
+
+
 def utc_now_float_string(fmt='%Y%m%d%H%M%S.%f'):
     return dt_to_float_string(datetime.utcnow(), fmt)
 
 
-def utc_ago_float_string(num_unit, fmt='%Y%m%d%H%M%S.%f'):
+def utc_ago_float_string(num_unit, now=None, fmt='%Y%m%d%H%M%S.%f'):
     """Return a float_string representing a UTC datetime in the past
 
     - num_unit: a string 'num:unit' (i.e. 15:seconds, 1.5:weeks, etc)
+    - now: a utc_float or None
 
-    Valid units are: (se)conds, (mi)nutes, (ho)urs, (da)ys, (we)eks
+    Valid units are: (se)conds, (mi)nutes, (ho)urs, (da)ys, (we)eks, hr, wk
     """
+    if now is None:
+        now = datetime.utcnow()
+    else:
+        now = float_string_to_dt(now)
     val = None
     num, unit = num_unit.split(':')
     _trans = {
@@ -81,7 +90,7 @@ def utc_ago_float_string(num_unit, fmt='%Y%m%d%H%M%S.%f'):
         pass
     else:
         td = timedelta(**kwargs)
-        val = dt_to_float_string(datetime.utcnow() - td, fmt)
+        val = dt_to_float_string(now - td, fmt)
     return val
 
 
