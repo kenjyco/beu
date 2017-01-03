@@ -3,6 +3,7 @@ import ujson
 import beu
 from collections import defaultdict
 from functools import partial
+from itertools import product, zip_longest, chain
 from redis import ResponseError
 
 
@@ -164,6 +165,9 @@ class RedThing(object):
         - admin_fmt: if True, use format and timezone defined in settings file
         - since: a 'num:unit' string (i.e. 15:seconds, 1.5:weeks, etc)
         - until: a 'num:unit' string (i.e. 15:seconds, 1.5:weeks, etc)
+
+        When count=True, you can specify multiple num:unit values in the
+        'since' or 'until' strings to return a dict of counts
         """
         to_intersect = []
         tmp_keys = []
@@ -225,23 +229,58 @@ class RedThing(object):
                 beu.REDIS.delete(tmp_key)
             tmp_keys = [tmp_keys[-1]]
 
-        if since:
-            val = beu.utc_ago_float_string(since)
-            if val:
-                start = float(val)
-        if until:
-            val = beu.utc_ago_float_string(until)
-            if val:
-                end = float(val)
-
         if count:
-            if start > 0 or end < float('inf'):
+            if since or until:
+                since = beu.string_to_set(since)
+                until = beu.string_to_set(until)
+                ranges = defaultdict(dict)
+                results = {}
+                if since and until:
+                    _gen = product(since, until)
+                    gen = chain(
+                        _gen,
+                        ((s, '') for s in since),
+                        (('', u) for u in until)
+                    )
+                else:
+                    gen = zip_longest(since, until)
+
+                for _since, _until in gen:
+                    if _since and _until:
+                        return_key = 'since:{}:until:{}'.format(_since, _until)
+                        _since_float = float(beu.utc_ago_float_string(_since, now))
+                        _until_float = float(beu.utc_ago_float_string(_until, now))
+                    elif _since:
+                        return_key = 'since:{}'.format(_since)
+                        _since_float = float(beu.utc_ago_float_string(_since, now))
+                        _until_float = float('inf')
+                    elif _until:
+                        return_key = 'until:{}'.format(_until)
+                        _until_float = float(beu.utc_ago_float_string(_until, now))
+                        _since_float = 0
+                    else:
+                        continue
+                    if _since_float > _until_float:
+                        continue
+
+                    results[return_key] = beu.REDIS.zcount(last_key, _since_float, _until_float)
+                val = results
+            elif start > 0 or end < float('inf'):
                 val = beu.REDIS.zcount(last_key, start, end)
             else:
                 val = beu.REDIS.zcard(last_key)
             for tmp_key in tmp_keys:
                 beu.REDIS.delete(tmp_key)
             return val
+        else:
+            if len(beu.string_to_set(since)) == 1:
+                val = beu.utc_ago_float_string(since)
+                if val:
+                    start = float(val)
+            if len(beu.string_to_set(until)) == 1:
+                val = beu.utc_ago_float_string(until)
+                if val:
+                    end = float(val)
 
         if desc:
             range_func = partial(beu.REDIS.zrevrangebyscore, last_key, end, start, start=0, num=n)
