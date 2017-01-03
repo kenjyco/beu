@@ -357,8 +357,19 @@ class RedThing(object):
             pipe.zrem(self._id_zset_key, hash_id)
             return pipe.execute()
 
-    def delete_to(self, score):
-        """Delete all items with a score (timestamp) between 0 and score"""
+    def delete_to(self, score=None, ts='', tz=None):
+        """Delete all items with a score (timestamp) between 0 and score
+
+        - score: a utc_float
+        - ts: a timestamp with form between YYYY and YYYY-MM-DD HH:MM:SS.f
+          (in the timezone specified in tz or ADMIN_TIMEZONE)
+        - tz: a timezone
+        """
+        if ts:
+            tz = tz or beu.ADMIN_TIMEZONE
+            score = float(beu.date_string_to_utc_float_string(ts, tz))
+        if score is None:
+            return
         pipe = beu.REDIS.pipeline()
         for hash_id in beu.REDIS.zrangebyscore(self._id_zset_key, 0, score):
             self.delete(hash_id, pipe)
