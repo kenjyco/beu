@@ -43,6 +43,8 @@ class RedThing(object):
         self._id_zset_key = self._make_key(self._base_key, '_id')
         self._find_base_key = self._make_key(self._base_key, '_find')
         self._next_find_id_string_key = self._make_key(self._find_base_key, '_next_id')
+        self._find_stats_hash_key = self._make_key(self._find_base_key, '_stats')
+        self._find_searches_zset_key = self._make_key(self._find_base_key, '_searches')
 
     def _make_key(self, *parts):
         return ':'.join([str(part) for part in parts])
@@ -143,7 +145,9 @@ class RedThing(object):
         to_intersect = []
         tmp_keys = []
         d = defaultdict(list)
+        stat_base_names = {}
         terms = beu.string_to_set(terms)
+        now = beu.utc_now_float_string()
         for term in terms:
             index_field, value = term.split(':')
             d[index_field].append(term)
@@ -151,6 +155,7 @@ class RedThing(object):
             if len(grouped_terms) > 1:
                 # Compute the union of all index_keys for the same field
                 tmp_key = self._get_next_find_key()
+                stat_base_names[';'.join(sorted(grouped_terms))] = tmp_key
                 tmp_keys.append(tmp_key)
                 beu.REDIS.sunionstore(
                     tmp_key,
@@ -161,20 +166,41 @@ class RedThing(object):
                 )
                 to_intersect.append(tmp_key)
             else:
-                to_intersect.append(self._make_key(self._base_key, grouped_terms[0]))
+                k = self._make_key(self._base_key, grouped_terms[0])
+                stat_base_names[grouped_terms[0]] = k
+                to_intersect.append(k)
 
-        if to_intersect:
+        if len(to_intersect) > 1:
             intersect_key = self._get_next_find_key()
             tmp_keys.append(intersect_key)
+            stat_base_names[';'.join(sorted(stat_base_names.keys()))] = intersect_key
             beu.REDIS.sinterstore(intersect_key, *to_intersect)
             last_key = self._get_next_find_key()
             tmp_keys.append(last_key)
             beu.REDIS.zinterstore(last_key, (intersect_key, self._id_zset_key), aggregate='MAX')
+        elif len(to_intersect) == 1:
+            last_key = self._get_next_find_key()
+            tmp_keys.append(last_key)
+            beu.REDIS.zinterstore(last_key, (to_intersect[0], self._id_zset_key), aggregate='MAX')
+        else:
+            last_key = self._id_zset_key
+
+        if stat_base_names:
+            pipe = beu.REDIS.pipeline()
+            for stat_base, set_name in stat_base_names.items():
+                pipe.zadd(self._find_searches_zset_key, now, stat_base)
+                pipe.hincrby(self._find_stats_hash_key, stat_base + '--count', 1)
+                pipe.hset(
+                    self._find_stats_hash_key,
+                    stat_base + '--last_size',
+                    beu.REDIS.scard(set_name)
+                )
+            pipe.execute()
+
+        if tmp_keys:
             for tmp_key in tmp_keys[:-1]:
                 beu.REDIS.delete(tmp_key)
             tmp_keys = [tmp_keys[-1]]
-        else:
-            last_key = self._id_zset_key
 
         if since:
             val = beu.utc_ago_float_string(since)
