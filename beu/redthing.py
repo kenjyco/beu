@@ -247,7 +247,6 @@ class RedThing(object):
             if since or until:
                 since = beu.string_to_set(since)
                 until = beu.string_to_set(until)
-                ranges = defaultdict(dict)
                 results = {}
                 if since and until:
                     _gen = product(since, until)
