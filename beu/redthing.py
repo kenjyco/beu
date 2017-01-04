@@ -14,17 +14,19 @@ class RedThing(object):
 
     - store events and meta-data with ability to query on indexed attributes
     """
-    def __init__(self, namespace, name, index_fields=[], json_fields=[],
-                 pickle_fields=[]):
-        """Pass in namespace, name, and list of fields to index on
+    def __init__(self, namespace, name, index_fields='', json_fields='',
+                 pickle_fields=''):
+        """Pass in namespace, name, and string of fields to index on
 
-        - index_fields: list of fields that should be indexed
-        - json_fields: list of fields that should be serialized as JSON
-        - pickle_fields: list of fields with complex/arbitrary structure
+        - index_fields: string of fields that should be indexed
+        - json_fields: string of fields that should be serialized as JSON
+        - pickle_fields: string of fields with complex/arbitrary structure
+
+        Separate fields in strings by any of , ; |
         """
-        index_fields = set(index_fields)
-        self._json_fields = set(json_fields)
-        self._pickle_fields = set(pickle_fields)
+        index_fields = beu.string_to_set(index_fields)
+        self._json_fields = beu.string_to_set(json_fields)
+        self._pickle_fields = beu.string_to_set(pickle_fields)
 
         invalid = (
             index_fields.intersection(self._json_fields)

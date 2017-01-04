@@ -44,17 +44,17 @@ def rt1():
 
 @pytest.fixture
 def rt2():
-    return beu.RedThing('test', 'rt2', json_fields=['data'])
+    return beu.RedThing('test', 'rt2', json_fields='data')
 
 
 @pytest.fixture
 def rt3():
-    return beu.RedThing('test', 'rt3', index_fields=['a'], json_fields=['data'])
+    return beu.RedThing('test', 'rt3', index_fields='a', json_fields='data')
 
 
 @pytest.fixture
 def rt4():
-    return beu.RedThing('test', 'rt4', index_fields=['a', 'b', 'c'])
+    return beu.RedThing('test', 'rt4', index_fields='a,b,c')
 
 
 @pytest.mark.skipif(DBSIZE != 0, reason='Database is not empty, has {} item(s)'.format(DBSIZE))
