@@ -17,6 +17,10 @@ APP_ENV = getenv('APP_ENV', 'dev')
 FLOAT_STRING_FMT = '%Y%m%d%H%M%S.%f'
 _config = configparser.RawConfigParser()
 _config.read(SETTINGS_FILE)
+__doc__ = """
+
+A thing that can be used to prototype backend/cli ideas.
+"""
 
 
 def from_string(val):
