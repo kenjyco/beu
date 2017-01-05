@@ -219,7 +219,7 @@ class RedThing(beu.RedKeyMaker):
              get_fields='', all_fields=False, count=False, ts_fmt=None,
              ts_tz=None, admin_fmt=False, start_ts='', end_ts='', since='',
              until='', include_meta=True):
-        """Return a list of dicts that match the search terms
+        """Return a list of dicts (or dict of list of dicts) that match all terms
 
         Multiple values in (terms, get_fields, start_ts, end_ts, since, until)
         must be separated by any of , ; |
