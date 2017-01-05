@@ -32,6 +32,21 @@ class UniqueRedThing(beu.RedKeyMaker):
         self._id_zset_key = self._make_key(self._base_key, '_id')
         self._ts_zset_key = self._make_key(self._base_key, '_ts')
 
+        _parts = [
+            '({}, {}'.format(repr(namespace), repr(unique_field)),
+            'json_fields={}'.format(repr(json_fields)) if json_fields else '',
+            'pickle_fields={}'.format(repr(pickle_fields)) if pickle_fields else '',
+        ]
+        self._repr = ''.join([
+            self.__class__.__name__,
+            ', '.join([p for p in _parts if p is not '']),
+            ')'
+        ])
+        beu.REDIS.hincrby('_UniqueRedThing', self._repr, 1)
+
+    def __repr__(self):
+        return self._repr
+
     @property
     def size(self):
         return beu.REDIS.zcard(self._id_zset_key)

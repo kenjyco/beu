@@ -70,6 +70,7 @@ class TestRedThing:
         _rt2.clear_keyspace()
         _rt3.clear_keyspace()
         _rt4.clear_keyspace()
+        beu.REDIS.delete('_RedThing')
 
     def test_add_and_get(self, rt1):
         data = generate_rt1_data()

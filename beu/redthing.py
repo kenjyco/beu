@@ -24,13 +24,13 @@ class RedThing(beu.RedKeyMaker):
 
         Separate fields in strings by any of , ; |
         """
-        index_fields = beu.string_to_set(index_fields)
+        index_fields_set = beu.string_to_set(index_fields)
         self._json_fields = beu.string_to_set(json_fields)
         self._pickle_fields = beu.string_to_set(pickle_fields)
 
         invalid = (
-            index_fields.intersection(self._json_fields)
-            .union(index_fields.intersection(self._pickle_fields))
+            index_fields_set.intersection(self._json_fields)
+            .union(index_fields_set.intersection(self._pickle_fields))
             .union(self._json_fields.intersection(self._pickle_fields))
         )
         assert invalid == set(), 'field(s) used in too many places: {}'.format(invalid)
@@ -38,7 +38,7 @@ class RedThing(beu.RedKeyMaker):
         self._base_key = self._make_key(namespace, name)
         self._index_base_keys = {
             index_field: self._make_key(self._base_key, index_field)
-            for index_field in index_fields
+            for index_field in index_fields_set
         }
         self._next_id_string_key = self._make_key(self._base_key, '_next_id')
         self._id_zset_key = self._make_key(self._base_key, '_id')
@@ -46,6 +46,22 @@ class RedThing(beu.RedKeyMaker):
         self._next_find_id_string_key = self._make_key(self._find_base_key, '_next_id')
         self._find_stats_hash_key = self._make_key(self._find_base_key, '_stats')
         self._find_searches_zset_key = self._make_key(self._find_base_key, '_searches')
+
+        _parts = [
+            '({}, {}'.format(repr(namespace), repr(name)),
+            'index_fields={}'.format(repr(index_fields)) if index_fields else '',
+            'json_fields={}'.format(repr(json_fields)) if json_fields else '',
+            'pickle_fields={}'.format(repr(pickle_fields)) if pickle_fields else '',
+        ]
+        self._repr = ''.join([
+            self.__class__.__name__,
+            ', '.join([p for p in _parts if p is not '']),
+            ')'
+        ])
+        beu.REDIS.hincrby('_RedThing', self._repr, 1)
+
+    def __repr__(self):
+        return self._repr
 
     def _get_next_find_key(self):
         return self._get_next_key(self._next_find_id_string_key, self._find_base_key)
