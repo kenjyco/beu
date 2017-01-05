@@ -395,16 +395,16 @@ class RedThing(beu.RedKeyMaker):
         for key in beu.REDIS.scan_iter('{}*'.format(self._base_key)):
             beu.REDIS.delete(key)
 
-    def index_field_info(self, n=10):
+    def index_field_info(self, num=10):
         """Return list of 2-item tuples (index_field:value, count)
 
-        - n: include top n per index type
+        - num: include top num per index type
         """
         results = []
         for index_field, base_key in sorted(self._index_base_keys.items()):
             results.extend([
                 (':'.join([index_field, beu.decode(name)]), int(count))
-                for name, count in beu.zshow(base_key, end=n-1)
+                for name, count in beu.zshow(base_key, end=num-1)
             ])
         return results
 
@@ -414,7 +414,7 @@ class RedThing(beu.RedKeyMaker):
             pipe.delete(key)
         pipe.execute()
 
-    def find_stats(self, n=5):
+    def find_stats(self, num=5):
         count_stats = []
         size_stats = []
         results = {}
@@ -426,10 +426,10 @@ class RedThing(beu.RedKeyMaker):
                 size_stats.append((name, int(beu.decode(num))))
         count_stats.sort(key=lambda x: x[1], reverse=True)
         size_stats.sort(key=lambda x: x[1], reverse=True)
-        results['counts'] = count_stats[:n]
-        results['sizes'] = size_stats[:n]
+        results['counts'] = count_stats[:num]
+        results['sizes'] = size_stats[:num]
         results['timestamps'] = []
-        newest = beu.zshow(self._find_searches_zset_key, end=3*(n-1))
+        newest = beu.zshow(self._find_searches_zset_key, end=3*(num-1))
         for name, ts in newest:
             results['timestamps'].append((
                 beu.decode(name),
