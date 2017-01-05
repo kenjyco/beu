@@ -227,3 +227,4 @@ ADMIN_DATE_FMT = get_setting('admin_date_fmt')
 REDIS_URL = get_setting('redis_url')
 REDIS = StrictRedis.from_url(REDIS_URL) if REDIS_URL is not '' else None
 from beu.redthing import RedThing
+from beu.unique_redthing import UniqueRedThing
