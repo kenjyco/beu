@@ -15,12 +15,12 @@ beu
 [dev-setup.bash]: https://github.com/kenjyco/beu/blob/master/dev-setup.bash
 
 > Note: the [scripts/beu.sh][beu.sh] script provides **`beu-test`**,
-> **`beu-ipython`**, and **`beu-example`** shell functions when sourced, as long
-> as [dev-setup.bash][] was used to install.
+> **`beu-ipython`**, **`beu-help`**, and **`beu-examples`** shell functions when
+> sourced, as long as [dev-setup.bash][] was used to install.
 
-## Load up example and experiment in the shell
+## Load up examples and experiment in the shell
 
-> `% beu-example`
+> `% beu-examples`
 
 [![asciinema](https://asciinema.org/a/dw2nutldbxgsfbsu15r179fs2.png)](https://asciinema.org/a/dw2nutldbxgsfbsu15r179fs2?autoplay=1)
 
