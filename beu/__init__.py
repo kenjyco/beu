@@ -12,6 +12,7 @@ ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_DIR = os.path.dirname(ROOT_DIR)
 SETTINGS_FILE = os.path.join(PROJECT_DIR, 'settings.ini')
 APP_ENV = getenv('APP_ENV', 'dev')
+FLOAT_STRING_FMT = '%Y%m%d%H%M%S.%f'
 _config = configparser.RawConfigParser()
 _config.read(SETTINGS_FILE)
 
@@ -54,19 +55,19 @@ def string_to_set(s):
     return set(re.split(r'\s*[,;\|]\s*', s)) - set([''])
 
 
-def dt_to_float_string(dt, fmt='%Y%m%d%H%M%S.%f'):
+def dt_to_float_string(dt, fmt=FLOAT_STRING_FMT):
     return dt.strftime(fmt)
 
 
-def float_string_to_dt(float_string, fmt='%Y%m%d%H%M%S.%f'):
+def float_string_to_dt(float_string, fmt=FLOAT_STRING_FMT):
     return datetime.strptime(float_string, fmt)
 
 
-def utc_now_float_string(fmt='%Y%m%d%H%M%S.%f'):
+def utc_now_float_string(fmt=FLOAT_STRING_FMT):
     return dt_to_float_string(datetime.utcnow(), fmt)
 
 
-def utc_ago_float_string(num_unit, now=None, fmt='%Y%m%d%H%M%S.%f'):
+def utc_ago_float_string(num_unit, now=None, fmt=FLOAT_STRING_FMT):
     """Return a float_string representing a UTC datetime in the past
 
     - num_unit: a string 'num:unit' (i.e. 15:seconds, 1.5:weeks, etc)
@@ -103,7 +104,7 @@ def utc_float_to_pretty(f=None, fmt=None, timezone=None):
             timezone = ADMIN_TIMEZONE
         else:
             return f
-    dt = datetime.strptime(str(f), '%Y%m%d%H%M%S.%f')
+    dt = datetime.strptime(str(f), FLOAT_STRING_FMT)
     if timezone:
         dt = dt.replace(tzinfo=dt_timezone.utc)
         dt = dt.astimezone(pytz.timezone(timezone))
@@ -111,6 +112,10 @@ def utc_float_to_pretty(f=None, fmt=None, timezone=None):
 
 
 def date_string_to_utc_float_string(date_string, timezone=None):
+    """Return a utc_float_string for a given date_string
+
+    - date_string: string form between 'YYYY' and 'YYYY-MM-DD HH:MM:SS.f'
+    """
     dt = None
     s = None
     for fmt in [
