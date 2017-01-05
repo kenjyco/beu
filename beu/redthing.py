@@ -42,7 +42,7 @@ class RedThing(beu.RedKeyMaker):
         self._next_id_string_key = self._make_key(self._base_key, '_next_id')
         self._id_zset_key = self._make_key(self._base_key, '_id')
         self._find_base_key = self._make_key(self._base_key, '_find')
-        self._next_find_id_string_key = self._make_key(self._find_base_key, '_next_id')
+        self._find_next_id_string_key = self._make_key(self._find_base_key, '_next_id')
         self._find_stats_hash_key = self._make_key(self._find_base_key, '_stats')
         self._find_searches_zset_key = self._make_key(self._find_base_key, '_searches')
 
@@ -63,7 +63,7 @@ class RedThing(beu.RedKeyMaker):
         return self._repr
 
     def _get_next_find_key(self):
-        return self._get_next_key(self._next_find_id_string_key, self._find_base_key)
+        return self._get_next_key(self._find_next_id_string_key, self._find_base_key)
 
     def _get_by_position(self, pos):
         data = {}
