@@ -70,9 +70,10 @@ def now():
     print(beu.utc_float_to_pretty())
 
 
-if QueryEvent.size == 0:
-    generate_and_add_events(15)
+if __name__ == '__main__':
+    if QueryEvent.size == 0:
+        generate_and_add_events(15)
 
-print('\nQueryEvent size:', QueryEvent.size)
-print('\nTop 3 index values per index:')
-pprint(QueryEvent.index_field_info(3))
+    print('\nQueryEvent size:', QueryEvent.size)
+    print('\nTop 3 index values per index:')
+    pprint(QueryEvent.index_field_info(3))

@@ -19,5 +19,6 @@ def prompt_session(prompt_string=None, ch='> '):
             break
 
 
-print('\nPress <Enter> twice to stop prompting.\n')
-prompt_session()
+if __name__ == '__main__':
+    print('\nPress <Enter> twice to stop prompting.\n')
+    prompt_session()

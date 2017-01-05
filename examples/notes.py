@@ -14,4 +14,5 @@ def input_session(prompt='> '):
             break
 
 
-input_session()
+if __name__ == '__main__':
+    input_session()
