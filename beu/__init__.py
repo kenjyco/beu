@@ -5,6 +5,8 @@ import textwrap
 import pytz
 from os import getenv
 from datetime import datetime, timedelta, timezone as dt_timezone
+from functools import partial
+from itertools import product, zip_longest, chain
 from redis import StrictRedis
 
 
@@ -134,6 +136,103 @@ def date_string_to_utc_float_string(date_string, timezone=None):
             dt = tz.localize(dt).astimezone(pytz.utc)
         s = dt_to_float_string(dt)
     return s
+
+
+def get_time_ranges_and_args(**kwargs):
+    """Return a dict of time range strings and start/end tuples
+
+    Multiple values in (start_ts, end_ts, since, until) must be separated
+    by any of , ; |
+
+    - tz: timezone
+    - now: float_string
+    - start: utc_float
+    - end: utc_float
+    - start_ts: timestamps with form between YYYY and YYYY-MM-DD HH:MM:SS.f (in tz)
+    - end_ts: timestamps with form between YYYY and YYYY-MM-DD HH:MM:SS.f (in tz)
+    - since: 'num:unit' strings (i.e. 15:seconds, 1.5:weeks, etc)
+    - until: 'num:unit' strings (i.e. 15:seconds, 1.5:weeks, etc)
+
+    The start/end kwargs returned are meant to be used with any of
+    REDIS functions zcount, zrangebyscore, or zrevrangebyscore
+    """
+    tz = kwargs.get('tz') or ADMIN_TIMEZONE
+    now = kwargs.get('now') or utc_now_float_string()
+    results = {}
+    _valid_args = [
+        ('start_ts', 'end_ts', partial(date_string_to_utc_float_string, timezone=tz)),
+        ('since', 'until', partial(utc_ago_float_string, now=now)),
+    ]
+    for first, second, func in _valid_args:
+        first_string = kwargs.get(first, '')
+        second_string = kwargs.get(second, '')
+        if first_string or second_string:
+            first_vals = string_to_set(first_string)
+            second_vals = string_to_set(second_string)
+            if first_vals and second_vals:
+                _gen = product(first_vals, second_vals)
+                gen = chain(
+                    _gen,
+                    ((f, '') for f in first_vals),
+                    (('', s) for s in second_vals)
+                )
+            else:
+                gen = zip_longest(first_vals, second_vals)
+
+            for _first, _second in gen:
+                if _first and _second:
+                    return_key = '{}={},{}={}'.format(first, _first, second, _second)
+                    start_float = float(func(_first))
+                    end_float = float(func(_second))
+                elif _first:
+                    return_key = '{}={}'.format(first, _first)
+                    start_float = float(func(_first))
+                    end_float = float('inf')
+                elif _second:
+                    return_key = '{}={}'.format(second, _second)
+                    end_float = float(func(_second))
+                    start_float = 0
+                else:
+                    continue
+                if start_float >= end_float:
+                    continue
+
+                results[return_key] = (start_float, end_float)
+
+    start = kwargs.get('start')
+    end = kwargs.get('end')
+    if start and end:
+        return_key = 'start={},end={}'.format(start, end)
+        results[return_key] = (float(start), float(end))
+    elif start:
+        return_key = 'start={}'.format(start)
+        results[return_key] = (float(start), float('inf'))
+    elif end:
+        return_key = 'end={}'.format(end)
+        results[return_key] = (0, float(end))
+    if not results:
+        results['all'] = (0, float('inf'))
+    return results
+
+
+def get_timestamp_formatter_from_args(ts_fmt=None, ts_tz=None, admin_fmt=False):
+    """Return a function that can be applied to a utc_float
+
+    - ts_fmt: strftime format for the returned timestamp
+    - ts_tz: a timezone to convert the timestamp to before formatting
+    - admin_fmt: if True, use format and timezone defined in settings file
+    """
+    if admin_fmt:
+        func = partial(
+            utc_float_to_pretty, fmt=ADMIN_DATE_FMT, timezone=ADMIN_TIMEZONE
+        )
+    elif ts_tz and ts_fmt:
+        func = partial(utc_float_to_pretty, fmt=ts_fmt, timezone=ts_tz)
+    elif ts_fmt:
+        func = partial(utc_float_to_pretty, fmt=ts_fmt)
+    else:
+        func = lambda x: x
+    return func
 
 
 def zshow(key, start=0, end=-1, desc=True, withscores=True):

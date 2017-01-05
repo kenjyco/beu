@@ -3,7 +3,6 @@ import ujson
 import beu
 from collections import defaultdict
 from functools import partial
-from itertools import product, zip_longest, chain
 from redis import ResponseError
 
 
@@ -146,33 +145,13 @@ class RedThing(beu.RedKeyMaker):
                 data[field] = beu.from_string(val) if val is not None else None
         return data
 
-    def find(self, terms='', start=0, end=float('inf'), n=20, desc=True,
-             get_fields='', all_fields=False, count=False, ts_fmt=None,
-             ts_tz=None, admin_fmt=False, start_ts='', end_ts='', since='',
-             until=''):
-        """Return a list of dicts that match the search terms
+    def _redis_zset_from_terms(self, terms=''):
+        """Return Redis key containing sorted set and bool denoting if its a temp
 
         - terms: string of 'index_field:value' pairs separated by any of , ; |
-        - start: utc timestamp float
-        - end: utc timestamp float
-        - n: max number of results
-        - desc: if True, return results in descending order
-        - get_fields: string of field names to get for each matching hash_id
-          separated by any of , ; |
-        - all_fields: if True, return all fields of each matching hash_id
-        - count: if True, only return the total number of results
-        - ts_fmt: strftime format for the returned timestamps (_ts field)
-        - ts_tz: a timezone to convert the timestamp to before formatting
-        - admin_fmt: if True, use format and timezone defined in settings file
-        - start_ts: a timestamp with form between YYYY and YYYY-MM-DD HH:MM:SS.f
-          (in the timezone specified in ts_tz or ADMIN_TIMEZONE)
-        - end_ts: a timestamp with form between YYYY and YYYY-MM-DD HH:MM:SS.f
-          (in the timezone specified in ts_tz or ADMIN_TIMEZONE)
-        - since: a 'num:unit' string (i.e. 15:seconds, 1.5:weeks, etc)
-        - until: a 'num:unit' string (i.e. 15:seconds, 1.5:weeks, etc)
 
-        When count=True, you can specify multiple num:unit values in the
-        'since' or 'until' strings to return a dict of counts
+        Also keep track of count, size, and timestamp stats for any intermediate
+        temporary sets created
         """
         to_intersect = []
         tmp_keys = []
@@ -234,99 +213,106 @@ class RedThing(beu.RedKeyMaker):
                 beu.REDIS.delete(tmp_key)
             tmp_keys = [tmp_keys[-1]]
 
-        if start_ts or end_ts:
-            tz = ts_tz or beu.ADMIN_TIMEZONE
-            if start_ts:
-                start = float(beu.date_string_to_utc_float_string(start_ts, tz))
-            if end_ts:
-                end = float(beu.date_string_to_utc_float_string(end_ts, tz))
+        return (last_key, tmp_keys != [])
 
-        if count:
-            if since or until:
-                since = beu.string_to_set(since)
-                until = beu.string_to_set(until)
-                results = {}
-                if since and until:
-                    _gen = product(since, until)
-                    gen = chain(
-                        _gen,
-                        ((s, '') for s in since),
-                        (('', u) for u in until)
+    def find(self, terms='', start=None, end=None, num=20, desc=None,
+             get_fields='', all_fields=False, count=False, ts_fmt=None,
+             ts_tz=None, admin_fmt=False, start_ts='', end_ts='', since='',
+             until='', include_meta=True):
+        """Return a list of dicts that match the search terms
+
+        Multiple values in (terms, get_fields, start_ts, end_ts, since, until)
+        must be separated by any of , ; |
+
+        - terms: string of 'index_field:value' pairs
+        - start: utc_float
+        - end: utc_float
+        - num: max number of results
+        - desc: if True, return results in descending order; if None,
+          auto-determine if desc should be True or False
+        - get_fields: string of field names to get for each matching hash_id
+        - all_fields: if True, return all fields of each matching hash_id
+        - count: if True, only return the total number of results (per time range)
+        - ts_fmt: strftime format for the returned timestamps (_ts field)
+        - ts_tz: a timezone to convert the timestamp to before formatting
+        - admin_fmt: if True, use format and timezone defined in settings file
+        - start_ts: timestamps with form between YYYY and YYYY-MM-DD HH:MM:SS.f
+          (in the timezone specified in ts_tz or ADMIN_TIMEZONE)
+        - end_ts: timestamps with form between YYYY and YYYY-MM-DD HH:MM:SS.f
+          (in the timezone specified in ts_tz or ADMIN_TIMEZONE)
+        - since: 'num:unit' strings (i.e. 15:seconds, 1.5:weeks, etc)
+        - until: 'num:unit' strings (i.e. 15:seconds, 1.5:weeks, etc)
+        - include_meta: if True (and 'count' is False), include attributes
+          '_id', '_ts', '_pos' in the results
+        """
+        results = {}
+        now = beu.utc_now_float_string()
+        result_key, result_key_is_tmp = self._redis_zset_from_terms(terms)
+        time_ranges = beu.get_time_ranges_and_args(
+            tz=ts_tz,
+            now=now,
+            start=start,
+            end=end,
+            start_ts=start_ts,
+            end_ts=end_ts,
+            since=since,
+            until=until
+        )
+        format_timestamp = beu.get_timestamp_formatter_from_args(
+            ts_fmt=ts_fmt,
+            ts_tz=ts_tz,
+            admin_fmt=admin_fmt
+        )
+
+        for name, start_end_tuple in time_ranges.items():
+            _start, _end = start_end_tuple
+            if count:
+                if _start > 0 or _end < float('inf'):
+                    func = partial(beu.REDIS.zcount, result_key, _start, _end)
+                else:
+                    func = partial(beu.REDIS.zcard, result_key)
+                results[name] = func()
+            else:
+                _desc = desc
+                if _desc is None:
+                    if 'start' in name or 'since' in name:
+                        _desc = False
+                    else:
+                        _desc = True
+
+                if _desc:
+                    func = partial(
+                        beu.REDIS.zrevrangebyscore, result_key, _end, _start,
+                        start=0, num=num, withscores=True
                     )
                 else:
-                    gen = zip_longest(since, until)
+                    func = partial(
+                        beu.REDIS.zrangebyscore, result_key, _start, _end,
+                        start=0, num=num, withscores=True
+                    )
 
-                for _since, _until in gen:
-                    if _since and _until:
-                        return_key = 'since:{}:until:{}'.format(_since, _until)
-                        _since_float = float(beu.utc_ago_float_string(_since, now))
-                        _until_float = float(beu.utc_ago_float_string(_until, now))
-                    elif _since:
-                        return_key = 'since:{}'.format(_since)
-                        _since_float = float(beu.utc_ago_float_string(_since, now))
-                        _until_float = float('inf')
-                    elif _until:
-                        return_key = 'until:{}'.format(_until)
-                        _until_float = float(beu.utc_ago_float_string(_until, now))
-                        _since_float = 0
+                i = 0
+                _results = []
+                for hash_id, timestamp in func():
+                    if all_fields:
+                        d = self.get(hash_id)
+                    elif get_fields:
+                        d = self.get(hash_id, get_fields)
                     else:
-                        continue
-                    if _since_float > _until_float:
-                        continue
+                        d = {}
+                    if include_meta:
+                        d['_id'] = beu.decode(hash_id)
+                        d['_ts'] = format_timestamp(timestamp)
+                        d['_pos'] = i
+                    _results.append(d)
+                    i += 1
+                results[name] = _results
 
-                    results[return_key] = beu.REDIS.zcount(last_key, _since_float, _until_float)
-                val = results
-            elif start > 0 or end < float('inf'):
-                val = beu.REDIS.zcount(last_key, start, end)
-            else:
-                val = beu.REDIS.zcard(last_key)
-            for tmp_key in tmp_keys:
-                beu.REDIS.delete(tmp_key)
-            return val
-        else:
-            if len(beu.string_to_set(since)) == 1:
-                val = beu.utc_ago_float_string(since)
-                if val:
-                    start = float(val)
-            if len(beu.string_to_set(until)) == 1:
-                val = beu.utc_ago_float_string(until)
-                if val:
-                    end = float(val)
+        if result_key_is_tmp:
+            beu.REDIS.delete(result_key)
 
-        if desc:
-            range_func = partial(beu.REDIS.zrevrangebyscore, last_key, end, start, start=0, num=n)
-        else:
-            range_func = partial(beu.REDIS.zrangebyscore, last_key, start, end, start=0, num=n)
-
-        if admin_fmt:
-            format_timestamp = partial(
-                beu.utc_float_to_pretty, fmt=beu.ADMIN_DATE_FMT, timezone=beu.ADMIN_TIMEZONE
-            )
-        elif ts_tz and ts_fmt:
-            format_timestamp = partial(beu.utc_float_to_pretty, fmt=ts_fmt, timezone=ts_tz)
-        elif ts_fmt:
-            format_timestamp = partial(beu.utc_float_to_pretty, fmt=ts_fmt)
-        else:
-            format_timestamp = lambda x: x
-
-        i = 0
-        results = []
-        for hash_id, timestamp in range_func(withscores=True):
-            if all_fields:
-                d = self.get(hash_id)
-            elif get_fields:
-                d = self.get(hash_id, get_fields)
-            else:
-                d = {}
-            d['_id'] = beu.decode(hash_id)
-            d['_ts'] = format_timestamp(timestamp)
-            d['_pos'] = i
-            results.append(d)
-            i += 1
-
-        for tmp_key in tmp_keys:
-            beu.REDIS.delete(tmp_key)
-
+        if len(results) == 1:
+            results = list(results.values())[0]
         return results
 
     def delete(self, hash_id, pipe=None):
