@@ -7,7 +7,7 @@ from itertools import product, zip_longest, chain
 from redis import ResponseError
 
 
-class RedThing(object):
+class RedThing(beu.RedKeyMaker):
     """
 
     Possible uses:
@@ -49,22 +49,6 @@ class RedThing(object):
         self._find_stats_hash_key = self._make_key(self._find_base_key, '_stats')
         self._find_searches_zset_key = self._make_key(self._find_base_key, '_searches')
 
-    def _make_key(self, *parts):
-        return ':'.join([str(part) for part in parts])
-
-    def _get_next_key(self, next_id_string_key=None, base_key=None):
-        if next_id_string_key is None:
-            next_id_string_key = self._next_id_string_key
-            base_key = self._base_key
-        if base_key is None:
-            base_key = ':'.join(next_id_string_key.split(':')[:-1])
-        pipe = beu.REDIS.pipeline()
-        pipe.setnx(next_id_string_key, 1)
-        pipe.get(next_id_string_key)
-        pipe.incr(next_id_string_key)
-        result = pipe.execute()
-        return self._make_key(base_key, int(result[1]))
-
     def _get_next_find_key(self):
         return self._get_next_key(self._next_find_id_string_key, self._find_base_key)
 
@@ -96,8 +80,8 @@ class RedThing(object):
         return self._get_by_position(0)
 
     def add(self, **data):
-        key = self._get_next_key()
         now = beu.utc_now_float_string()
+        key = self._get_next_key(self._next_id_string_key, self._base_key)
         for field in self._json_fields:
             val = data.get(field)
             if val is not None:

@@ -206,6 +206,22 @@ def make_selections(items, prompt='', wrap=True, item_format=''):
     return selected
 
 
+class RedKeyMaker(object):
+    """RedKeyMaker defines '_make_key' and '_get_next_key' methods"""
+    def _make_key(self, *parts):
+        return ':'.join([str(part) for part in parts])
+
+    def _get_next_key(self, next_id_string_key, base_key=None):
+        if base_key is None:
+            base_key = ':'.join(next_id_string_key.split(':')[:-1])
+        pipe = REDIS.pipeline()
+        pipe.setnx(next_id_string_key, 1)
+        pipe.get(next_id_string_key)
+        pipe.incr(next_id_string_key)
+        result = pipe.execute()
+        return self._make_key(base_key, int(result[1]))
+
+
 ADMIN_TIMEZONE = get_setting('admin_timezone')
 ADMIN_DATE_FMT = get_setting('admin_date_fmt')
 REDIS_URL = get_setting('redis_url')
