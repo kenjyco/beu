@@ -125,11 +125,21 @@ class UniqueRedThing(beu.RedKeyMaker):
         if hash_id:
             return self.get_by_hash_id(hash_id, fields)
 
-    def recent_ids(self, n=10):
-        """Return list of 2-item tuples (hash_id, utc_float)"""
+    def recent_ids(self, n=10, ts_fmt=None, ts_tz=None, admin_fmt=False):
+        """Return list of 2-item tuples (hash_id, utc_float)
+
+        - ts_fmt: strftime format for the returned timestamp
+        - ts_tz: a timezone to convert the timestamp to before formatting
+        - admin_fmt: if True, use format and timezone defined in settings file
+        """
+        format_timestamp = beu.get_timestamp_formatter_from_args(
+            ts_fmt=ts_fmt,
+            ts_tz=ts_tz,
+            admin_fmt=admin_fmt
+        )
         return [
-            (beu.decode(hash_id), utc_float)
             for hash_id, utc_float in beu.zshow(self._ts_zset_key, end=n-1)
+            (beu.decode(hash_id), format_timestamp(utc_float))
         ]
 
     def recent_values(self, n=10):
