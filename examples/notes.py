@@ -14,5 +14,17 @@ def input_session(prompt='> '):
             break
 
 
+def hand_pick_from(**find_kwargs):
+    find_kwargs.update(dict(
+        admin_fmt=True, all_fields=True, include_meta=True
+    ))
+    selected = beu.make_selections(
+        notes.find(**find_kwargs),
+        item_format='{_ts} -> {text}',
+        wrap=False
+    )
+    import pdb; pdb.set_trace()
+
+
 if __name__ == '__main__':
     input_session()
