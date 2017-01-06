@@ -22,7 +22,7 @@ beu
 
 > `% beu-examples`
 
-[![asciinema](https://asciinema.org/a/dw2nutldbxgsfbsu15r179fs2.png)](https://asciinema.org/a/dw2nutldbxgsfbsu15r179fs2?autoplay=1)
+[![asciinema](https://asciinema.org/a/698k7nivkqf30poapp5ujx9yd.png)](https://asciinema.org/a/698k7nivkqf30poapp5ujx9yd?autoplay=1)
 
 ## Settings, environments, testing, and debugging
 
