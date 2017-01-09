@@ -82,13 +82,29 @@ class UniqueRedThing(beu.RedKeyMaker):
         if score:
             return self._make_key(self._base_key, int(score))
 
-    def get_by_hash_id(self, hash_id, fields=''):
+    def get_by_hash_id(self, hash_id, fields='', include_meta=False,
+                       timestamp_formatter=beu.identity, ts_fmt=None, ts_tz=None,
+                       admin_fmt=False, item_format=''):
         """Wrapper to beu.REDIS.hget/hmget/hgetall
 
         - fields: string of field names to get separated by any of , ; |
+        - include_meta: if True include attributes _id and _ts
+        - timestamp_formatter: a callable to apply to the _ts timestamp
+        - ts_fmt: strftime format for the returned timestamps (_ts field)
+        - ts_tz: a timezone to convert the timestamp to before formatting
+        - admin_fmt: if True, use format and timezone defined in settings file
+        - item_format: format string for each item (return a string instead of
+          a dict)
         """
         fields = beu.string_to_set(fields)
         num_fields = len(fields)
+        if timestamp_formatter == beu.identity and include_meta:
+            if ts_fmt or ts_tz or admin_fmt:
+                timestamp_formatter = beu.get_timestamp_formatter_from_args(
+                    ts_fmt=ts_fmt,
+                    ts_tz=ts_tz,
+                    admin_fmt=admin_fmt
+                )
         try:
             if num_fields == 1:
                 field = fields.pop()
@@ -112,16 +128,44 @@ class UniqueRedThing(beu.RedKeyMaker):
             else:
                 val = beu.decode(data[field])
                 data[field] = beu.from_string(val) if val is not None else None
+        if include_meta:
+            data['_id'] = beu.decode(hash_id)
+            data['_ts'] = timestamp_formatter(
+                beu.REDIS.zscore(self._ts_zset_key, hash_id)
+            )
+        if item_format:
+            return item_format.format(**data)
         return data
 
-    def get_by_value(self, unique_val, fields=''):
+    def get_by_value(self, unique_val, fields='', include_meta=False,
+                     timestamp_formatter=beu.identity, ts_fmt=None, ts_tz=None,
+                     admin_fmt=False, item_format=''):
         """Wrapper to self.get_by_hash_id
 
         - fields: string of field names to get separated by any of , ; |
+        - include_meta: if True include attributes _id and _ts
+        - timestamp_formatter: a callable to apply to the _ts timestamp
+        - ts_fmt: strftime format for the returned timestamps (_ts field)
+        - ts_tz: a timezone to convert the timestamp to before formatting
+        - admin_fmt: if True, use format and timezone defined in settings file
+        - item_format: format string for each item (return a string instead of
+          a dict)
         """
         hash_id = self.get_hash_id(unique_val)
+        data = {}
         if hash_id:
-            return self.get_by_hash_id(hash_id, fields)
+            data = self.get_by_hash_id(
+                hash_id,
+                fields=fields,
+                include_meta=include_meta,
+                timestamp_formatter=timestamp_formatter,
+                ts_fmt=ts_fmt,
+                ts_tz=ts_tz,
+                admin_fmt=admin_fmt,
+                item_format=item_format
+            )
+        return data
+
 
     def recent_ids(self, num=10, ts_fmt=None, ts_tz=None, admin_fmt=False):
         """Return list of 2-item tuples (hash_id, utc_float)

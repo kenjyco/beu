@@ -113,13 +113,29 @@ class RedThing(beu.RedKeyMaker):
         pipe.execute()
         return key
 
-    def get(self, hash_key, fields=''):
+    def get(self, hash_key, fields='', include_meta=False,
+            timestamp_formatter=beu.identity, ts_fmt=None, ts_tz=None,
+            admin_fmt=False, item_format=''):
         """Wrapper to beu.REDIS.hget/hmget/hgetall
 
         - fields: string of field names to get separated by any of , ; |
+        - include_meta: if True include attributes _id and _ts
+        - timestamp_formatter: a callable to apply to the _ts timestamp
+        - ts_fmt: strftime format for the returned timestamps (_ts field)
+        - ts_tz: a timezone to convert the timestamp to before formatting
+        - admin_fmt: if True, use format and timezone defined in settings file
+        - item_format: format string for each item (return a string instead of
+          a dict)
         """
         fields = beu.string_to_set(fields)
         num_fields = len(fields)
+        if timestamp_formatter == beu.identity and include_meta:
+            if ts_fmt or ts_tz or admin_fmt:
+                timestamp_formatter = beu.get_timestamp_formatter_from_args(
+                    ts_fmt=ts_fmt,
+                    ts_tz=ts_tz,
+                    admin_fmt=admin_fmt
+                )
         try:
             if num_fields == 1:
                 field = fields.pop()
@@ -143,6 +159,13 @@ class RedThing(beu.RedKeyMaker):
             else:
                 val = beu.decode(data[field])
                 data[field] = beu.from_string(val) if val is not None else None
+        if include_meta:
+            data['_id'] = hash_key
+            data['_ts'] = timestamp_formatter(
+                beu.REDIS.zscore(self._id_zset_key, hash_key)
+            )
+        if item_format:
+            return item_format.format(**data)
         return data
 
     def _redis_zset_from_terms(self, terms=''):
@@ -218,7 +241,7 @@ class RedThing(beu.RedKeyMaker):
     def find(self, terms='', start=None, end=None, num=20, desc=None,
              get_fields='', all_fields=False, count=False, ts_fmt=None,
              ts_tz=None, admin_fmt=False, start_ts='', end_ts='', since='',
-             until='', include_meta=True):
+             until='', include_meta=True, item_format=''):
         """Return a list of dicts (or dict of list of dicts) that match all terms
 
         Multiple values in (terms, get_fields, start_ts, end_ts, since, until)
@@ -243,7 +266,8 @@ class RedThing(beu.RedKeyMaker):
         - since: 'num:unit' strings (i.e. 15:seconds, 1.5:weeks, etc)
         - until: 'num:unit' strings (i.e. 15:seconds, 1.5:weeks, etc)
         - include_meta: if True (and 'count' is False), include attributes
-          '_id', '_ts', '_pos' in the results
+          _id, _ts, and _pos in the results
+        - item_format: format string for each item
         """
         results = {}
         now = beu.utc_now_float_string()
@@ -258,7 +282,7 @@ class RedThing(beu.RedKeyMaker):
             since=since,
             until=until
         )
-        format_timestamp = beu.get_timestamp_formatter_from_args(
+        timestamp_formatter = beu.get_timestamp_formatter_from_args(
             ts_fmt=ts_fmt,
             ts_tz=ts_tz,
             admin_fmt=admin_fmt
@@ -295,15 +319,32 @@ class RedThing(beu.RedKeyMaker):
                 _results = []
                 for hash_id, timestamp in func():
                     if all_fields:
-                        d = self.get(hash_id)
+                        d = self.get(
+                            hash_id,
+                            include_meta=include_meta,
+                            timestamp_formatter=timestamp_formatter,
+                            item_format=item_format,
+                        )
+                        if include_meta and not item_format:
+                            d['_pos'] = i
                     elif get_fields:
-                        d = self.get(hash_id, get_fields)
+                        d = self.get(
+                            hash_id,
+                            get_fields,
+                            include_meta=include_meta,
+                            timestamp_formatter=timestamp_formatter,
+                            item_format=item_format,
+                        )
+                        if include_meta and not item_format:
+                            d['_pos'] = i
                     else:
                         d = {}
-                    if include_meta:
-                        d['_id'] = beu.decode(hash_id)
-                        d['_ts'] = format_timestamp(timestamp)
-                        d['_pos'] = i
+                        if include_meta:
+                            d['_id'] = beu.decode(hash_id)
+                            d['_ts'] = timestamp_formatter(timestamp)
+                            d['_pos'] = i
+                        if item_format:
+                            d = item_format.format(**d)
                     _results.append(d)
                     i += 1
                 results[name] = _results
