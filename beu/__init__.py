@@ -251,6 +251,10 @@ def decode(obj, encoding='utf-8'):
         return obj
 
 
+def identity(x):
+    return x
+
+
 def user_input(prompt='input: '):
     """Prompt user for input
 
@@ -279,7 +283,7 @@ def make_selections(items, prompt='', wrap=True, item_format=''):
     if not prompt:
         prompt = 'Make selections (separate by space): '
 
-    make_string = lambda x: x
+    make_string = identity
     if item_format:
         make_string = lambda x: item_format.format(**x)
 
