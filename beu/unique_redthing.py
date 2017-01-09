@@ -167,7 +167,7 @@ class UniqueRedThing(beu.RedKeyMaker):
         return data
 
 
-    def recent_ids(self, num=10, ts_fmt=None, ts_tz=None, admin_fmt=False):
+    def recent_ids(self, limit=10, ts_fmt=None, ts_tz=None, admin_fmt=False):
         """Return list of 2-item tuples (hash_id, utc_float/formatted)
 
         - ts_fmt: strftime format for the returned timestamp
@@ -181,12 +181,16 @@ class UniqueRedThing(beu.RedKeyMaker):
         )
         return [
             (beu.decode(hash_id), format_timestamp(utc_float))
-            for hash_id, utc_float in beu.zshow(self._ts_zset_key, end=num-1)
+            for hash_id, utc_float in beu.zshow(self._ts_zset_key, end=limit-1)
         ]
 
-    def recent_values(self, num=10):
-        """Return list of num most recent unique values"""
+    def recent_values(self, limit=10, show_repr=False):
+        """Return list of limit most recent unique values
+
+        - show_repr: if True show the object's string representation instead of
+          the value of the unique_field
+        """
         return [
             beu.decode(val)
-            for val in beu.REDIS.zrevrange(self._id_zset_key, start=0, end=num-1)
+            for val in beu.REDIS.zrevrange(self._id_zset_key, start=0, end=limit-1)
         ]

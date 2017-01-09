@@ -121,10 +121,10 @@ class TestRedThing:
         rt4.add(a='blue', b='square', c='plain')
 
         assert len(rt4.find()) == 10
-        assert len(rt4.find(num=5)) == 5
+        assert len(rt4.find(limit=5)) == 5
         assert rt4.find('a:blue', count=True) == 2
         assert rt4.find('a:red,a:yellow', count=True) == 6
-        assert len(rt4.find('a:red,a:yellow', num=3)) == 3
+        assert len(rt4.find('a:red,a:yellow', limit=3)) == 3
         assert rt4.find('b:triangle,c:spotted', count=True) == 3
         assert rt4.find('b:triangle,b:square,c:striped,c:plain', count=True) == 4
         assert rt4.find('a:red,b:triangle,b:square,c:spotted,c:plain', count=True) == 3

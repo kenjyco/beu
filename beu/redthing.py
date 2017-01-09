@@ -238,7 +238,7 @@ class RedThing(beu.RedKeyMaker):
 
         return (last_key, tmp_keys != [])
 
-    def find(self, terms='', start=None, end=None, num=20, desc=None,
+    def find(self, terms='', start=None, end=None, limit=20, desc=None,
              get_fields='', all_fields=False, count=False, ts_fmt=None,
              ts_tz=None, admin_fmt=False, start_ts='', end_ts='', since='',
              until='', include_meta=True, item_format=''):
@@ -250,7 +250,7 @@ class RedThing(beu.RedKeyMaker):
         - terms: string of 'index_field:value' pairs
         - start: utc_float
         - end: utc_float
-        - num: max number of results
+        - limit: max number of results
         - desc: if True, return results in descending order; if None,
           auto-determine if desc should be True or False
         - get_fields: string of field names to get for each matching hash_id
@@ -307,12 +307,12 @@ class RedThing(beu.RedKeyMaker):
                 if _desc:
                     func = partial(
                         beu.REDIS.zrevrangebyscore, result_key, _end, _start,
-                        start=0, num=num, withscores=True
+                        start=0, num=limit, withscores=True
                     )
                 else:
                     func = partial(
                         beu.REDIS.zrangebyscore, result_key, _start, _end,
-                        start=0, num=num, withscores=True
+                        start=0, num=limit, withscores=True
                     )
 
                 i = 0
@@ -423,16 +423,16 @@ class RedThing(beu.RedKeyMaker):
         pipe.execute()
         return hash_id
 
-    def index_field_info(self, num=10):
+    def index_field_info(self, limit=10):
         """Return list of 2-item tuples (index_field:value, count)
 
-        - num: include top num per index type
+        - limit: number of top index values per index type
         """
         results = []
         for index_field, base_key in sorted(self._index_base_keys.items()):
             results.extend([
                 (':'.join([index_field, beu.decode(name)]), int(count))
-                for name, count in beu.zshow(base_key, end=num-1)
+                for name, count in beu.zshow(base_key, end=limit-1)
             ])
         return results
 
@@ -442,7 +442,7 @@ class RedThing(beu.RedKeyMaker):
             pipe.delete(key)
         pipe.execute()
 
-    def find_stats(self, num=5):
+    def find_stats(self, limit=5):
         count_stats = []
         size_stats = []
         results = {}
@@ -457,7 +457,7 @@ class RedThing(beu.RedKeyMaker):
         results['counts'] = count_stats[:num]
         results['sizes'] = size_stats[:num]
         results['timestamps'] = []
-        newest = beu.zshow(self._find_searches_zset_key, end=3*(num-1))
+        newest = beu.zshow(self._find_searches_zset_key, end=3*(limit-1))
         for name, ts in newest:
             results['timestamps'].append((
                 beu.decode(name),
