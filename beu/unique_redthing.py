@@ -168,7 +168,7 @@ class UniqueRedThing(beu.RedKeyMaker):
 
 
     def recent_ids(self, num=10, ts_fmt=None, ts_tz=None, admin_fmt=False):
-        """Return list of 2-item tuples (hash_id, utc_float)
+        """Return list of 2-item tuples (hash_id, utc_float/formatted)
 
         - ts_fmt: strftime format for the returned timestamp
         - ts_tz: a timezone to convert the timestamp to before formatting
