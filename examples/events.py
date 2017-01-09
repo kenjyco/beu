@@ -4,7 +4,7 @@ import time
 from pprint import pprint
 
 
-QueryEvent = beu.RedThing('ev', 'query', index_fields='name,type', json_fields='data')
+events = beu.RedThing('ns', 'event', index_fields='name,type', json_fields='data')
 
 
 fake_dict_keys = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh']
@@ -36,7 +36,7 @@ def generate_event(send=True, show=False):
 
     event_id = None
     if send:
-        event_id = QueryEvent.add(**event_data)
+        event_id = events.add(**event_data)
     if show:
         pprint(event_data)
 
@@ -71,9 +71,9 @@ def now():
 
 
 if __name__ == '__main__':
-    if QueryEvent.size == 0:
+    if events.size == 0:
         generate_and_add_events(15)
 
-    print('\nQueryEvent size:', QueryEvent.size)
+    print('\nevents size:', events.size)
     print('\nTop 3 index values per index:')
-    pprint(QueryEvent.index_field_info(3))
+    pprint(events.index_field_info(3))

@@ -1,5 +1,5 @@
 from examples.events import (
-    QueryEvent, generate_event, generate_and_add_events, slow_trickle_events, now
+    events, generate_event, generate_and_add_events, slow_trickle_events, now
 )
 from examples.notes import notes, input_session, hand_pick_from
 from examples.links import link_collection
