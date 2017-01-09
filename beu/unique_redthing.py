@@ -35,15 +35,15 @@ class UniqueRedThing(beu.RedKeyMaker):
             'json_fields={}'.format(repr(json_fields)) if json_fields else '',
             'pickle_fields={}'.format(repr(pickle_fields)) if pickle_fields else '',
         ]
-        self._repr = ''.join([
+        self._init_args = ''.join([
             self.__class__.__name__,
             ', '.join([p for p in _parts if p is not '']),
             ')'
         ])
-        beu.REDIS.hincrby('_UniqueRedThing', self._repr, 1)
+        beu.REDIS.hincrby(self.__class__.__name__, self._init_args, 1)
 
     def __repr__(self):
-        return self._repr
+        return self._init_args
 
     @property
     def size(self):
