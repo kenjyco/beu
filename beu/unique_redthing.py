@@ -23,9 +23,7 @@ class UniqueRedThing(beu.RedKeyMaker):
             .union(u.intersection(self._pickle_fields))
             .union(self._json_fields.intersection(self._pickle_fields))
         )
-        if invalid != set():
-            msg = 'The following field(s) used in too many places: {}'
-            raise Exception(msg.format(invalid))
+        assert invalid == set(), 'field(s) used in too many places: {}'.format(invalid)
 
         self._base_key = self._make_key(namespace, unique_field)
         self._next_id_string_key = self._make_key(self._base_key, '_next_id')
