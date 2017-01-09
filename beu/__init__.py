@@ -319,7 +319,11 @@ def make_selections(items, prompt='', wrap=True, item_format=''):
 
 
 class RedKeyMaker(object):
-    """RedKeyMaker defines '_make_key' and '_get_next_key' methods"""
+    """RedKeyMaker is a base class for things that need to make redis keys
+
+    The sub-class should set the `self._base_key` string in order for
+    `show_keyspace` and `clear_keyspace` methods to work
+    """
     def _make_key(self, *parts):
         return ':'.join([str(part) for part in parts])
 
@@ -332,6 +336,19 @@ class RedKeyMaker(object):
         pipe.incr(next_id_string_key)
         result = pipe.execute()
         return self._make_key(base_key, int(result[1]))
+
+    def show_keyspace(self):
+        if self.size <= 500:
+            return sorted([
+                (decode(key), decode(REDIS.type(key)))
+                for key in REDIS.scan_iter('{}*'.format(self._base_key))
+            ])
+        else:
+            print('Keyspace is too large')
+
+    def clear_keyspace(self):
+        for key in REDIS.scan_iter('{}*'.format(self._base_key)):
+            REDIS.delete(key)
 
 
 ADMIN_TIMEZONE = get_setting('admin_timezone')

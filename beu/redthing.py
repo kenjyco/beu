@@ -382,19 +382,6 @@ class RedThing(beu.RedKeyMaker):
         pipe.execute()
         return hash_id
 
-    def show_keyspace(self):
-        if self.size <= 500:
-            return sorted([
-                (beu.decode(key), beu.decode(beu.REDIS.type(key)))
-                for key in beu.REDIS.scan_iter('{}*'.format(self._base_key))
-            ])
-        else:
-            print('Keyspace is too large')
-
-    def clear_keyspace(self):
-        for key in beu.REDIS.scan_iter('{}*'.format(self._base_key)):
-            beu.REDIS.delete(key)
-
     def index_field_info(self, num=10):
         """Return list of 2-item tuples (index_field:value, count)
 

@@ -148,16 +148,3 @@ class UniqueRedThing(beu.RedKeyMaker):
             beu.decode(val)
             for val in beu.REDIS.zrevrange(self._id_zset_key, start=0, end=num-1)
         ]
-
-    def show_keyspace(self):
-        if self.size <= 500:
-            return sorted([
-                (beu.decode(key), beu.decode(beu.REDIS.type(key)))
-                for key in beu.REDIS.scan_iter('{}*'.format(self._base_key))
-            ])
-        else:
-            print('Keyspace is too large')
-
-    def clear_keyspace(self):
-        for key in beu.REDIS.scan_iter('{}*'.format(self._base_key)):
-            beu.REDIS.delete(key)
