@@ -109,16 +109,16 @@ def utc_ago_float_string(num_unit, now=None, fmt=FLOAT_STRING_FMT):
     return val
 
 
-def utc_float_to_pretty(f=None, fmt=None, timezone=None):
-    if not f:
-        f = float(utc_now_float_string())
+def utc_float_to_pretty(utc_float=None, fmt=None, timezone=None):
+    if not utc_float:
+        utc_float = float(utc_now_float_string())
     if not fmt:
         if ADMIN_DATE_FMT:
             fmt = ADMIN_DATE_FMT
             timezone = ADMIN_TIMEZONE
         else:
-            return f
-    dt = datetime.strptime(str(f), FLOAT_STRING_FMT)
+            return utc_float
+    dt = datetime.strptime(str(utc_float), FLOAT_STRING_FMT)
     if timezone:
         dt = dt.replace(tzinfo=dt_timezone.utc)
         dt = dt.astimezone(pytz.timezone(timezone))
