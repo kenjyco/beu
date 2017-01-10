@@ -184,12 +184,8 @@ class UniqueRedThing(beu.RedKeyMaker):
             for hash_id, utc_float in beu.zshow(self._ts_zset_key, end=limit-1)
         ]
 
-    def recent_values(self, limit=10, show_repr=False):
-        """Return list of limit most recent unique values
-
-        - show_repr: if True show the object's string representation instead of
-          the value of the unique_field
-        """
+    def recent_values(self, limit=10):
+        """Return list of limit most recent unique values"""
         return [
             beu.decode(val)
             for val in beu.REDIS.zrevrange(self._id_zset_key, start=0, end=limit-1)
