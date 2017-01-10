@@ -454,8 +454,8 @@ class RedThing(beu.RedKeyMaker):
                 size_stats.append((name, int(beu.decode(num))))
         count_stats.sort(key=lambda x: x[1], reverse=True)
         size_stats.sort(key=lambda x: x[1], reverse=True)
-        results['counts'] = count_stats[:num]
-        results['sizes'] = size_stats[:num]
+        results['counts'] = count_stats[:limit]
+        results['sizes'] = size_stats[:limit]
         results['timestamps'] = []
         newest = beu.zshow(self._find_searches_zset_key, end=3*(limit-1))
         for name, ts in newest:
