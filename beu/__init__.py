@@ -2,12 +2,14 @@ import re
 import configparser
 import os.path
 import textwrap
+import requests
 import pytz
 from os import getenv
 from datetime import datetime, timedelta, timezone as dt_timezone
 from functools import partial
 from itertools import product, zip_longest, chain
 from redis import StrictRedis
+from bs4 import BeautifulSoup, FeatureNotFound
 
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -15,6 +17,8 @@ PROJECT_DIR = os.path.dirname(ROOT_DIR)
 SETTINGS_FILE = os.path.join(PROJECT_DIR, 'settings.ini')
 APP_ENV = getenv('APP_ENV', 'dev')
 FLOAT_STRING_FMT = '%Y%m%d%H%M%S.%f'
+requests.packages.urllib3.disable_warnings()
+USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/45.0.2454.85 Chrome/45.0.2454.85 Safari/537.36'
 _config = configparser.RawConfigParser()
 _config.read(SETTINGS_FILE)
 __doc__ = """
@@ -243,6 +247,38 @@ def get_timestamp_formatter_from_args(ts_fmt=None, ts_tz=None, admin_fmt=False):
     return func
 
 
+def new_requests_session():
+    """Return a new requests Session object"""
+    session = requests.Session()
+    session.headers['User-Agent'] = USER_AGENT
+    return session
+
+
+def fetch_html(url, session=None):
+    """Fetch url and return the page's html (or None)"""
+    session = session or new_requests_session()
+    try:
+        response = session.head(url)
+    except requests.exceptions.ConnectionError:
+        print('Could not access {}'.format(repr(url)))
+    else:
+        if 'text/html' in response.headers['content-type']:
+            response = session.get(url, verify=False)
+            return response.content
+        else:
+            print('Not html content')
+
+
+def get_soup(url, session=None):
+    """Fetch url and return a BeautifulSoup object (or None)"""
+    html = fetch_html(url, session)
+    if html:
+        try:
+            return BeautifulSoup(html, 'lxml')
+        except FeatureNotFound:
+            return BeautifulSoup(html)
+
+
 def zshow(key, start=0, end=-1, desc=True, withscores=True):
     """Wrapper to REDIS.zrange"""
     return REDIS.zrange(key, start, end, withscores=withscores, desc=desc)
@@ -359,5 +395,6 @@ ADMIN_TIMEZONE = get_setting('admin_timezone')
 ADMIN_DATE_FMT = get_setting('admin_date_fmt')
 REDIS_URL = get_setting('redis_url')
 REDIS = StrictRedis.from_url(REDIS_URL) if REDIS_URL is not '' else None
+import beu.page_parser
 from beu.redthing import RedThing
 from beu.unique_redthing import UniqueRedThing
