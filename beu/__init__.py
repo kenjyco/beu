@@ -69,6 +69,10 @@ def float_string_to_dt(float_string, fmt=FLOAT_STRING_FMT):
     return datetime.strptime(float_string, fmt)
 
 
+def utc_now_iso():
+    return datetime.utcnow().isoformat()
+
+
 def utc_now_float_string(fmt=FLOAT_STRING_FMT):
     return dt_to_float_string(datetime.utcnow(), fmt)
 
