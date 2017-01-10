@@ -47,9 +47,15 @@ class UniqueRedThing(beu.RedKeyMaker):
 
     @property
     def size(self):
+        """Return the number of items in the collection"""
         return beu.REDIS.zcard(self._id_zset_key)
 
     def add(self, **data):
+        """Add all keys and values in data to the collection
+
+        The _unique_field must provided in the data and there must not
+        be an item in the collection with this same value already
+        """
         unique_val = data.get(self._unique_field)
         assert unique_val is not None, (
             '{} field is not in data'.format(repr(self._unique_field))
@@ -78,6 +84,7 @@ class UniqueRedThing(beu.RedKeyMaker):
         return key
 
     def get_hash_id(self, unique_val):
+        """Return the hash_id of the object that has unique_val in _unique_field"""
         score = beu.REDIS.zscore(self._id_zset_key, unique_val)
         if score:
             return self._make_key(self._base_key, int(score))

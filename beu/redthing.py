@@ -82,17 +82,21 @@ class RedThing(beu.RedKeyMaker):
 
     @property
     def size(self):
+        """Return the number of items in the collection"""
         return beu.REDIS.zcard(self._id_zset_key)
 
     @property
     def last(self):
+        """Return the last item in the collection"""
         return self._get_by_position(-1)
 
     @property
     def first(self):
+        """Return the first item in the collection"""
         return self._get_by_position(0)
 
     def add(self, **data):
+        """Add all keys and values in data to the collection"""
         now = beu.utc_now_float_string()
         key = self._get_next_key(self._next_id_string_key, self._base_key)
         for field in self._json_fields:
@@ -437,12 +441,17 @@ class RedThing(beu.RedKeyMaker):
         return results
 
     def clear_find_stats(self):
+        """Delete all Redis keys under self._find_base_key"""
         pipe = beu.REDIS.pipeline()
         for key in beu.REDIS.scan_iter('{}*'.format(self._find_base_key)):
             pipe.delete(key)
         pipe.execute()
 
     def find_stats(self, limit=5):
+        """Return summary info for temporary sets created during 'find' calls
+
+        - limit: max number of items to return in 'counts' and 'sizes' info
+        """
         count_stats = []
         size_stats = []
         results = {}

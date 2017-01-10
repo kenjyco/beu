@@ -49,6 +49,7 @@ def generate_event(add=True, show=False):
 
 
 def generate_and_add_events(num):
+    """Generate num events, adding each event to 'events' and show metrics"""
     initial_used_memory = beu.REDIS.info()['used_memory_human']
     start = time.time()
     for _ in range(num):
@@ -60,6 +61,13 @@ def generate_and_add_events(num):
 
 
 def slow_trickle_events(sleeptime=.234, show=False, randomsleep=False):
+    """Slowly generate events and add to 'events'
+
+    - sleeptime: an exact time to sleep between generating each event
+    - show: if True, pprint the generated data to the screen
+    - randomsleep: if True, choose a random sleep duration between 0 and 1 sec
+      after generating each event
+    """
     sleeper = lambda: time.sleep(sleeptime)
     if randomsleep:
         sleeper = lambda: time.sleep(random.random())

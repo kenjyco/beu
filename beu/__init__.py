@@ -28,6 +28,10 @@ A thing that can be used to prototype backend/cli ideas.
 
 
 def from_string(val):
+    """Return simple bool, int, and float values contained in a string
+
+    Useful for converting items in settings.ini or values pulled from Redis
+    """
     if val.lower() == 'true':
         val = True
     elif val.lower() == 'false':
@@ -46,6 +50,12 @@ def from_string(val):
 
 
 def get_setting(name, default='', section=APP_ENV):
+    """Get a setting from settings.ini for a particular section
+
+    If item is not found in the section, look for it in the 'default' section.
+    If item is not found in the default section of settings.ini, return the
+    default value
+    """
     try:
         val = _config[section][name]
     except KeyError:
@@ -66,18 +76,22 @@ def string_to_set(s):
 
 
 def dt_to_float_string(dt, fmt=FLOAT_STRING_FMT):
+    """Return string representation of a utc_float from given dt object"""
     return dt.strftime(fmt)
 
 
 def float_string_to_dt(float_string, fmt=FLOAT_STRING_FMT):
+    """Return a dt object from a utc_float"""
     return datetime.strptime(float_string, fmt)
 
 
 def utc_now_iso():
+    """Return current UTC timestamp in ISO format"""
     return datetime.utcnow().isoformat()
 
 
 def utc_now_float_string(fmt=FLOAT_STRING_FMT):
+    """Return string representation of a utc_float for right now"""
     return dt_to_float_string(datetime.utcnow(), fmt)
 
 
@@ -110,6 +124,14 @@ def utc_ago_float_string(num_unit, now=None, fmt=FLOAT_STRING_FMT):
 
 
 def utc_float_to_pretty(utc_float=None, fmt=None, timezone=None):
+    """Return the formatted version of utc_float
+
+    - fmt: a strftime format
+    - timezone: a timezone
+
+    If no utc_float is provided, a utc_float for "right now" will be used. If no
+    fmt is provided and admin_date_fmt is in settings.ini, settings will be used
+    """
     if not utc_float:
         utc_float = float(utc_now_float_string())
     if not fmt:
@@ -285,6 +307,7 @@ def zshow(key, start=0, end=-1, desc=True, withscores=True):
 
 
 def decode(obj, encoding='utf-8'):
+    """Decode the bytes of an object to an encoding"""
     try:
         return obj.decode(encoding)
     except (AttributeError, UnicodeDecodeError):
@@ -292,6 +315,7 @@ def decode(obj, encoding='utf-8'):
 
 
 def identity(x):
+    """Return x, unmodified"""
     return x
 
 
@@ -309,12 +333,14 @@ def user_input(prompt_string='input', ch='> '):
 
 
 def make_selections(items, prompt='', wrap=True, item_format=''):
-    """Return a subset of the items provided
+    """Generate a menu from items, then return a subset of the items provided
 
     - items: list of strings or list of dicts
     - prompt: string to display when asking for input
     - wrap: True/False for whether or not to wrap long lines
     - item_format: format string for each item (when items are dicts)
+
+    Note: selection order is preserved in the returned items
     """
     if not items:
         return items
@@ -360,15 +386,17 @@ def make_selections(items, prompt='', wrap=True, item_format=''):
 
 
 class RedKeyMaker(object):
-    """RedKeyMaker is a base class for things that need to make redis keys
+    """RedKeyMaker is a base class for things that need to make Redis keys
 
     The sub-class should set the `self._base_key` string in order for
     `show_keyspace` and `clear_keyspace` methods to work
     """
     def _make_key(self, *parts):
+        """Join the string parts together, separated by colon(:)"""
         return ':'.join([str(part) for part in parts])
 
     def _get_next_key(self, next_id_string_key, base_key=None):
+        """Get the next key to use and increment next_id_string_key"""
         if base_key is None:
             base_key = ':'.join(next_id_string_key.split(':')[:-1])
         pipe = REDIS.pipeline()
@@ -379,6 +407,10 @@ class RedKeyMaker(object):
         return self._make_key(base_key, int(result[1]))
 
     def show_keyspace(self):
+        """Show the Redis keyspace for under self._base_key
+
+        If collection size is over 500 items, a message will be printed instead
+        """
         if self.size <= 500:
             return sorted([
                 (decode(key), decode(REDIS.type(key)))
@@ -388,6 +420,7 @@ class RedKeyMaker(object):
             print('Keyspace is too large')
 
     def clear_keyspace(self):
+        """Delete all Redis keys under self._base_key"""
         for key in REDIS.scan_iter('{}*'.format(self._base_key)):
             REDIS.delete(key)
 
