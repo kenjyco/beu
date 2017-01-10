@@ -16,7 +16,12 @@ except FileNotFoundError:
     words = fake_dict_keys[:] * 50
 
 
-def generate_event(send=True, show=False):
+def generate_event(add=True, show=False):
+    """Generate a dict of event data
+
+    - add: if True, automatically add the genarated event to 'events'
+    - show: if True, pprint the generated data to the screen
+    """
     event_data = {
         'name': random.choice(['google', 'yahoo', 'askjeeves', 'altavista']),
         'type': random.choice([
@@ -35,7 +40,7 @@ def generate_event(send=True, show=False):
     }
 
     event_id = None
-    if send:
+    if add:
         event_id = events.add(**event_data)
     if show:
         pprint(event_data)
@@ -43,14 +48,14 @@ def generate_event(send=True, show=False):
     return (event_id, event_data)
 
 
-def generate_and_add_events(n):
+def generate_and_add_events(num):
     initial_used_memory = beu.REDIS.info()['used_memory_human']
     start = time.time()
-    for _ in range(n):
-        generate_event(send=True)
+    for _ in range(num):
+        generate_event(add=True)
     end = time.time()
     final_used_memory = beu.REDIS.info()['used_memory_human']
-    print('Added {} events in {} seconds'.format(n, end - start))
+    print('Added {} events in {} seconds'.format(num, end - start))
     print('Memory usage went from {} to {}'.format(initial_used_memory, final_used_memory))
 
 
@@ -60,7 +65,7 @@ def slow_trickle_events(sleeptime=.234, show=False, randomsleep=False):
         sleeper = lambda: time.sleep(random.random())
     while True:
         try:
-            generate_event(send=True, show=show)
+            generate_event(add=True, show=show)
             sleeper()
         except KeyboardInterrupt:
             break
