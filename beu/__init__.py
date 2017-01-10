@@ -295,13 +295,14 @@ def identity(x):
     return x
 
 
-def user_input(prompt='input: '):
+def user_input(prompt_string='input', ch='> '):
     """Prompt user for input
 
-    - prompt: string to display when asking for input
+    - prompt_string: string to display when asking for input
+    - ch: string appended to the main prompt_string
     """
     try:
-        return input(prompt)
+        return input(prompt_string + ch)
     except (EOFError, KeyboardInterrupt):
         print()
         return ''
