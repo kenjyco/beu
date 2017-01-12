@@ -117,7 +117,7 @@ class RedThing(beu.RedKeyMaker):
         pipe.execute()
         return key
 
-    def get(self, hash_key, fields='', include_meta=False,
+    def get(self, hash_id, fields='', include_meta=False,
             timestamp_formatter=beu.identity, ts_fmt=None, ts_tz=None,
             admin_fmt=False, item_format=''):
         """Wrapper to beu.REDIS.hget/hmget/hgetall
@@ -143,11 +143,11 @@ class RedThing(beu.RedKeyMaker):
         try:
             if num_fields == 1:
                 field = fields.pop()
-                data = {field: beu.REDIS.hget(hash_key, field)}
+                data = {field: beu.REDIS.hget(hash_id, field)}
             elif num_fields > 1:
-                data = dict(zip(fields, beu.REDIS.hmget(hash_key, *fields)))
+                data = dict(zip(fields, beu.REDIS.hmget(hash_id, *fields)))
             else:
-                _data = beu.REDIS.hgetall(hash_key)
+                _data = beu.REDIS.hgetall(hash_id)
                 data = {
                     beu.decode(k): v
                     for k, v in _data.items()
@@ -164,9 +164,9 @@ class RedThing(beu.RedKeyMaker):
                 val = beu.decode(data[field])
                 data[field] = beu.from_string(val) if val is not None else None
         if include_meta:
-            data['_id'] = beu.decode(hash_key)
+            data['_id'] = beu.decode(hash_id)
             data['_ts'] = timestamp_formatter(
-                beu.REDIS.zscore(self._id_zset_key, hash_key)
+                beu.REDIS.zscore(self._id_zset_key, hash_id)
             )
         if item_format:
             return item_format.format(**data)
