@@ -164,7 +164,7 @@ class RedThing(beu.RedKeyMaker):
                 val = beu.decode(data[field])
                 data[field] = beu.from_string(val) if val is not None else None
         if include_meta:
-            data['_id'] = hash_key
+            data['_id'] = beu.decode(hash_key)
             data['_ts'] = timestamp_formatter(
                 beu.REDIS.zscore(self._id_zset_key, hash_key)
             )
