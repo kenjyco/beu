@@ -111,9 +111,9 @@ class RedThing(beu.RedKeyMaker):
         pipe.zadd(self._id_zset_key, now, key)
         pipe.hmset(key, data)
         for index_field, base_key in self._index_base_keys.items():
-            key_name = self._make_key(base_key, data.get(index_field, ''))
+            key_name = self._make_key(base_key, data.get(index_field))
             pipe.sadd(key_name, key)
-            pipe.zincrby(base_key, str(data.get(index_field, '')), 1)
+            pipe.zincrby(base_key, str(data.get(index_field)), 1)
         pipe.execute()
         return key
 
