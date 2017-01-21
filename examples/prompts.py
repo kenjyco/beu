@@ -5,7 +5,8 @@ from pprint import pprint
 prompts = beu.RedThing('ns', 'prompt', index_fields='p,tag')
 prompt_strings = [
     'basketball player', 'super hero', 'favorite food', 'video game',
-    'movie', 'tv show'
+    'movie', 'tv show', 'Chicago sports star', 'Chicago musician',
+    'Atlanta music producer',
 ]
 
 
