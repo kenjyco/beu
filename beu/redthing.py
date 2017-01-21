@@ -40,7 +40,7 @@ class RedThing(beu.RedKeyMaker):
             for index_field in index_fields_set
         }
         self._next_id_string_key = self._make_key(self._base_key, '_next_id')
-        self._id_zset_key = self._make_key(self._base_key, '_id')
+        self._ts_zset_key = self._make_key(self._base_key, '_ts')
         self._find_base_key = self._make_key(self._base_key, '_find')
         self._find_next_id_string_key = self._make_key(self._find_base_key, '_next_id')
         self._find_stats_hash_key = self._make_key(self._find_base_key, '_stats')
@@ -67,7 +67,7 @@ class RedThing(beu.RedKeyMaker):
 
     def _get_by_position(self, pos):
         data = {}
-        x = beu.REDIS.zrange(self._id_zset_key, pos, pos, withscores=True)
+        x = beu.REDIS.zrange(self._ts_zset_key, pos, pos, withscores=True)
         if x:
             hash_id, ts = x[0]
             data = self.get(hash_id)
@@ -103,7 +103,7 @@ class RedThing(beu.RedKeyMaker):
             if val is not None:
                 data[field] = pickle.dumps(val)
         pipe = beu.REDIS.pipeline()
-        pipe.zadd(self._id_zset_key, now, key)
+        pipe.zadd(self._ts_zset_key, now, key)
         pipe.hmset(key, data)
         for index_field, base_key in self._index_base_keys.items():
             key_name = self._make_key(base_key, data.get(index_field))
@@ -161,7 +161,7 @@ class RedThing(beu.RedKeyMaker):
         if include_meta:
             data['_id'] = beu.decode(hash_id)
             data['_ts'] = timestamp_formatter(
-                beu.REDIS.zscore(self._id_zset_key, hash_id)
+                beu.REDIS.zscore(self._ts_zset_key, hash_id)
             )
         if item_format:
             return item_format.format(**data)
@@ -210,13 +210,13 @@ class RedThing(beu.RedKeyMaker):
             beu.REDIS.sinterstore(intersect_key, *to_intersect)
             last_key = self._get_next_find_key()
             tmp_keys.append(last_key)
-            beu.REDIS.zinterstore(last_key, (intersect_key, self._id_zset_key), aggregate='MAX')
+            beu.REDIS.zinterstore(last_key, (intersect_key, self._ts_zset_key), aggregate='MAX')
         elif len(to_intersect) == 1:
             last_key = self._get_next_find_key()
             tmp_keys.append(last_key)
-            beu.REDIS.zinterstore(last_key, (to_intersect[0], self._id_zset_key), aggregate='MAX')
+            beu.REDIS.zinterstore(last_key, (to_intersect[0], self._ts_zset_key), aggregate='MAX')
         else:
-            last_key = self._id_zset_key
+            last_key = self._ts_zset_key
 
         if stat_base_names:
             pipe = beu.REDIS.pipeline()
@@ -362,7 +362,7 @@ class RedThing(beu.RedKeyMaker):
         - pipe: if a redis pipeline object is passed in, just add more
           operations to the pipe
         """
-        score = beu.REDIS.zscore(self._id_zset_key, hash_id)
+        score = beu.REDIS.zscore(self._ts_zset_key, hash_id)
         if score is None:
             return
         if pipe is not None:
@@ -379,7 +379,7 @@ class RedThing(beu.RedKeyMaker):
             pipe.zincrby(self._index_base_keys[k], v, -1)
 
         if execute:
-            pipe.zrem(self._id_zset_key, hash_id)
+            pipe.zrem(self._ts_zset_key, hash_id)
             return pipe.execute()
 
     def delete_to(self, score=None, ts='', tz=None):
@@ -396,14 +396,14 @@ class RedThing(beu.RedKeyMaker):
         if score is None:
             return
         pipe = beu.REDIS.pipeline()
-        for hash_id in beu.REDIS.zrangebyscore(self._id_zset_key, 0, score):
+        for hash_id in beu.REDIS.zrangebyscore(self._ts_zset_key, 0, score):
             self.delete(hash_id, pipe)
-        pipe.zremrangebyscore(self._id_zset_key, 0, score)
+        pipe.zremrangebyscore(self._ts_zset_key, 0, score)
         return pipe.execute()[-1]
 
     def update(self, hash_id, **data):
         """Update data at a particular hash_id"""
-        score = beu.REDIS.zscore(self._id_zset_key, hash_id)
+        score = beu.REDIS.zscore(self._ts_zset_key, hash_id)
         if score is None or data == {}:
             return
         now = beu.utc_now_float_string()
@@ -418,7 +418,7 @@ class RedThing(beu.RedKeyMaker):
                 pipe.sadd(index_key, hash_id)
                 pipe.zincrby(self._index_base_keys[k], data[k], 1)
         pipe.hmset(hash_id, data)
-        pipe.zadd(self._id_zset_key, now, hash_id)
+        pipe.zadd(self._ts_zset_key, now, hash_id)
         pipe.execute()
         return hash_id
 

@@ -435,8 +435,8 @@ class RedKeyMaker(object):
 
     @property
     def size(self):
-        """Return cardinality of self._id_zset_key (number of items in the zset)"""
-        return beu.REDIS.zcard(self._id_zset_key)
+        """Return cardinality of self._ts_zset_key (number of items in the zset)"""
+        return beu.REDIS.zcard(self._ts_zset_key)
 
     @property
     def now(self):
