@@ -5,6 +5,8 @@ import textwrap
 import requests
 import pytz
 from os import getenv
+from subprocess import call
+from sys import exit
 from datetime import datetime, timedelta, timezone as dt_timezone
 from functools import partial
 from itertools import product, zip_longest, chain
@@ -299,6 +301,13 @@ def get_soup(url, session=None):
             return BeautifulSoup(html, 'lxml')
         except FeatureNotFound:
             return BeautifulSoup(html)
+
+
+def run_or_die(cmd):
+    """Run a shell command or exit the system"""
+    ret_code = call(cmd, shell=True)
+    if ret_code != 0:
+        exit(ret_code)
 
 
 def zshow(key, start=0, end=-1, desc=True, withscores=True):
