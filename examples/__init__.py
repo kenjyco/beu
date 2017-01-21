@@ -1,7 +1,7 @@
 import beu
 from pprint import pprint
 from examples.events import (
-    events, generate_event, generate_and_add_events, slow_trickle_events, now
+    events, generate_event, generate_and_add_events, slow_trickle_events
 )
 from examples.notes import notes, input_session
 from examples.prompts import prompts, prompt_session

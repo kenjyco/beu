@@ -81,11 +81,6 @@ class RedThing(beu.RedKeyMaker):
         return data
 
     @property
-    def size(self):
-        """Return the number of items in the collection"""
-        return beu.REDIS.zcard(self._id_zset_key)
-
-    @property
     def last(self):
         """Return the last item in the collection"""
         return self._get_by_position(-1)

@@ -79,10 +79,6 @@ def slow_trickle_events(sleeptime=.234, show=False, randomsleep=False):
             break
 
 
-def now():
-    print(beu.utc_float_to_pretty())
-
-
 if __name__ == '__main__':
     if events.size == 0:
         generate_and_add_events(15)

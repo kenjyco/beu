@@ -424,6 +424,19 @@ class RedKeyMaker(object):
         for key in REDIS.scan_iter('{}*'.format(self._base_key)):
             REDIS.delete(key)
 
+    @property
+    def size(self):
+        """Return cardinality of self._id_zset_key (number of items in the zset)"""
+        return beu.REDIS.zcard(self._id_zset_key)
+
+    @property
+    def now(self):
+        return beu.utc_float_to_pretty()
+
+    @property
+    def now_utc_float(self):
+        return float(beu.utc_now_float_string())
+
 
 ADMIN_TIMEZONE = get_setting('admin_timezone')
 ADMIN_DATE_FMT = get_setting('admin_date_fmt')

@@ -45,11 +45,6 @@ class UniqueRedThing(beu.RedKeyMaker):
     def __repr__(self):
         return self._init_args
 
-    @property
-    def size(self):
-        """Return the number of items in the collection"""
-        return beu.REDIS.zcard(self._id_zset_key)
-
     def add(self, **data):
         """Add all keys and values in data to the collection
 
