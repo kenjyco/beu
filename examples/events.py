@@ -4,7 +4,7 @@ import time
 from pprint import pprint
 
 
-events = beu.RedThing('ns', 'event', index_fields='name,type', json_fields='data')
+events = beu.RedThing('ns', 'event', index_fields='name,type,tag', json_fields='data')
 
 
 fake_dict_keys = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh']
