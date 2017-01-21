@@ -11,7 +11,7 @@ class RedThing(beu.RedKeyMaker):
 
     Possible uses:
 
-    - store events and meta-data with ability to query on indexed attributes
+    - store events/logs and meta-data with ability to query on indexed attributes
     """
     def __init__(self, namespace, name, index_fields='', json_fields='',
                  pickle_fields=''):
