@@ -427,6 +427,49 @@ class RedThing(beu.RedKeyMaker):
         pipe.execute()
         return hash_id
 
+
+    def select_and_modify(self, menu_item_format='', action='update',
+                          update_fields='', **find_kwargs):
+        """Find items matching 'find_kwargs', make selections, then perform action
+
+        - menu_item_format: format string for each menu item
+        - action: 'update' or 'delete'
+        - update_fields: (required if action is update)... a string containing
+          fields to update, separated by any of , ; |
+        - find_kwargs: a dict of kwargs for the self.find method
+            - note: admin_fmt=True and include_meta=True cannot be over-written
+        """
+        assert action in ('update', 'delete'), 'action can only be "update" or "delete"'
+        update_fields = beu.string_to_set(update_fields)
+        if action == 'update':
+            assert update_fields != set(), 'update_fields is required if action is "update"'
+        find_kwargs.update(dict(admin_fmt=True, include_meta=True))
+        selected = beu.make_selections(
+            self.find(**find_kwargs),
+            item_format=menu_item_format,
+            wrap=False
+        )
+
+        if selected:
+            print('\nSelected:')
+            print('\n'.join([menu_item_format.format(**x) for x in selected]))
+            results = []
+            if action == 'update':
+                new_data = {}
+                for field in update_fields:
+                    resp = beu.user_input('value for {} field'.format(repr(field)))
+                    if resp:
+                        new_data[field] = resp
+                if new_data:
+                    for item in selected:
+                        results.append(self.update(item['_id'], **new_data))
+            elif action == 'delete':
+                for item in selected:
+                    results.append(self.delete(item['_id']))
+
+            return results
+
+
     def index_field_info(self, limit=10):
         """Return list of 2-item tuples (index_field:value, count)
 
