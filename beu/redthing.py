@@ -305,6 +305,7 @@ class RedThing(object):
         if self._unique_field:
             unique_val = self.get(hash_id, self._unique_field)[self._unique_field]
             pipe.zrem(self._id_zset_key, unique_val)
+        pipe.delete(self._make_key(hash_id, '_changes'))
 
         if execute:
             pipe.zrem(self._ts_zset_key, hash_id)
@@ -344,22 +345,52 @@ class RedThing(object):
         score = beu.REDIS.zscore(self._ts_zset_key, hash_id)
         if score is None or data == {}:
             return
+
         now = self.now_utc_float
+        update_fields = ','.join(data.keys())
+        changes_hash_key = self._make_key(hash_id, '_changes')
+        old_timestamp = beu.REDIS.zscore(self._ts_zset_key, hash_id)
         pipe = beu.REDIS.pipeline()
-        index_fields = ','.join(self._index_base_keys.keys())
-        if index_fields:
-            for k, v in self.get(hash_id, index_fields).items():
-                if k in data and data[k] != v:
-                    old_index_key = self._make_key(self._base_key, k, v)
-                    index_key = self._make_key(self._base_key, k, data[k])
+        for field, old_value in self.get(hash_id, update_fields).items():
+            if data[field] != old_value:
+                k = '{}|{}'.format(field, old_timestamp)
+                pipe.hset(changes_hash_key, k, old_value)
+                if field in self._index_base_keys:
+                    old_index_key = self._make_key(self._base_key, field, old_value)
+                    index_key = self._make_key(self._base_key, field, data[field])
                     pipe.srem(old_index_key, hash_id)
-                    pipe.zincrby(self._index_base_keys[k], v, -1)
+                    pipe.zincrby(self._index_base_keys[field], old_value, -1)
                     pipe.sadd(index_key, hash_id)
-                    pipe.zincrby(self._index_base_keys[k], data[k], 1)
+                    pipe.zincrby(self._index_base_keys[field], data[field], 1)
         pipe.hmset(hash_id, data)
         pipe.zadd(self._ts_zset_key, now, hash_id)
         pipe.execute()
         return hash_id
+
+    def old_data_for_hash_id(self, hash_id):
+        """Return info about fields that have been modified on the hash_id"""
+        assert hash_id.startswith(self._base_key), (
+            '{} does not start with {}'.format(repr(hash_id), repr(self._base_key))
+        )
+        results = []
+        changes_hash_key = self._make_key(hash_id, '_changes')
+        for name, value in beu.REDIS.hgetall(changes_hash_key).items():
+            field, timestamp = beu.decode(name).split('|')
+            results.append({
+                '_ts_raw': timestamp,
+                '_ts_admin': beu.utc_float_to_pretty(
+                    timestamp, fmt=beu.ADMIN_DATE_FMT, timezone=beu.ADMIN_TIMEZONE
+                ),
+                'field': field,
+                'value': value,
+            })
+        results.sort(key=lambda x: (x['_ts_raw'], x['field']))
+        return results
+
+    def old_data_for_unique_value(self, unique_val):
+        """Wrapper to self.old_data_for_hash_id"""
+        hash_id = self.get_hash_id_for_unique_value(unique_val)
+        return self.old_data_for_hash_id(hash_id)
 
     def recent_unique_values(self, limit=10):
         """Return list of limit most recent unique values"""
