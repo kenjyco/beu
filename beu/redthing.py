@@ -602,7 +602,10 @@ class RedThing(object):
 
         if selected:
             print('\nSelected:')
-            print('\n'.join([menu_item_format.format(**x) for x in selected]))
+            if menu_item_format:
+                print('\n'.join([menu_item_format.format(**x) for x in selected]) + '\n')
+            else:
+                print('\n'.join([repr(x) for x in selected]) + '\n')
             results = []
             if action == 'update':
                 new_data = {}
