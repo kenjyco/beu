@@ -6,31 +6,37 @@ from functools import partial
 from redis import ResponseError
 
 
-class RedThing(beu.RedKeyMaker):
+class RedThing(object):
     """
 
     Possible uses:
 
     - store events/logs and meta-data with ability to query on indexed attributes
     """
-    def __init__(self, namespace, name, index_fields='', json_fields='',
-                 pickle_fields=''):
-        """Pass in namespace, name, and string of fields to index on
+    def __init__(self, namespace, name, unique_field='', index_fields='',
+                 json_fields='', pickle_fields=''):
+        """Pass in namespace and name
 
+        - unique_field: name of the optional unique field
         - index_fields: string of fields that should be indexed
         - json_fields: string of fields that should be serialized as JSON
         - pickle_fields: string of fields with complex/arbitrary structure
 
         Separate fields in strings by any of , ; |
         """
+        self._unique_field = unique_field
         index_fields_set = beu.string_to_set(index_fields)
         self._json_fields = beu.string_to_set(json_fields)
         self._pickle_fields = beu.string_to_set(pickle_fields)
 
+        u = set([unique_field])
         invalid = (
             index_fields_set.intersection(self._json_fields)
             .union(index_fields_set.intersection(self._pickle_fields))
+            .union(index_fields_set.intersection(u))
             .union(self._json_fields.intersection(self._pickle_fields))
+            .union(self._json_fields.intersection(u))
+            .union(self._pickle_fields.intersection(u))
         )
         assert invalid == set(), 'field(s) used in too many places: {}'.format(invalid)
 
@@ -41,6 +47,7 @@ class RedThing(beu.RedKeyMaker):
         }
         self._next_id_string_key = self._make_key(self._base_key, '_next_id')
         self._ts_zset_key = self._make_key(self._base_key, '_ts')
+        self._id_zset_key = self._make_key(self._base_key, '_id')
         self._find_base_key = self._make_key(self._base_key, '_find')
         self._find_next_id_string_key = self._make_key(self._find_base_key, '_next_id')
         self._find_stats_hash_key = self._make_key(self._find_base_key, '_stats')
@@ -48,6 +55,7 @@ class RedThing(beu.RedKeyMaker):
 
         _parts = [
             '({}, {}'.format(repr(namespace), repr(name)),
+            'unique_field={}'.format(repr(unique_field)) if unique_field else '',
             'index_fields={}'.format(repr(index_fields)) if index_fields else '',
             'json_fields={}'.format(repr(json_fields)) if json_fields else '',
             'pickle_fields={}'.format(repr(pickle_fields)) if pickle_fields else '',
@@ -62,38 +70,44 @@ class RedThing(beu.RedKeyMaker):
     def __repr__(self):
         return self._init_args
 
+    def _make_key(self, *parts):
+        """Join the string parts together, separated by colon(:)"""
+        return ':'.join([str(part) for part in parts])
+
+    def _get_next_key(self, next_id_string_key, base_key=None):
+        """Get the next key to use and increment next_id_string_key"""
+        if base_key is None:
+            base_key = ':'.join(next_id_string_key.split(':')[:-1])
+        pipe = beu.REDIS.pipeline()
+        pipe.setnx(next_id_string_key, 1)
+        pipe.get(next_id_string_key)
+        pipe.incr(next_id_string_key)
+        result = pipe.execute()
+        return self._make_key(base_key, int(result[1]))
+
     def _get_next_find_key(self):
         return self._get_next_key(self._find_next_id_string_key, self._find_base_key)
 
-    def _get_by_position(self, pos):
-        data = {}
-        x = beu.REDIS.zrange(self._ts_zset_key, pos, pos, withscores=True)
-        if x:
-            hash_id, ts = x[0]
-            data = self.get(hash_id)
-            data['_id'] = beu.decode(hash_id)
-            data['_ts_raw'] = ts
-            data['_ts_admin'] = beu.utc_float_to_pretty(
-                ts,
-                fmt=beu.ADMIN_DATE_FMT,
-                timezone=beu.ADMIN_TIMEZONE
-            )
-        return data
-
-    @property
-    def last(self):
-        """Return the last item in the collection"""
-        return self._get_by_position(-1)
-
-    @property
-    def first(self):
-        """Return the first item in the collection"""
-        return self._get_by_position(0)
-
     def add(self, **data):
-        """Add all keys and values in data to the collection"""
-        now = beu.utc_now_float_string()
+        """Add all keys and values in data to the collection
+
+        If self._unique_field is a non-empty string, the field must be provided
+        in the data and there must not be an item in the collection with the
+        same value for that field
+        """
+        if self._unique_field:
+            unique_val = data.get(self._unique_field)
+            assert unique_val is not None, (
+                'unique field {} is not in data'.format(repr(self._unique_field))
+            )
+            score = beu.REDIS.zscore(self._id_zset_key, unique_val)
+            assert score is None, (
+                '{}={} already exists'.format(self._unique_field, repr(unique_val))
+            )
+
+        now = self.now_utc_float
         key = self._get_next_key(self._next_id_string_key, self._base_key)
+        id_num = int(key.split(':')[-1])
         for field in self._json_fields:
             val = data.get(field)
             if val is not None:
@@ -103,6 +117,8 @@ class RedThing(beu.RedKeyMaker):
             if val is not None:
                 data[field] = pickle.dumps(val)
         pipe = beu.REDIS.pipeline()
+        if self._unique_field:
+            pipe.zadd(self._id_zset_key, id_num, unique_val)
         pipe.zadd(self._ts_zset_key, now, key)
         pipe.hmset(key, data)
         for index_field, base_key in self._index_base_keys.items():
@@ -167,6 +183,204 @@ class RedThing(beu.RedKeyMaker):
             return item_format.format(**data)
         return data
 
+    def get_hash_id_for_unique_value(self, unique_val):
+        """Return the hash_id of the object that has unique_val in _unique_field"""
+        if self._unique_field:
+            score = beu.REDIS.zscore(self._id_zset_key, unique_val)
+            if score:
+                return self._make_key(self._base_key, int(score))
+
+    def get_by_unique_value(self, unique_val, fields='', include_meta=False,
+                            timestamp_formatter=beu.identity, ts_fmt=None,
+                            ts_tz=None, admin_fmt=False, item_format=''):
+        """Wrapper to self.get
+
+        - fields: string of field names to get separated by any of , ; |
+        - include_meta: if True include attributes _id and _ts
+        - timestamp_formatter: a callable to apply to the _ts timestamp
+        - ts_fmt: strftime format for the returned timestamps (_ts field)
+        - ts_tz: a timezone to convert the timestamp to before formatting
+        - admin_fmt: if True, use format and timezone defined in settings file
+        - item_format: format string for each item (return a string instead of
+          a dict)
+        """
+        hash_id = self.get_hash_id_for_unique_value(unique_val)
+        data = {}
+        if hash_id:
+            data = self.get(
+                hash_id,
+                fields=fields,
+                include_meta=include_meta,
+                timestamp_formatter=timestamp_formatter,
+                ts_fmt=ts_fmt,
+                ts_tz=ts_tz,
+                admin_fmt=admin_fmt,
+                item_format=item_format
+            )
+        return data
+
+    def get_by_position(self, pos):
+        data = {}
+        x = beu.REDIS.zrange(self._ts_zset_key, pos, pos, withscores=True)
+        if x:
+            hash_id, ts = x[0]
+            data = self.get(hash_id)
+            data['_id'] = beu.decode(hash_id)
+            data['_ts_raw'] = ts
+            data['_ts_admin'] = beu.utc_float_to_pretty(
+                ts,
+                fmt=beu.ADMIN_DATE_FMT,
+                timezone=beu.ADMIN_TIMEZONE
+            )
+        return data
+
+    @property
+    def last(self):
+        """Return the last item in the collection"""
+        return self._get_by_position(-1)
+
+    @property
+    def first(self):
+        """Return the first item in the collection"""
+        return self._get_by_position(0)
+
+    @property
+    def size(self):
+        """Return cardinality of self._ts_zset_key (number of items in the zset)"""
+        return beu.REDIS.zcard(self._ts_zset_key)
+
+    @property
+    def now_pretty(self):
+        return beu.utc_float_to_pretty()
+
+    @property
+    def now_utc_float(self):
+        return float(beu.utc_now_float_string())
+
+    @property
+    def keyspace(self):
+        """Show the Redis keyspace for self._base_key
+
+        If collection size is over 500 items, a message will be returned instead
+        """
+        if self.size <= 500:
+            return sorted([
+                (beu.decode(key), beu.decode(beu.REDIS.type(key)))
+                for key in beu.REDIS.scan_iter('{}*'.format(self._base_key))
+            ])
+        else:
+            return 'Keyspace is too large'
+
+    def clear_keyspace(self):
+        """Delete all Redis keys under self._base_key"""
+        for key in beu.REDIS.scan_iter('{}*'.format(self._base_key)):
+            beu.REDIS.delete(key)
+
+    def delete(self, hash_id, pipe=None):
+        """Delete a specific hash_id's data and remove from indexes it is in
+
+        - hash_id: hash_id to remove
+        - pipe: if a redis pipeline object is passed in, just add more
+          operations to the pipe
+        """
+        assert hash_id.startswith(self._base_key), (
+            '{} does not start with {}'.format(repr(hash_id), repr(self._base_key))
+        )
+        score = beu.REDIS.zscore(self._ts_zset_key, hash_id)
+        if score is None:
+            return
+        if pipe is not None:
+            execute = False
+        else:
+            pipe = beu.REDIS.pipeline()
+            execute = True
+
+        pipe.delete(hash_id)
+        index_fields = ','.join(self._index_base_keys.keys())
+        if index_fields:
+            for k, v in self.get(hash_id, index_fields).items():
+                old_index_key = self._make_key(self._base_key, k, v)
+                pipe.srem(old_index_key, hash_id)
+                pipe.zincrby(self._index_base_keys[k], v, -1)
+        if self._unique_field:
+            unique_val = self.get(hash_id, self._unique_field)[self._unique_field]
+            pipe.zrem(self._id_zset_key, unique_val)
+
+        if execute:
+            pipe.zrem(self._ts_zset_key, hash_id)
+            return pipe.execute()
+
+    def delete_to(self, score=None, ts='', tz=None):
+        """Delete all items with a score (timestamp) between 0 and score
+
+        - score: a utc_float
+        - ts: a timestamp with form between YYYY and YYYY-MM-DD HH:MM:SS.f
+          (in the timezone specified in tz or ADMIN_TIMEZONE)
+        - tz: a timezone
+        """
+        if ts:
+            tz = tz or beu.ADMIN_TIMEZONE
+            score = float(beu.date_string_to_utc_float_string(ts, tz))
+        if score is None:
+            return
+        pipe = beu.REDIS.pipeline()
+        for hash_id in beu.REDIS.zrangebyscore(self._ts_zset_key, 0, score):
+            self.delete(hash_id, pipe)
+        pipe.zremrangebyscore(self._ts_zset_key, 0, score)
+        return pipe.execute()[-1]
+
+    def update(self, hash_id, **data):
+        """Update data at a particular hash_id
+
+        If a unique_field is being used, it cannot be updated
+        """
+        assert hash_id.startswith(self._base_key), (
+            '{} does not start with {}'.format(repr(hash_id), repr(self._base_key))
+        )
+        if self._unique_field:
+            assert self._unique_field not in data, (
+                '{} is the unique field and cannot be updated'.format(repr(self._unique_field))
+            )
+        score = beu.REDIS.zscore(self._ts_zset_key, hash_id)
+        if score is None or data == {}:
+            return
+        now = self.now_utc_float
+        pipe = beu.REDIS.pipeline()
+        index_fields = ','.join(self._index_base_keys.keys())
+        if index_fields:
+            for k, v in self.get(hash_id, index_fields).items():
+                if k in data and data[k] != v:
+                    old_index_key = self._make_key(self._base_key, k, v)
+                    index_key = self._make_key(self._base_key, k, data[k])
+                    pipe.srem(old_index_key, hash_id)
+                    pipe.zincrby(self._index_base_keys[k], v, -1)
+                    pipe.sadd(index_key, hash_id)
+                    pipe.zincrby(self._index_base_keys[k], data[k], 1)
+        pipe.hmset(hash_id, data)
+        pipe.zadd(self._ts_zset_key, now, hash_id)
+        pipe.execute()
+        return hash_id
+
+    def recent_unique_values(self, limit=10):
+        """Return list of limit most recent unique values"""
+        return [
+            beu.decode(val)
+            for val in beu.REDIS.zrevrange(self._id_zset_key, start=0, end=limit-1)
+        ]
+
+    def index_field_info(self, limit=10):
+        """Return list of 2-item tuples (index_field:value, count)
+
+        - limit: number of top index values per index type
+        """
+        results = []
+        for index_field, base_key in sorted(self._index_base_keys.items()):
+            results.extend([
+                (':'.join([index_field, beu.decode(name)]), int(count))
+                for name, count in beu.zshow(base_key, end=limit-1)
+            ])
+        return results
+
     def _redis_zset_from_terms(self, terms=''):
         """Return Redis key containing sorted set and bool denoting if its a temp
 
@@ -180,7 +394,7 @@ class RedThing(beu.RedKeyMaker):
         d = defaultdict(list)
         stat_base_names = {}
         terms = beu.string_to_set(terms)
-        now = beu.utc_now_float_string()
+        now = self.now_utc_float
         for term in terms:
             index_field, value = term.split(':')
             d[index_field].append(term)
@@ -269,7 +483,7 @@ class RedThing(beu.RedKeyMaker):
         - item_format: format string for each item
         """
         results = {}
-        now = beu.utc_now_float_string()
+        now = self.now_utc_float
         result_key, result_key_is_tmp = self._redis_zset_from_terms(terms)
         time_ranges = beu.get_time_ranges_and_args(
             tz=ts_tz,
@@ -355,74 +569,6 @@ class RedThing(beu.RedKeyMaker):
             results = list(results.values())[0]
         return results
 
-    def delete(self, hash_id, pipe=None):
-        """Delete a specific hash_id's data and remove from indexes it is in
-
-        - hash_id: hash_id to remove
-        - pipe: if a redis pipeline object is passed in, just add more
-          operations to the pipe
-        """
-        score = beu.REDIS.zscore(self._ts_zset_key, hash_id)
-        if score is None:
-            return
-        if pipe is not None:
-            execute = False
-        else:
-            pipe = beu.REDIS.pipeline()
-            execute = True
-
-        indexed_data = self.get(hash_id, ','.join(self._index_base_keys.keys()))
-        pipe.delete(hash_id)
-        for k, v in indexed_data.items():
-            old_index_key = self._make_key(self._base_key, k, v)
-            pipe.srem(old_index_key, hash_id)
-            pipe.zincrby(self._index_base_keys[k], v, -1)
-
-        if execute:
-            pipe.zrem(self._ts_zset_key, hash_id)
-            return pipe.execute()
-
-    def delete_to(self, score=None, ts='', tz=None):
-        """Delete all items with a score (timestamp) between 0 and score
-
-        - score: a utc_float
-        - ts: a timestamp with form between YYYY and YYYY-MM-DD HH:MM:SS.f
-          (in the timezone specified in tz or ADMIN_TIMEZONE)
-        - tz: a timezone
-        """
-        if ts:
-            tz = tz or beu.ADMIN_TIMEZONE
-            score = float(beu.date_string_to_utc_float_string(ts, tz))
-        if score is None:
-            return
-        pipe = beu.REDIS.pipeline()
-        for hash_id in beu.REDIS.zrangebyscore(self._ts_zset_key, 0, score):
-            self.delete(hash_id, pipe)
-        pipe.zremrangebyscore(self._ts_zset_key, 0, score)
-        return pipe.execute()[-1]
-
-    def update(self, hash_id, **data):
-        """Update data at a particular hash_id"""
-        score = beu.REDIS.zscore(self._ts_zset_key, hash_id)
-        if score is None or data == {}:
-            return
-        now = beu.utc_now_float_string()
-        pipe = beu.REDIS.pipeline()
-        indexed_data = self.get(hash_id, ','.join(self._index_base_keys.keys()))
-        for k, v in indexed_data.items():
-            if k in data and data[k] != v:
-                old_index_key = self._make_key(self._base_key, k, v)
-                index_key = self._make_key(self._base_key, k, data[k])
-                pipe.srem(old_index_key, hash_id)
-                pipe.zincrby(self._index_base_keys[k], v, -1)
-                pipe.sadd(index_key, hash_id)
-                pipe.zincrby(self._index_base_keys[k], data[k], 1)
-        pipe.hmset(hash_id, data)
-        pipe.zadd(self._ts_zset_key, now, hash_id)
-        pipe.execute()
-        return hash_id
-
-
     def select_and_modify(self, menu_item_format='', action='update',
                           update_fields='', **find_kwargs):
         """Find items matching 'find_kwargs', make selections, then perform action
@@ -433,14 +579,23 @@ class RedThing(beu.RedKeyMaker):
           fields to update, separated by any of , ; |
         - find_kwargs: a dict of kwargs for the self.find method
             - note: admin_fmt=True and include_meta=True cannot be over-written
+
+        If the action was 'update', return a list of hash_ids that were modified.
+        If the action was 'delete', return a list redis pipe execution results
+        per selected item (list of lists)
         """
         assert action in ('update', 'delete'), 'action can only be "update" or "delete"'
         update_fields = beu.string_to_set(update_fields)
         if action == 'update':
             assert update_fields != set(), 'update_fields is required if action is "update"'
+            assert self._unique_field not in update_fields, (
+                '{} is the unique field and cannot be updated'.format(repr(self._unique_field))
+            )
         find_kwargs.update(dict(admin_fmt=True, include_meta=True))
+        found = self.find(**find_kwargs)
+        assert type(found) == list, 'Results contain multiple time ranges... not allowed for now'
         selected = beu.make_selections(
-            self.find(**find_kwargs),
+            found,
             item_format=menu_item_format,
             wrap=False
         )
@@ -463,27 +618,6 @@ class RedThing(beu.RedKeyMaker):
                     results.append(self.delete(item['_id']))
 
             return results
-
-
-    def index_field_info(self, limit=10):
-        """Return list of 2-item tuples (index_field:value, count)
-
-        - limit: number of top index values per index type
-        """
-        results = []
-        for index_field, base_key in sorted(self._index_base_keys.items()):
-            results.extend([
-                (':'.join([index_field, beu.decode(name)]), int(count))
-                for name, count in beu.zshow(base_key, end=limit-1)
-            ])
-        return results
-
-    def clear_find_stats(self):
-        """Delete all Redis keys under self._find_base_key"""
-        pipe = beu.REDIS.pipeline()
-        for key in beu.REDIS.scan_iter('{}*'.format(self._find_base_key)):
-            pipe.delete(key)
-        pipe.execute()
 
     def find_stats(self, limit=5):
         """Return summary info for temporary sets created during 'find' calls
@@ -512,3 +646,10 @@ class RedThing(beu.RedKeyMaker):
                 beu.utc_float_to_pretty(ts, fmt=beu.ADMIN_DATE_FMT, timezone=beu.ADMIN_TIMEZONE)
             ))
         return results
+
+    def clear_find_stats(self):
+        """Delete all Redis keys under self._find_base_key"""
+        pipe = beu.REDIS.pipeline()
+        for key in beu.REDIS.scan_iter('{}*'.format(self._find_base_key)):
+            pipe.delete(key)
+        pipe.execute()

@@ -394,63 +394,9 @@ def make_selections(items, prompt='', wrap=True, item_format=''):
     return selected
 
 
-class RedKeyMaker(object):
-    """RedKeyMaker is a base class for things that need to make Redis keys
-
-    The sub-class should set the `self._base_key` string in order for
-    `show_keyspace` and `clear_keyspace` methods to work
-    """
-    def _make_key(self, *parts):
-        """Join the string parts together, separated by colon(:)"""
-        return ':'.join([str(part) for part in parts])
-
-    def _get_next_key(self, next_id_string_key, base_key=None):
-        """Get the next key to use and increment next_id_string_key"""
-        if base_key is None:
-            base_key = ':'.join(next_id_string_key.split(':')[:-1])
-        pipe = REDIS.pipeline()
-        pipe.setnx(next_id_string_key, 1)
-        pipe.get(next_id_string_key)
-        pipe.incr(next_id_string_key)
-        result = pipe.execute()
-        return self._make_key(base_key, int(result[1]))
-
-    def show_keyspace(self):
-        """Show the Redis keyspace for under self._base_key
-
-        If collection size is over 500 items, a message will be printed instead
-        """
-        if self.size <= 500:
-            return sorted([
-                (decode(key), decode(REDIS.type(key)))
-                for key in REDIS.scan_iter('{}*'.format(self._base_key))
-            ])
-        else:
-            print('Keyspace is too large')
-
-    def clear_keyspace(self):
-        """Delete all Redis keys under self._base_key"""
-        for key in REDIS.scan_iter('{}*'.format(self._base_key)):
-            REDIS.delete(key)
-
-    @property
-    def size(self):
-        """Return cardinality of self._ts_zset_key (number of items in the zset)"""
-        return beu.REDIS.zcard(self._ts_zset_key)
-
-    @property
-    def now(self):
-        return beu.utc_float_to_pretty()
-
-    @property
-    def now_utc_float(self):
-        return float(beu.utc_now_float_string())
-
-
 ADMIN_TIMEZONE = get_setting('admin_timezone')
 ADMIN_DATE_FMT = get_setting('admin_date_fmt')
 REDIS_URL = get_setting('redis_url')
 REDIS = StrictRedis.from_url(REDIS_URL) if REDIS_URL is not '' else None
 import beu.page_parser
 from beu.redthing import RedThing
-from beu.unique_redthing import UniqueRedThing

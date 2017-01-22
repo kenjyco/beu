@@ -9,5 +9,4 @@ from examples.links import links
 
 
 if __name__ == '__main__':
-    from pprint import pprint
     print('\nUse dir() to see what is available')

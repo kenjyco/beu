@@ -1,6 +1,6 @@
 import beu
 
-links = beu.UniqueRedThing('vs', 'link')
+links = beu.RedThing('vs', 'link', unique_field='link')
 
 
 if __name__ == '__main__':
