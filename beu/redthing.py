@@ -353,7 +353,7 @@ class RedThing(object):
         pipe = beu.REDIS.pipeline()
         for field, old_value in self.get(hash_id, update_fields).items():
             if data[field] != old_value:
-                k = '{}|{}'.format(field, old_timestamp)
+                k = '{}--{}'.format(field, old_timestamp)
                 pipe.hset(changes_hash_key, k, old_value)
                 if field in self._index_base_keys:
                     old_index_key = self._make_key(self._base_key, field, old_value)
@@ -375,7 +375,7 @@ class RedThing(object):
         results = []
         changes_hash_key = self._make_key(hash_id, '_changes')
         for name, value in beu.REDIS.hgetall(changes_hash_key).items():
-            field, timestamp = beu.decode(name).split('|')
+            field, timestamp = beu.decode(name).split('--')
             results.append({
                 '_ts_raw': timestamp,
                 '_ts_admin': beu.utc_float_to_pretty(
