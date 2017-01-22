@@ -237,12 +237,12 @@ class RedThing(object):
     @property
     def last(self):
         """Return the last item in the collection"""
-        return self._get_by_position(-1)
+        return self.get_by_position(-1)
 
     @property
     def first(self):
         """Return the first item in the collection"""
-        return self._get_by_position(0)
+        return self.get_by_position(0)
 
     @property
     def size(self):
