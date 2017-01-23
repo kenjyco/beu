@@ -14,19 +14,36 @@ from redis import StrictRedis
 from bs4 import BeautifulSoup, FeatureNotFound
 
 
-ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-PROJECT_DIR = os.path.dirname(ROOT_DIR)
-SETTINGS_FILE = os.path.join(PROJECT_DIR, 'settings.ini')
+__doc__ = """
+
+A thing that can be used to prototype backend/cli ideas.
+"""
+
+
+def _get_settings_file():
+    root_dir = os.path.dirname(os.path.abspath(__file__))
+    project_dir = os.path.dirname(root_dir)
+    home_config_dir = os.path.expanduser('~/.config/beu')
+    dirs = (project_dir, home_config_dir, '/etc/beu')
+    for dirname in dirs:
+        settings_file = os.path.join(dirname, 'settings.ini')
+        if os.path.isfile(settings_file):
+            return settings_file
+
+    msg = 'No "settings.ini" file found in any of {}\n\nSee {}'.format(
+        ', '.join([repr(d) for d in dirs]),
+        'https://raw.githubusercontent.com/kenjyco/beu/master/settings.ini.sample'
+    )
+    raise Exception(msg)
+
+
+SETTINGS_FILE = _get_settings_file()
 APP_ENV = getenv('APP_ENV', 'dev')
 FLOAT_STRING_FMT = '%Y%m%d%H%M%S.%f'
 requests.packages.urllib3.disable_warnings()
 USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/45.0.2454.85 Chrome/45.0.2454.85 Safari/537.36'
 _config = configparser.RawConfigParser()
 _config.read(SETTINGS_FILE)
-__doc__ = """
-
-A thing that can be used to prototype backend/cli ideas.
-"""
 
 
 def from_string(val):
