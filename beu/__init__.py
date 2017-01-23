@@ -7,6 +7,7 @@ import pytz
 from os import getenv
 from subprocess import call
 from sys import exit
+from shutil import copyfile
 from datetime import datetime, timedelta, timezone as dt_timezone
 from functools import partial
 from itertools import product, zip_longest, chain
@@ -24,17 +25,19 @@ def _get_settings_file():
     root_dir = os.path.dirname(os.path.abspath(__file__))
     project_dir = os.path.dirname(root_dir)
     home_config_dir = os.path.expanduser('~/.config/beu')
-    dirs = (project_dir, home_config_dir, '/etc/beu')
-    for dirname in dirs:
+    for dirname in (project_dir, home_config_dir, '/etc/beu'):
         settings_file = os.path.join(dirname, 'settings.ini')
         if os.path.isfile(settings_file):
             return settings_file
 
-    msg = 'No "settings.ini" file found in any of {}\n\nSee {}'.format(
-        ', '.join([repr(d) for d in dirs]),
-        'https://raw.githubusercontent.com/kenjyco/beu/master/settings.ini.sample'
-    )
-    raise Exception(msg)
+    # Copy the sample settings file in project_dir and return it
+    sample_file = os.path.join(project_dir, 'settings.ini.sample')
+    settings_file = os.path.join(home_config_dir, 'settings.ini')
+    if not os.path.exists(home_config_dir):
+        os.makedirs(home_config_dir)
+    copyfile(sample_file, settings_file)
+    print('\nCopied settings to {}'.format(repr(home_config_dir)))
+    return settings_file
 
 
 SETTINGS_FILE = _get_settings_file()
