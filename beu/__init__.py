@@ -36,7 +36,7 @@ def _get_settings_file():
     if not os.path.exists(home_config_dir):
         os.makedirs(home_config_dir)
     copyfile(sample_file, settings_file)
-    print('\nCopied settings to {}'.format(repr(home_config_dir)))
+    print('\nCopied settings to {}'.format(repr(settings_file)))
     return settings_file
 
 
