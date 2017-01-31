@@ -4,6 +4,7 @@ click==6.6
 lxml==3.7.2
 beautifulsoup4==4.5.1
 requests==2.12.4
+youtube-dl
 
 # For development
 ipython

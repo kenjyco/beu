@@ -55,3 +55,6 @@ def run_or_die(cmd):
     ret_code = call(cmd, shell=True)
     if ret_code != 0:
         exit(ret_code)
+
+
+import beu.download
