@@ -3,18 +3,19 @@ from setuptools import setup, find_packages
 
 setup(
     name='beu',
-    version='0.1.0',
+    version='0.1.1',
     description='Beginner Express .:. Back End .:. Big Example .:. Brainstorm Effectively',
     author='Ken',
     author_email='kenjyco@gmail.com',
     license='MIT',
     url='https://github.com/kenjyco/beu',
-    download_url='https://github.com/kenjyco/beu/tarball/v0.1.0',
+    download_url='https://github.com/kenjyco/beu/tarball/v0.1.1',
     packages=find_packages(),
     install_requires=[
         'redis-helper',
         'input-helper',
         'mocp',
+        'chloop',
         'youtube-dl',
         'click',
         'requests==2.12.4',
