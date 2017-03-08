@@ -20,18 +20,18 @@ def delete_all_extra_files(path='.'):
         print('Removed {}'.format(repr(fname)))
     for fname in glob(os.path.join(path, '**/*.f???.*')):
         os.remove(fname)
-        print('removed {}'.format(repr(fname)))
+        print('Removed {}'.format(repr(fname)))
 
 
 class MyLogger(object):
     def debug(self, msg):
-        pass
+        print('== DEBUG ==', msg)
 
     def warning(self, msg):
-        pass
+        print('== WARNING ==', msg)
 
     def error(self, msg):
-        pass
+        print('== ERROR ==', msg)
 
 
 def my_hook(d):
@@ -69,7 +69,7 @@ def av_from_url(url, **kwargs):
         'logger': MyLogger(),
         'progress_hooks': [my_hook],
     }
-    if 'template' in kwargs:
+    if 'template' in kwargs and kwargs['template']:
         ydl_opts.update({'outtmpl': kwargs['template']})
     if kwargs.get('audio_only', False):
         ydl_opts.update({
@@ -88,53 +88,89 @@ def av_from_url(url, **kwargs):
 
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(url, download=False)
+        formats = info.pop('formats', None)
         ydl.download([url])
+
+    for key in (
+        'age_limit',
+        'annotations',
+        'automatic_captions',
+        'episode_number',
+        'format_id',
+        'format_note',
+        'http_headers',
+        'is_live',
+        'license',
+        'player_url',
+        'preference',
+        'protocol',
+        'requested_subtitles',
+        'requested_formats',
+        'season_number',
+        'series',
+        'start_time',
+        'vcodec',
+        'webpage_url',
+        'webpage_url_basename',
+    ):
+        info.pop(key, None)
 
     return info
 
 
 @click.command()
-@click.argument('args', nargs=-1)
 @click.option(
     '--template', '-o', 'template', default='',
     help='string representing generated filenames'
 )
 @click.option(
     '--playlist', '-p', 'playlist', is_flag=True, default=False,
-    help='if True, allow downloading entire playlist'
+    help='Allow downloading entire playlist'
 )
 @click.option(
     '--quiet', '-q', 'quiet', is_flag=True, default=False,
-    help='if True, don\'t print messages to stdout'
+    help='Don\'t print messages to stdout'
 )
 @click.option(
     '--thumbnail', '-t', 'thumbnail', is_flag=True, default=False,
-    help='if True, download thumbnail image of video'
+    help='Download thumbnail image of video'
 )
 @click.option(
     '--description', '-d', 'description', is_flag=True, default=False,
-    help='if True, download description of video to a file'
+    help='Download description of video to a file'
 )
 @click.option(
     '--subtitles', '-s', 'subtitles', is_flag=True, default=False,
-    help='if True, embed subtitles in the downloaded video'
+    help='Embed subtitles in the downloaded video'
 )
 @click.option(
     '--audio-only', '-a', 'audio_only', is_flag=True, default=False,
-    help='if True, don\'t keep the video file if one was downloaded'
+    help='Don\'t keep the video file if one was downloaded'
 )
 @click.option(
     '--mp3', '-m', 'mp3', is_flag=True, default=False,
-    help='if True, convert downloaded audio to MP3 file'
+    help='Convert downloaded audio to MP3 file'
 )
-def download(*args, **kwargs):
+@click.argument('args', nargs=-1)
+def main(**kwargs):
     """Wrapper to 'av_from_url'
 
     - args: urls or filenames containing urls
     """
+    args = kwargs.pop('args')
     urls = ih.get_all_urls(*args)
     results = []
     for url in urls:
         results.append(av_from_url(url, **kwargs))
     delete_all_extra_files()
-    return results
+    #
+    #
+    # return results
+    from pprint import pprint
+    pprint(results)
+    #
+    #
+
+
+if __name__ == '__main__':
+    main()
