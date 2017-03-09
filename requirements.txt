@@ -2,11 +2,9 @@ redis-helper
 input-helper
 mocp
 chloop
-youtube-dl
+yt-helper
+parse-helper
 click
-requests
-lxml
-beautifulsoup4
 
 # For development
 ipython

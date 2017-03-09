@@ -1,5 +1,9 @@
 *.sw[po]
 *.py[cod]
-*.ini
+env/
 venv/
+dist/
+build/
+.eggs/
 .cache/
+*.egg-info/
