@@ -25,13 +25,14 @@ setup(
     package_data={
         '' : ['*.ini'],
     },
-    # entry_points={
-    #     'console_scripts': [
-    #         'download=beu.download:download',
-    #     ],
-    # },
+    entry_points={
+        'console_scripts': [
+            'beu-vidsearch=beu.scripts.vidsearch:main',
+        ],
+    },
     classifiers=[
         'Development Status :: 3 - Alpha',
+        'Environment :: Console',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3.5',
