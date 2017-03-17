@@ -3,13 +3,13 @@ from setuptools import setup, find_packages
 
 setup(
     name='beu',
-    version='0.1.4',
+    version='0.1.5',
     description='Beginner Express .:. Back End .:. Big Example .:. Brainstorm Effectively',
     author='Ken',
     author_email='kenjyco@gmail.com',
     license='MIT',
     url='https://github.com/kenjyco/beu',
-    download_url='https://github.com/kenjyco/beu/tarball/v0.1.4',
+    download_url='https://github.com/kenjyco/beu/tarball/v0.1.5',
     packages=find_packages(),
     install_requires=[
         'redis-helper',

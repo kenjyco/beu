@@ -11,7 +11,7 @@ def main(query):
         return
 
     selected = beu.ih.make_selections(
-        beu.ph.youtube_serp('redis'),
+        beu.ph.youtube_serp(query),
         wrap=False,
         item_format='{duration} .::. {title} .::. {user} .::. {uploaded}',
     )
