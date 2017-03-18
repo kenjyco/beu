@@ -19,6 +19,7 @@ setup(
         'yt-helper',
         'parse-helper',
         'click',
+        'ipython',
     ],
     include_package_data=True,
     package_dir={'': '.'},
@@ -27,6 +28,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
+            'beu-ipython=beu.scripts.shell:main',
             'beu-vidsearch=beu.scripts.vidsearch:main',
         ],
     },
