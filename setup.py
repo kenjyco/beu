@@ -23,7 +23,7 @@ setup(
     include_package_data=True,
     package_dir={'': '.'},
     package_data={
-        '' : ['*.ini'],
+        '': ['*.ini'],
     },
     entry_points={
         'console_scripts': [

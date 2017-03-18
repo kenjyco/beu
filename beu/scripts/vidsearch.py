@@ -17,4 +17,4 @@ def main(query):
     )
     if selected:
         results = [beu.yh.av_from_url(x['link']) for x in selected]
-
+        return results
