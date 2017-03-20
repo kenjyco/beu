@@ -30,6 +30,7 @@ setup(
         'console_scripts': [
             'beu-ipython=beu.scripts.shell:main',
             'beu-vidsearch=beu.scripts.vidsearch:main',
+            'beu-audiosearch=beu.scripts.audiosearch:main',
         ],
     },
     classifiers=[
