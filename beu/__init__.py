@@ -7,6 +7,7 @@ import logging
 import os.path
 from subprocess import call
 from datetime import datetime
+from sys import exit
 
 
 LOGFILE = os.path.abspath('log--beu.log')
