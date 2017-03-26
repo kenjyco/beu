@@ -4,6 +4,7 @@ mocp
 chloop
 yt-helper
 parse-helper
+bg-helper
 click
 
 # For development

@@ -22,6 +22,7 @@ setup(
         'chloop',
         'yt-helper',
         'parse-helper',
+        'bg-helper',
         'click',
         'ipython',
     ],

@@ -40,5 +40,8 @@ Start ``beu-ipython`` which already has the ``beu`` module imported
     In [4]: beu.yh
     Out[4]: <module 'yt_helper' from '/tmp/stuff/venv/lib/python3.5/site-packages/yt_helper/__init__.py'>
 
-    In [5]: beu.moc
-    Out[5]: <module 'moc' from '/tmp/stuff/venv/lib/python3.5/site-packages/moc/__init__.py'>
+    In [5]: beu.bh
+    Out[5]: <module 'bg_helper' from '/tmp/stuff/venv/lib/python3.5/site-packages/bg_helper/__init__.py'>
+
+    In [6]: beu.moc
+    Out[6]: <module 'moc' from '/tmp/stuff/venv/lib/python3.5/site-packages/moc/__init__.py'>
