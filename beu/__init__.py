@@ -5,9 +5,7 @@ import parse_helper as ph
 import moc
 import logging
 import os.path
-from subprocess import call
 from datetime import datetime
-from sys import exit
 
 
 LOGFILE = os.path.abspath('log--beu.log')
@@ -28,10 +26,3 @@ logger.addHandler(console_handler)
 def utc_now_iso():
     """Return current UTC timestamp in ISO format"""
     return datetime.utcnow().isoformat()
-
-
-def run_or_die(cmd):
-    """Run a shell command or exit the system"""
-    ret_code = call(cmd, shell=True)
-    if ret_code != 0:
-        exit(ret_code)
