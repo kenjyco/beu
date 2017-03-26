@@ -3,6 +3,7 @@ import input_helper as ih
 import yt_helper as yh
 import parse_helper as ph
 import bg_helper as bh
+import vlc_helper as vh
 import moc
 import logging
 import os.path

@@ -5,6 +5,7 @@ chloop
 yt-helper
 parse-helper
 bg-helper
+vlc-helper
 click
 
 # For development

@@ -23,6 +23,7 @@ setup(
         'yt-helper',
         'parse-helper',
         'bg-helper',
+        'vlc-helper',
         'click',
         'ipython',
     ],
