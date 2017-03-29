@@ -8,6 +8,7 @@ import moc
 import logging
 import os.path
 from datetime import datetime
+from chloop import GetCharLoop
 
 
 LOGFILE = os.path.abspath('log--beu.log')
