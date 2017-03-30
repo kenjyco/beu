@@ -5,10 +5,10 @@ import parse_helper as ph
 import bg_helper as bh
 import vlc_helper as vh
 import moc
+import chloop
 import logging
 import os.path
 from datetime import datetime
-from chloop import GetCharLoop
 
 
 LOGFILE = os.path.abspath('log--beu.log')
