@@ -5,7 +5,6 @@ chloop
 yt-helper
 parse-helper
 bg-helper
-vlc-helper
 mocp-cli
 click
 

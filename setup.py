@@ -6,14 +6,14 @@ with open('README.rst', 'r') as fp:
 
 setup(
     name='beu',
-    version='0.1.11',
+    version='0.1.12',
     description='Beginner Express .:. Back End .:. Big Example .:. Brainstorm Effectively',
     long_description=long_description,
     author='Ken',
     author_email='kenjyco@gmail.com',
     license='MIT',
     url='https://github.com/kenjyco/beu',
-    download_url='https://github.com/kenjyco/beu/tarball/v0.1.11',
+    download_url='https://github.com/kenjyco/beu/tarball/v0.1.12',
     packages=find_packages(),
     install_requires=[
         'redis-helper',
@@ -23,7 +23,6 @@ setup(
         'yt-helper',
         'parse-helper',
         'bg-helper',
-        'vlc-helper',
         'mocp-cli',
         'click',
         'ipython',
