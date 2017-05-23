@@ -16,5 +16,5 @@ def main(query):
         item_format='{duration} .::. {title} .::. {user} .::. {uploaded}',
     )
     if selected:
-        results = [beu.yh.av_from_url(x['link']) for x in selected]
+        results = [beu.yh.av_from_url(x['link'], playlist=True, query=query) for x in selected]
         return results

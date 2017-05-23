@@ -21,7 +21,8 @@ def main(query):
                 x['link'],
                 audio_only=True,
                 mp3=True,
-                playlist=False,
+                playlist=True,
+                query=query,
             )
             for x in selected
         ]
