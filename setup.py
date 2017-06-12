@@ -6,14 +6,14 @@ with open('README.rst', 'r') as fp:
 
 setup(
     name='beu',
-    version='0.1.13',
+    version='0.1.14',
     description='Beginner Express .:. Back End .:. Big Example .:. Brainstorm Effectively',
     long_description=long_description,
     author='Ken',
     author_email='kenjyco@gmail.com',
     license='MIT',
     url='https://github.com/kenjyco/beu',
-    download_url='https://github.com/kenjyco/beu/tarball/v0.1.13',
+    download_url='https://github.com/kenjyco/beu/tarball/v0.1.14',
     packages=find_packages(),
     install_requires=[
         'redis-helper',
@@ -37,6 +37,8 @@ setup(
             'beu-ipython=beu.scripts.shell:main',
             'beu-vidsearch=beu.scripts.vidsearch:main',
             'beu-audiosearch=beu.scripts.audiosearch:main',
+            'beu-trending=beu.scripts.trending:main',
+            'beu-related-to=beu.scripts.related_to:main',
         ],
     },
     classifiers=[
