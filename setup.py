@@ -35,8 +35,6 @@ setup(
     entry_points={
         'console_scripts': [
             'beu-ipython=beu.scripts.shell:main',
-            'beu-vidsearch=beu.scripts.vidsearch:main',
-            'beu-audiosearch=beu.scripts.audiosearch:main',
             'beu-trending=beu.scripts.trending:main',
             'beu-related-to=beu.scripts.related_to:main',
         ],
