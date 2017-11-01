@@ -1,16 +1,32 @@
-beu
-===
+About
+-----
 
-See the following
+The ``beu`` package is intended to be an easy way to explore several
+complementary Python packages.
 
--  https://github.com/kenjyco/input-helper
--  https://github.com/kenjyco/bg-helper
--  https://github.com/kenjyco/redis-helper
--  https://github.com/kenjyco/chloop
--  https://github.com/kenjyco/parse-helper
--  https://github.com/kenjyco/yt-helper
--  https://github.com/kenjyco/mocp
--  https://github.com/kenjyco/mocp-cli
+-  There is a script to help you get all the system requirements
+   installed
+-  The ``beu`` module auto-imports several relevant modules as their
+   preferred 2-character shortcuts for quick interaction
+-  The ``beu-ipython`` command is a shortcut to start an ``ipython``
+   session with the ``beu`` module imported before you see the shell
+   prompt
+-  The commands provided by the other packages are all installed to the
+   same place
+-  All the advanced features of the packages are made available (since
+   some packages will do more when certain other packages can be
+   imported)
+
+See the following docs:
+
+-  https://github.com/kenjyco/input-helper/blob/master/README.md#usage
+-  https://github.com/kenjyco/bg-helper/blob/master/README.md#usage
+-  https://github.com/kenjyco/redis-helper/blob/master/README.md#intro
+-  https://github.com/kenjyco/chloop/blob/master/README.md#usage
+-  https://github.com/kenjyco/parse-helper/blob/master/README.md#usage
+-  https://github.com/kenjyco/yt-helper/blob/master/README.md#usage
+-  https://github.com/kenjyco/mocp/blob/master/README.md#usage
+-  https://github.com/kenjyco/mocp-cli/blob/master/README.md#usage
 
 Install
 -------
@@ -57,11 +73,6 @@ The ``beu-ipython`` script is provided
 
     Options:
       --help  Show this message and exit.
-
-Start ``beu-ipython`` which already has the ``beu`` module imported
-
-    When ``beu`` is imported, it also imports most/all of my PYPI
-    packages as their preferred 2-character shortcuts.
 
 ::
 
