@@ -11,6 +11,7 @@ if [[ -f /usr/bin/apt-get && -n "$(groups | grep sudo)" ]]; then
     echo -e "\nInstalling tools"
     sudo apt-get install -y binutils-multiarch gcc g++ python3-dev python3-venv python3-pip python3-setuptools build-essential
     sudo apt-get install -y redis-server moc libav-tools sox rtmpdump
+    sudo apt-get install -y vlc
     # Requirements for lxml
     sudo apt-get install -y libxml2 libxslt1.1 libxml2-dev libxslt1-dev zlib1g-dev
 elif [[ -f /usr/local/bin/brew ]]; then
@@ -21,4 +22,18 @@ elif [[ -f /usr/local/bin/brew ]]; then
     if [[ -z $(brew services list | grep "redis@3.2.*started") ]]; then
         brew services start redis@3.2
     fi
+fi
+
+if [[ ! -d "$HOME/.beu" ]]; then
+    echo -e "\nCreating $HOME/.beu directory"
+    mkdir -p $HOME/.beu
+fi
+
+cd $HOME/.beu || exit 1
+echo -e "\nCreating $HOME/.beu/venv virtual environment and installing"
+python3 -m venv venv && venv/bin/pip3 install --upgrade pip wheel
+if [[ $(uname) == 'Darwin' ]]; then
+    venv/bin/pip3 install beu
+else
+    venv/bin/pip3 install beu vlc-helper
 fi
