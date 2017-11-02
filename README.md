@@ -13,7 +13,6 @@ Python packages.
 - All the advanced features of the packages are made available (since some
   packages will do more when certain other packages can be imported)
 
-
 See the following docs:
 
 - <https://github.com/kenjyco/input-helper/blob/master/README.md#usage>
@@ -27,8 +26,9 @@ See the following docs:
 
 ## Install
 
-Install system requirements and `beu` to `~/.beu` (Debian-based distros and
-Mac). Also modify `~/.zshrc` and `~/.bashrc` or `~/.bash_profile`.
+Install system requirements and install `beu` package to `~/.beu` (Debian-based
+distros and Mac). Also modify one of `~/.zshrc`, `~/.bashrc`, or
+`~/.bash_profile`.
 
 ```
 % curl -o- https://raw.githubusercontent.com/kenjyco/beu/master/install.sh | bash
@@ -36,6 +36,12 @@ Mac). Also modify `~/.zshrc` and `~/.bashrc` or `~/.bash_profile`.
 
 > Note: if using a Mac, you need to run [jack](http://www.jackaudio.org/) in
 > another terminal EVERY TIME you want to use MOC (i.e. `jackd -d coreaudio`).
+
+Source the `wrappers.sh` file
+
+```
+% source ~/.beu/wrappers.sh
+```
 
 Verify that the MOC server can start
 
@@ -47,10 +53,11 @@ Verify that the MOC server can start
 
 ## Usage
 
-The `beu-ipython` script is provided
+The `beu-ipython` script is provided (with the `b` shortcut set in
+`~/.beu/wrappers.sh`)
 
 ```
-$ venv/bin/beu-ipython --help
+% b --help
 Usage: beu-ipython [OPTIONS]
 
   Start ipython with `beu` imported
@@ -60,7 +67,7 @@ Options:
 ```
 
 ```
-% venv/bin/beu-ipython
+% b
 Python 3.5.2 (default, Nov 17 2016, 17:05:23)
 Type "copyright", "credits" or "license" for more information.
 
@@ -91,3 +98,26 @@ Out[6]: <module 'yt_helper' from '/tmp/stuff/venv/lib/python3.5/site-packages/yt
 In [7]: beu.moc
 Out[7]: <module 'moc' from '/tmp/stuff/venv/lib/python3.5/site-packages/moc/__init__.py'>
 ```
+
+## Updating
+
+Use `beu-update` to get the latest changes
+
+```
+% beu-update
+```
+
+## Misc
+
+You should be able to pass the `--help` option to any of the command/shortcuts
+listed below for more info.
+
+- Use `a` (`yt-search --audio-only`) to search for and download audio files
+- Use `v` (`yt-search`) to search for and download video files
+- Use `m` (`mocplayer`) to start the REPL to control audio playback and making
+  annotations
+- Use `pdfsearch` (`ph-goo --filetype pdf`) to search for and download PDF files
+- Use `rh-shell` to explore Collection objects
+
+> Note: see the [wrappers.sh](https://raw.githubusercontent.com/kenjyco/beu/master/wrappers.sh)
+> file to see all defined shortcuts.
