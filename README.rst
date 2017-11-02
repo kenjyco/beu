@@ -31,13 +31,12 @@ See the following docs:
 Install
 -------
 
-Install system requirements (Debian-based distros and Mac)
+Install system requirements and install ``beu`` to ``~/.beu``
+(Debian-based distros and Mac)
 
 ::
 
-    % curl -o- https://raw.githubusercontent.com/kenjyco/beu/master/install-system-requirements.sh | bash
-
-..
+    % curl -o- https://raw.githubusercontent.com/kenjyco/beu/master/install.sh | bash
 
     Note: if using a Mac, you need to run
     `jack <http://www.jackaudio.org/>`__ in another terminal EVERY TIME
@@ -49,15 +48,7 @@ Verify that the MOC server can start
 
     % mocp
 
-..
-
     Press ``q`` to quit.
-
-Install with ``pip``
-
-::
-
-    % pip3 install beu
 
 Usage
 -----
