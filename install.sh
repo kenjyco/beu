@@ -37,3 +37,5 @@ if [[ $(uname) == 'Darwin' ]]; then
 else
     venv/bin/pip3 install beu vlc-helper
 fi
+echo -e "\nSaving latest wrappers.sh"
+curl https://raw.githubusercontent.com/kenjyco/beu/master/wrappers.sh > wrappers.sh
