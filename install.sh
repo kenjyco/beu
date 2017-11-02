@@ -41,3 +41,19 @@ else
 fi
 echo -e "\nSaving latest wrappers.sh"
 curl https://raw.githubusercontent.com/kenjyco/beu/master/wrappers.sh > wrappers.sh
+
+if [[ -f $HOME/.zshrc ]]; then
+    if [[ -z "$(grep '.beu' $HOME/.zshrc)" ]]; then
+        echo -e '\n[[ -f $HOME/.beu/wrappers.sh ]] && source $HOME/.beu/wrappers.sh' >> $HOME/.zshrc
+    fi
+fi
+
+if [[ -f $HOME/.bashrc ]]; then
+    if [[ -z "$(grep '.beu' $HOME/.bashrc)" ]]; then
+        echo -e '\n[[ -f $HOME/.beu/wrappers.sh ]] && source $HOME/.beu/wrappers.sh' >> $HOME/.bashrc
+    fi
+elif [[ -f $HOME/.bash_profile ]]; then
+    if [[ -z "$(grep '.beu' $HOME/.bash_profile)" ]]; then
+        echo -e '\n[[ -f $HOME/.beu/wrappers.sh ]] && source $HOME/.beu/wrappers.sh' >> $HOME/.bash_profile
+    fi
+fi
