@@ -31,8 +31,9 @@ See the following docs:
 Install
 -------
 
-Install system requirements and install ``beu`` to ``~/.beu``
-(Debian-based distros and Mac)
+Install system requirements and ``beu`` to ``~/.beu`` (Debian-based
+distros and Mac). Also modify ``~/.zshrc`` and ``~/.bashrc`` or
+``~/.bash_profile``.
 
 ::
 
