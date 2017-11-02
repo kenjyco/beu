@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+if [[ ! -f $HOME/.zshrc && ! -f $HOME/.bashrc && ! -f $HOME/.bash_profile ]]; then
+    echo -e "\nCreating an empty $HOME/.bash_profile"
+    touch $HOME/.bash_profile
+fi
+
 if [[ $(uname) == 'Darwin' && ! -f /usr/local/bin/brew ]]; then
     echo -e "\nInstalling homebrew"
     /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" || exit 1
