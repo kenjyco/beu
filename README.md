@@ -40,14 +40,6 @@ Source the `wrappers.sh` file
 % source ~/.beu/wrappers.sh
 ```
 
-Verify that the MOC server can start
-
-```
-% mocp
-```
-
-> Press `q` to quit.
-
 ## Usage
 
 The `beu-ipython` script is provided (with the `b` shortcut set in
