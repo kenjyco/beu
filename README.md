@@ -34,9 +34,6 @@ distros and Mac). Also modify one of `~/.zshrc`, `~/.bashrc`, or
 % curl -o- https://raw.githubusercontent.com/kenjyco/beu/master/install.sh | bash
 ```
 
-> Note: if using a Mac, you need to run [jack](http://www.jackaudio.org/) in
-> another terminal EVERY TIME you want to use MOC (i.e. `jackd -d coreaudio`).
-
 Source the `wrappers.sh` file
 
 ```

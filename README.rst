@@ -39,10 +39,6 @@ Install system requirements and install ``beu`` package to ``~/.beu``
 
     % curl -o- https://raw.githubusercontent.com/kenjyco/beu/master/install.sh | bash
 
-    Note: if using a Mac, you need to run
-    `jack <http://www.jackaudio.org/>`__ in another terminal EVERY TIME
-    you want to use MOC (i.e. ``jackd -d coreaudio``).
-
 Source the ``wrappers.sh`` file
 
 ::
@@ -54,6 +50,8 @@ Verify that the MOC server can start
 ::
 
     % mocp
+
+..
 
     Press ``q`` to quit.
 
