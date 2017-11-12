@@ -8,6 +8,7 @@ try:
 except ImportError:
     pass
 import moc
+import mocp_cli
 import chloop
 import logging
 import os.path
