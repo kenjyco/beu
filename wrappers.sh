@@ -6,6 +6,15 @@ beu-site-packages() {
     fi
 }
 
+beu-reinstall() {
+    oldpwd=$(pwd)
+    [[ ! -d "$HOME/.beu" ]] && mkdir -p "$HOME/.beu"
+    cd "$HOME/.beu"
+    rm -rf venv 2>/dev/null
+    curl -o- https://raw.githubusercontent.com/kenjyco/beu/master/install.sh | bash
+    cd "$oldpwd"
+}
+
 beu-update() {
     [[ ! -d "$HOME/.beu/venv" ]] && echo "$HOME/.beu/venv does not exist" && return 1
     oldpwd=$(pwd)
