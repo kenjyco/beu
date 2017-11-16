@@ -1,9 +1,11 @@
+if [[ -d "$HOME/.beu/venv/lib/python3.5/site-packages" ]]; then
+    BEU_SITE_PACKAGES="$HOME/.beu/venv/lib/python3.5/site-packages"
+elif [[ -d "$HOME/.beu/venv/lib/python3.6/site-packages" ]]; then
+    BEU_SITE_PACKAGES="$HOME/.beu/venv/lib/python3.6/site-packages"
+fi
+
 beu-site-packages() {
-    if [[ -d "$HOME/.beu/venv/lib/python3.5/site-packages" ]]; then
-        cd "$HOME/.beu/venv/lib/python3.5/site-packages"
-    elif [[ -d "$HOME/.beu/venv/lib/python3.6/site-packages" ]]; then
-        cd "$HOME/.beu/venv/lib/python3.6/site-packages"
-    fi
+    cd "$BEU_SITE_PACKAGES"
 }
 
 beu-reinstall() {
@@ -27,6 +29,43 @@ beu-update() {
     echo -e "\nSaving latest wrappers.sh"
     curl https://raw.githubusercontent.com/kenjyco/beu/master/wrappers.sh > wrappers.sh
     cd "$oldpwd"
+}
+
+beu-repos-list() {
+    level=$1
+    [[ ! "$level" =~ [0-9]+ ]] && level=3
+    find ~ -maxdepth $level -type d -name ".git" -print0 |
+    xargs -0 -I {} dirname {} 2>/dev/null |
+    sort |
+    egrep '(beu|bg-helper|chloop|input-helper|mocp|parse-helper|redis-helper|vlc-helper)'
+}
+
+BEU_REPOS_LIST=$(beu-repos-list)
+_REPO_BEU=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep beu$)
+_REPO_BG_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep bg-helper$)
+_REPO_CHLOOP=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep chloop$)
+_REPO_INPUT_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep input-helper$)
+_REPO_MOCP=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep mocp$)
+_REPO_MOCP_CLI=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep mocp-cli$)
+_REPO_PARSE_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep parse-helper$)
+_REPO_REDIS_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep redis-helper$)
+_REPO_VLC_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep vlc-helper$)
+
+_beu-repos-diff() {
+    [[ -z "$BEU_REPOS_LIST" ]] && return
+    [[ -d "$_REPO_BEU" ]] && diff -r "$BEU_SITE_PACKAGES/beu" "$_REPO_BEU/beu"
+    [[ -d "$_REPO_BG_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/bg_helper" "$_REPO_BG_HELPER/bg_helper"
+    [[ -d "$_REPO_CHLOOP" ]] && diff -r "$BEU_SITE_PACKAGES/chloop" "$_REPO_CHLOOP/chloop"
+    [[ -d "$_REPO_INPUT_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/input_helper" "$_REPO_INPUT_HELPER/input_helper"
+    [[ -d "$_REPO_MOCP" ]] && diff -r "$BEU_SITE_PACKAGES/moc" "$_REPO_MOCP/moc"
+    [[ -d "$_REPO_MOCP_CLI" ]] && diff -r "$BEU_SITE_PACKAGES/moc_cli" "$_REPO_MOCP_CLI/mocp_cli"
+    [[ -d "$_REPO_PARSE_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/parse_helper" "$_REPO_PARSE_HELPER/parse_helper"
+    [[ -d "$_REPO_REDIS_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/redis_helper" "$_REPO_REDIS_HELPER/redis_helper"
+    [[ -d "$_REPO_VLC_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/vlc_helper" "$_REPO_VLC_HELPER/vlc_helper"
+}
+
+beu-repos-diff() {
+    _beu-repos-diff 2>/dev/null | egrep -v '(Only in|No such file)'
 }
 
 rh-download-examples() {
