@@ -52,6 +52,9 @@ _REPO_REDIS_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep redis-helper$)
 _REPO_VLC_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep vlc-helper$)
 _REPO_YT_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep yt-helper$)
 
+which colordiff &>/dev/null
+[[ $? -eq 0 ]] && _use_colordiff="yes"
+
 _beu-repos-diff() {
     [[ -z "$BEU_REPOS_LIST" ]] && return
     [[ -d "$_REPO_BEU" ]] && diff -r "$BEU_SITE_PACKAGES/beu" "$_REPO_BEU/beu"
@@ -67,7 +70,11 @@ _beu-repos-diff() {
 }
 
 beu-repos-diff() {
-    _beu-repos-diff 2>/dev/null | egrep -v '(Only in|No such file)'
+    if [[ -n "$_use_colordiff" ]]; then
+        _beu-repos-diff 2>/dev/null | egrep -v '(Only in|No such file)' | colordiff
+    else
+        _beu-repos-diff 2>/dev/null | egrep -v '(Only in|No such file)'
+    fi
 }
 
 rh-download-examples() {
