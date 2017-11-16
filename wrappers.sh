@@ -37,7 +37,7 @@ beu-repos-list() {
     find ~ -maxdepth $level -type d -name ".git" -print0 |
     xargs -0 -I {} dirname {} 2>/dev/null |
     sort |
-    egrep '(beu|bg-helper|chloop|input-helper|mocp|parse-helper|redis-helper|vlc-helper)'
+    egrep '(beu|bg-helper|chloop|input-helper|mocp|parse-helper|redis-helper|vlc-helper|yt-helper)'
 }
 
 BEU_REPOS_LIST=$(beu-repos-list)
@@ -50,6 +50,7 @@ _REPO_MOCP_CLI=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep mocp-cli$)
 _REPO_PARSE_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep parse-helper$)
 _REPO_REDIS_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep redis-helper$)
 _REPO_VLC_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep vlc-helper$)
+_REPO_YT_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep yt-helper$)
 
 _beu-repos-diff() {
     [[ -z "$BEU_REPOS_LIST" ]] && return
@@ -62,6 +63,7 @@ _beu-repos-diff() {
     [[ -d "$_REPO_PARSE_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/parse_helper" "$_REPO_PARSE_HELPER/parse_helper"
     [[ -d "$_REPO_REDIS_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/redis_helper" "$_REPO_REDIS_HELPER/redis_helper"
     [[ -d "$_REPO_VLC_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/vlc_helper" "$_REPO_VLC_HELPER/vlc_helper"
+    [[ -d "$_REPO_YT_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/yt_helper" "$_REPO_YT_HELPER/yt_helper"
 }
 
 beu-repos-diff() {
