@@ -62,7 +62,7 @@ _beu-repos-diff() {
     [[ -d "$_REPO_CHLOOP" ]] && diff -r "$BEU_SITE_PACKAGES/chloop" "$_REPO_CHLOOP/chloop"
     [[ -d "$_REPO_INPUT_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/input_helper" "$_REPO_INPUT_HELPER/input_helper"
     [[ -d "$_REPO_MOCP" ]] && diff -r "$BEU_SITE_PACKAGES/moc" "$_REPO_MOCP/moc"
-    [[ -d "$_REPO_MOCP_CLI" ]] && diff -r "$BEU_SITE_PACKAGES/moc_cli" "$_REPO_MOCP_CLI/mocp_cli"
+    [[ -d "$_REPO_MOCP_CLI" ]] && diff -r "$BEU_SITE_PACKAGES/mocp_cli" "$_REPO_MOCP_CLI/mocp_cli"
     [[ -d "$_REPO_PARSE_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/parse_helper" "$_REPO_PARSE_HELPER/parse_helper"
     [[ -d "$_REPO_REDIS_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/redis_helper" "$_REPO_REDIS_HELPER/redis_helper"
     [[ -d "$_REPO_VLC_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/vlc_helper" "$_REPO_VLC_HELPER/vlc_helper"
@@ -71,9 +71,9 @@ _beu-repos-diff() {
 
 beu-repos-diff() {
     if [[ -n "$_use_colordiff" ]]; then
-        _beu-repos-diff 2>/dev/null | egrep -v '(Only in|No such file)' | colordiff
+        _beu-repos-diff 2>/dev/null | egrep -v '(Only in|No such file)' | colordiff | less -rFX
     else
-        _beu-repos-diff 2>/dev/null | egrep -v '(Only in|No such file)'
+        _beu-repos-diff 2>/dev/null | egrep -v '(Only in|No such file)' | less -FX
     fi
 }
 
