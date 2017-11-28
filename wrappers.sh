@@ -67,6 +67,10 @@ _beu-repos-diff() {
     [[ -d "$_REPO_REDIS_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/redis_helper" "$_REPO_REDIS_HELPER/redis_helper"
     [[ -d "$_REPO_VLC_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/vlc_helper" "$_REPO_VLC_HELPER/vlc_helper"
     [[ -d "$_REPO_YT_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/yt_helper" "$_REPO_YT_HELPER/yt_helper"
+    if [[ -s "$_REPO_BEU/wrappers.sh" ]]; then
+        _output=$(diff "$HOME/.beu/wrappers.sh" "$_REPO_BEU/wrappers.sh")
+        [[ -n "$_output" ]] && echo diff "$HOME/.beu/wrappers.sh" "$_REPO_BEU/wrappers.sh" && echo "$_output"
+    fi
 }
 
 beu-repos-diff() {
