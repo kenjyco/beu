@@ -52,6 +52,14 @@ _REPO_REDIS_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep redis-helper$)
 _REPO_VLC_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep vlc-helper$)
 _REPO_YT_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep yt-helper$)
 
+_get_beu_repos_base_dir() {
+    for repo in $(beu-repos-list | tr '\n' '\0' | xargs -0); do
+        dirname "$repo"
+    done | uniq -c | sort -n | tail -n 1 | egrep -o '\/.*$'
+}
+
+BEU_REPOS_DIR=$(_get_beu_repos_base_dir)
+
 which colordiff &>/dev/null
 [[ $? -eq 0 ]] && _use_colordiff="yes"
 
