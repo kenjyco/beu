@@ -3,6 +3,9 @@ import input_helper as ih
 import yt_helper as yh
 import parse_helper as ph
 import bg_helper as bh
+import fs_helper as fh
+import dt_helper as dh
+import settings_helper as sh
 try:
     import vlc_helper as vh
 except ImportError:
@@ -12,7 +15,6 @@ import mocp_cli
 import chloop
 import logging
 import os.path
-from datetime import datetime
 
 
 LOGFILE = os.path.abspath('log--beu.log')
@@ -28,8 +30,3 @@ console_handler.setLevel(logging.INFO)
 console_handler.setFormatter(logging.Formatter('%(asctime)s: %(message)s'))
 logger.addHandler(file_handler)
 logger.addHandler(console_handler)
-
-
-def utc_now_iso():
-    """Return current UTC timestamp in ISO format"""
-    return datetime.utcnow().isoformat()

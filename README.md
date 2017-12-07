@@ -86,6 +86,18 @@ Out[6]: <module 'yt_helper' from '/tmp/stuff/venv/lib/python3.5/site-packages/yt
 
 In [7]: beu.moc
 Out[7]: <module 'moc' from '/tmp/stuff/venv/lib/python3.5/site-packages/moc/__init__.py'>
+
+In [8]: beu.mocp_cli
+Out[8]: <module 'mocp_cli' from '/tmp/stuff/venv/lib/python3.5/site-packages/mocp_cli/__init__.py'>
+
+In [9]: beu.fh
+Out[9]: <module 'fs_helper' from '/tmp/stuff/venv/lib/python3.5/site-packages/fs_helper/__init__.py'>
+
+In [10]: beu.dh
+Out[10]: <module 'dt_helper' from '/tmp/stuff/venv/lib/python3.5/site-packages/dt_helper/__init__.py'>
+
+In [11]: beu.sh
+Out[11]: <module 'settings_helper' from '/tmp/stuff/venv/lib/python3.5/site-packages/settings_helper/__init__.py'>
 ```
 
 ## Updating

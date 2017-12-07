@@ -6,6 +6,9 @@ yt-helper
 parse-helper
 bg-helper
 mocp-cli
+fs-helper
+settings-helper
+dt-helper
 click
 
 # For development
