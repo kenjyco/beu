@@ -21,10 +21,14 @@ beu-update() {
     [[ ! -d "$HOME/.beu/venv" ]] && echo "$HOME/.beu/venv does not exist" && return 1
     oldpwd=$(pwd)
     cd $HOME/.beu
+    pip_args="--upgrade"
+    if [[ $(venv/bin/pip3 --version | egrep -o 'pip (\d+)' | cut -c 5-) -gt 9 ]]; then
+        pip_args=" --upgrade --upgrade-strategy=eager"
+    fi
     if [[ $(uname) == 'Darwin' ]]; then
-        venv/bin/pip3 install --upgrade beu
+        venv/bin/pip3 install $pip_args beu
     else
-        venv/bin/pip3 install --upgrade beu vlc-helper
+        venv/bin/pip3 install $pip_args beu vlc-helper
     fi
     echo -e "\nSaving latest wrappers.sh"
     curl https://raw.githubusercontent.com/kenjyco/beu/master/wrappers.sh > wrappers.sh
