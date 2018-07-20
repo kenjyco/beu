@@ -155,13 +155,13 @@ beu-ipython() {
     PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/beu-ipython "$@"
 }
 
-beu-trending() {
-    PYTHONPATH=$HOME $HOME/venv/bin/beu-trending "$@"
-}
-
-beu-related-to() {
-    PYTHONPATH=$HOME $HOME/venv/bin/beu-related-to "$@"
-}
+# beu-trending() {
+#     PYTHONPATH=$HOME $HOME/venv/bin/beu-trending "$@"
+# }
+#
+# beu-related-to() {
+#     PYTHONPATH=$HOME $HOME/venv/bin/beu-related-to "$@"
+# }
 
 if [[ $(uname) != 'Darwin' ]]; then
     vlc-repl() {
