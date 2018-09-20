@@ -6,6 +6,7 @@ def main():
     """Start ipython with `beu` imported"""
     from IPython import embed
     import beu
+    from pprint import pprint
     embed()
 
 
