@@ -15,7 +15,9 @@ if [[ -f /usr/bin/apt-get && -n "$(groups | grep sudo)" ]]; then
     sudo apt-get update || exit 1
     echo -e "\nInstalling tools"
     sudo apt-get install -y binutils-multiarch gcc g++ python3-dev python3-venv python3-pip python3-setuptools build-essential
-    sudo apt-get install -y redis-server moc libav-tools sox rtmpdump
+    sudo apt-get install -y libav-tools
+    [[ $? -ne 0 ]] && sudo apt-get install -y ffmpeg
+    sudo apt-get install -y redis-server moc sox rtmpdump
     sudo apt-get install -y vlc imagemagick wmctrl
     # Requirements for lxml
     sudo apt-get install -y libxml2 libxslt1.1 libxml2-dev libxslt1-dev zlib1g-dev
