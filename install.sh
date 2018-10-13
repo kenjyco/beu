@@ -5,9 +5,24 @@ if [[ ! -f $HOME/.zshrc && ! -f $HOME/.bashrc && ! -f $HOME/.bash_profile ]]; th
     touch $HOME/.bash_profile
 fi
 
-if [[ $(uname) == 'Darwin' && ! -f /usr/local/bin/brew ]]; then
-    echo -e "\nInstalling homebrew"
-    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" || exit 1
+if [[ $(uname) == 'Darwin' ]]; then
+    if [[ ! -f /usr/local/bin/brew ]]; then
+        echo -e "\nInstalling homebrew"
+        /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" || exit 1
+    fi
+
+    echo -e "\nGetting the list of packages already installed with brew"
+    _installed=$(brew list -1)
+    _brew_install_or_upgrade() {
+        for x in "$@"; do
+            echo "checking $x"
+            if [[ -z "$(echo -e "$_installed" | grep "$x")" ]]; then
+                brew install $x
+            else
+                brew upgrade $x 2>/dev/null
+            fi
+        done
+    }
 fi
 
 if [[ -f /usr/bin/apt-get && -n "$(groups | grep sudo)" ]]; then
@@ -26,8 +41,8 @@ if [[ -f /usr/bin/apt-get && -n "$(groups | grep sudo)" ]]; then
 elif [[ -f /usr/local/bin/brew ]]; then
     echo -e "\nUpdating homebrew package listing"
     brew update || exit 1
-    echo -e "\nInstalling tools"
-    brew install python3 moc libav sox rtmpdump libxml2 redis@3.2
+    echo -e "\nInstalling/upgrading tools"
+    _brew_install_or_upgrade python3 moc libav sox rtmpdump libxml2 redis@3.2
     if [[ -z $(brew services list | grep "redis@3.2.*started") ]]; then
         brew services start redis@3.2
     fi
