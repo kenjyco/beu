@@ -24,7 +24,10 @@ beu-update() {
     oldpwd=$(pwd)
     cd $HOME/.beu
     pip_args="--upgrade"
-    if [[ $(venv/bin/pip3 --version | egrep -o 'pip (\d+)' | cut -c 5-) -gt 9 ]]; then
+    pip_version=$(venv/bin/pip3 --version | egrep -o 'pip (\d+)' | cut -c 5-)
+    [[ -z "$pip_version" ]] && pip_version=$(venv/bin/pip3 --version | perl -pe 's/^pip\s+(\d+).*/$1/')
+    [[ -z "$pip_version" ]] && pip_version=0
+    if [[ $pip_version -gt 9 ]]; then
         pip_args=" --upgrade --upgrade-strategy=eager"
     fi
     if [[ $(uname) == 'Darwin' ]]; then
