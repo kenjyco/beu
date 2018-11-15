@@ -23,6 +23,11 @@ See the following docs:
 - <https://github.com/kenjyco/yt-helper/blob/master/README.md#usage>
 - <https://github.com/kenjyco/mocp/blob/master/README.md#usage>
 - <https://github.com/kenjyco/mocp-cli/blob/master/README.md#usage>
+- <https://github.com/kenjyco/settings-helper/blob/master/README.md>
+- <https://github.com/kenjyco/dt-helper/blob/master/README.md>
+- <https://github.com/kenjyco/fs-helper/blob/master/README.md>
+- <https://github.com/kenjyco/aws-info-helper/blob/master/README.md>
+- <https://github.com/kenjyco/vlc-helper/blob/master/README.md>
 
 ## Install
 
@@ -98,6 +103,9 @@ Out[10]: <module 'dt_helper' from '/tmp/stuff/venv/lib/python3.5/site-packages/d
 
 In [11]: beu.sh
 Out[11]: <module 'settings_helper' from '/tmp/stuff/venv/lib/python3.5/site-packages/settings_helper/__init__.py'>
+
+In [12]: beu.ah
+Out[12]: <module 'aws_info_helper' from '/tmp/stuff/venv/lib/python3.5/site-packages/aws_info_helper/__init__.py'>
 ```
 
 ## Updating
