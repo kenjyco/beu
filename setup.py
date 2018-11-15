@@ -27,6 +27,7 @@ setup(
         'fs-helper',
         'settings-helper',
         'dt-helper',
+        'aws_info_helper',
         'click',
         'ipython',
     ],

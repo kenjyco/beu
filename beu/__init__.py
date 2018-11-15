@@ -6,6 +6,8 @@ import bg_helper as bh
 import fs_helper as fh
 import dt_helper as dh
 import settings_helper as sh
+import aws_info_helper as ah
+
 try:
     import vlc_helper as vh
 except ImportError:

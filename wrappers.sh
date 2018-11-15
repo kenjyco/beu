@@ -46,7 +46,7 @@ beu-repos-list() {
     find ~ -maxdepth $level -type d -name ".git" -print0 |
     xargs -0 -I {} dirname {} 2>/dev/null |
     sort |
-    egrep '(beu|bg-helper|chloop|input-helper|mocp|parse-helper|redis-helper|vlc-helper|yt-helper|dt-helper|fs-helper|settings-helper)'
+    egrep '(beu|bg-helper|chloop|input-helper|mocp|parse-helper|redis-helper|vlc-helper|yt-helper|dt-helper|fs-helper|settings-helper|aws-info-helper)'
 }
 
 BEU_REPOS_LIST=$(beu-repos-list)
@@ -63,6 +63,7 @@ _REPO_YT_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep yt-helper$)
 _REPO_DT_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep dt-helper$)
 _REPO_FS_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep fs-helper$)
 _REPO_SETTINGS_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep settings-helper$)
+_REPO_AWS_INFO_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep aws-info-helper$)
 
 _get_beu_repos_base_dir() {
     for repo in $(beu-repos-list | tr '\n' '\0' | xargs -0); do
@@ -90,6 +91,7 @@ _beu-repos-diff() {
     [[ -d "$_REPO_DT_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/dt_helper" "$_REPO_DT_HELPER/dt_helper"
     [[ -d "$_REPO_FS_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/fs_helper" "$_REPO_FS_HELPER/fs_helper"
     [[ -d "$_REPO_SETTINGS_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/settings_helper" "$_REPO_SETTINGS_HELPER/settings_helper"
+    [[ -d "$_REPO_AWS_INFO_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/aws_info_helper" "$_REPO_AWS_INFO_HELPER/aws_info_helper"
     if [[ -s "$_REPO_BEU/wrappers.sh" ]]; then
         _output=$(diff "$HOME/.beu/wrappers.sh" "$_REPO_BEU/wrappers.sh")
         [[ -n "$_output" ]] && echo diff "$HOME/.beu/wrappers.sh" "$_REPO_BEU/wrappers.sh" && echo "$_output"
@@ -126,6 +128,10 @@ yt-download() {
 
 yt-search() {
     PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/yt-search "$@"
+}
+
+ah-info-ec2() {
+    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ah-info-ec2 "$@"
 }
 
 ph-goo() {
