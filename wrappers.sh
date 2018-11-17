@@ -134,6 +134,10 @@ ah-info-ec2() {
     PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ah-info-ec2 "$@"
 }
 
+ah-collection-update-ec2() {
+    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ah-collection-update-ec2 "$@"
+}
+
 ph-goo() {
     PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ph-goo "$@"
 }
