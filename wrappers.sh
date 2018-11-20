@@ -138,6 +138,10 @@ ah-collection-update-ec2() {
     PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ah-collection-update-ec2 "$@"
 }
 
+ah-ssh-command-ec2() {
+    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ah-ssh-command-ec2 "$@"
+}
+
 ph-goo() {
     PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ph-goo "$@"
 }
