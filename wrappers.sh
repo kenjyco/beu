@@ -100,9 +100,9 @@ _beu-repos-diff() {
 
 beu-repos-diff() {
     if [[ -n "$_use_colordiff" ]]; then
-        _beu-repos-diff 2>/dev/null | egrep -v '(Only in|No such file)' | colordiff | less -rFX
+        _beu-repos-diff 2>/dev/null | egrep -v '(Only in|No such file|Binary files)' | colordiff | less -rFX
     else
-        _beu-repos-diff 2>/dev/null | egrep -v '(Only in|No such file)' | less -FX
+        _beu-repos-diff 2>/dev/null | egrep -v '(Only in|No such file|Binary files)' | less -FX
     fi
 }
 
