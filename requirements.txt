@@ -9,7 +9,8 @@ mocp-cli
 fs-helper
 settings-helper
 dt-helper
-aws_info_helper
+jira-helper
+aws-info-helper
 click
 
 # For development
