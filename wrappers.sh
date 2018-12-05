@@ -72,6 +72,10 @@ _get_beu_repos_base_dir() {
     done | uniq -c | sort -n | tail -n 1 | egrep -o '\/.*$'
 }
 
+_lasttag() {
+    git describe --tags $(git rev-list --tags --max-count=1)
+}
+
 BEU_REPOS_DIR=$(_get_beu_repos_base_dir)
 
 which colordiff &>/dev/null
@@ -106,6 +110,37 @@ beu-repos-diff() {
     else
         _beu-repos-diff 2>/dev/null | egrep -v '(Only in|No such file|Binary files)' | less -FX
     fi
+}
+
+_beu-repos-diff-since-lasttag() {
+    oldpwd=$(pwd)
+    for repo in $(echo $BEU_REPOS_LIST | tr ' ' '\n'); do
+        cd "$repo"
+        the_diff=$(git diff $(_lasttag)..)
+        if [[ -n "$the_diff" ]]; then
+            echo -e "\n==============="
+            echo "$(pwd)"
+            echo "$the_diff"
+        fi
+    done
+    cd "$oldpwd"
+}
+
+beu-repos-diff-since-lasttag() {
+    _beu-repos-diff-since-lasttag | colordiff | less -rFX
+}
+
+beu-repos-commits-since-lasttag() {
+    oldpwd=$(pwd)
+    for repo in $(echo $BEU_REPOS_LIST | tr ' ' '\n'); do
+        cd "$repo"
+        the_log=$(git log --oneline $(_lasttag)..)
+        if [[ -n "$the_log" ]]; then
+            echo -e "\n==============="
+            echo -e "$(pwd)\n$the_log"
+        fi
+    done | less -FX
+    cd "$oldpwd"
 }
 
 beu-repos-setup() {
