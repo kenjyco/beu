@@ -143,6 +143,19 @@ beu-repos-commits-since-lasttag() {
     cd "$oldpwd"
 }
 
+beu-repos-status() {
+    oldpwd=$(pwd)
+    for repo in $(echo $BEU_REPOS_LIST | tr ' ' '\n'); do
+        cd "$repo"
+        the_status=$(git status -s)
+        if [[ -n "$the_status" ]]; then
+            echo -e "\n==============="
+            echo -e "$(pwd)\n$the_status"
+        fi
+    done | less -FX
+    cd "$oldpwd"
+}
+
 beu-repos-setup() {
     oldpwd=$(pwd)
     for repo in $(beu-repos-list | tr '\n' '\0' | xargs -0); do
