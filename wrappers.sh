@@ -81,7 +81,7 @@ BEU_REPOS_DIR=$(_get_beu_repos_base_dir)
 which colordiff &>/dev/null
 [[ $? -eq 0 ]] && _use_colordiff="yes"
 
-_beu-repos-diff() {
+_beu-repos-diff-with-site-packages() {
     [[ -z "$BEU_REPOS_LIST" ]] && return
     [[ -d "$_REPO_BEU" ]] && diff -r "$BEU_SITE_PACKAGES/beu" "$_REPO_BEU/beu"
     [[ -d "$_REPO_BG_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/bg_helper" "$_REPO_BG_HELPER/bg_helper"
@@ -104,11 +104,11 @@ _beu-repos-diff() {
     fi
 }
 
-beu-repos-diff() {
+beu-repos-diff-with-site-packages() {
     if [[ -n "$_use_colordiff" ]]; then
-        _beu-repos-diff 2>/dev/null | egrep -v '(Only in|No such file|Binary files)' | colordiff | less -rFX
+        _beu-repos-diff-with-site-packages 2>/dev/null | egrep -v '(Only in|No such file|Binary files)' | colordiff | less -rFX
     else
-        _beu-repos-diff 2>/dev/null | egrep -v '(Only in|No such file|Binary files)' | less -FX
+        _beu-repos-diff-with-site-packages 2>/dev/null | egrep -v '(Only in|No such file|Binary files)' | less -FX
     fi
 }
 
