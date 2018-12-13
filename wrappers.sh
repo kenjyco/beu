@@ -158,6 +158,13 @@ beu-repos-status() {
     cd "$oldpwd"
 }
 
+beu-repos-clean() {
+    for repo in $(echo $BEU_REPOS_LIST | tr ' ' '\n'); do
+        find "$repo" \( -name '.eggs' -o -name '*.egg-info' -o -name '__pycache__' \
+            -o -name 'build' -o -name 'dist' \) -print0 | xargs -0 rm -rfv
+    done
+}
+
 beu-repos-setup() {
     oldpwd=$(pwd)
     for repo in $(beu-repos-list | tr '\n' '\0' | xargs -0); do
