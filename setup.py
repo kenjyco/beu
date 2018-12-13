@@ -29,6 +29,7 @@ setup(
         'dt-helper',
         'jira-helper',
         'aws-info-helper',
+        'easy-workflow-manager',
         'click',
         'ipython',
     ],
