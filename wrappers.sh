@@ -229,6 +229,10 @@ ewm-new-branch-from-source() {
     PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ewm-new-branch-from-source "$@"
 }
 
+ewm-branch-from() {
+    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ewm-branch-from "$@"
+}
+
 ewm-deploy-to-qa() {
     PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ewm-deploy-to-qa "$@"
 }
@@ -243,6 +247,10 @@ ewm-clear-qa() {
 
 ewm-show-qa() {
     PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ewm-show-qa "$@"
+}
+
+ewm-repo-info() {
+    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ewm-repo-info "$@"
 }
 
 ewm-tag-release() {
