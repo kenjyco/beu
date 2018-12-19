@@ -249,6 +249,10 @@ ewm-show-qa() {
     PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ewm-show-qa "$@"
 }
 
+ewm-show-branches() {
+    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ewm-show-branches "$@"
+}
+
 ewm-repo-info() {
     PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ewm-repo-info "$@"
 }
