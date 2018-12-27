@@ -168,19 +168,19 @@ beu-repos-clean() {
 beu-repos-setup() {
     oldpwd=$(pwd)
     for repo in $(beu-repos-list | tr '\n' '\0' | xargs -0); do
-		cd "$repo"
+        cd "$repo"
         echo -e "\n--------------------------------------------------\n$repo"
-		pip_args=(--upgrade)
+        pip_args=(--upgrade)
         if [[ ! -d "venv" ]]; then
-			echo "Creating venv at $(pwd)/venv..."
-			python3 -m venv venv && venv/bin/pip3 install pip wheel ${pip_args[@]}
-		fi
-		pip_version=$(venv/bin/pip3 --version | egrep -o 'pip (\d+)' | cut -c 5-)
-		[[ -z "$pip_version" ]] && pip_version=$(venv/bin/pip3 --version | perl -pe 's/^pip\s+(\d+).*/$1/')
-		[[ -z "$pip_version" ]] && pip_version=0;
+            echo "Creating venv at $(pwd)/venv..."
+            python3 -m venv venv && venv/bin/pip3 install pip wheel ${pip_args[@]}
+        fi
+        pip_version=$(venv/bin/pip3 --version | egrep -o 'pip (\d+)' | cut -c 5-)
+        [[ -z "$pip_version" ]] && pip_version=$(venv/bin/pip3 --version | perl -pe 's/^pip\s+(\d+).*/$1/')
+        [[ -z "$pip_version" ]] && pip_version=0;
         [[ $pip_version -gt 9 ]] && pip_args=(--upgrade --upgrade-strategy eager)
-		[[ -f requirements.txt ]] && venv/bin/pip3 install -r requirements.txt ${pip_args[@]}
-		venv/bin/pip3 install ipython pdbpp ${pip_args[@]}
+        [[ -f requirements.txt ]] && venv/bin/pip3 install -r requirements.txt ${pip_args[@]}
+        venv/bin/pip3 install ipython pdbpp ${pip_args[@]}
     done
     cd "$oldpwd"
 }
