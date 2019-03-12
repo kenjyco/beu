@@ -18,3 +18,4 @@ click
 ipython
 pdbpp
 pytest
+pipdeptree
