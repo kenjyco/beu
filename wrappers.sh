@@ -43,7 +43,7 @@ beu-update() {
 beu-repos-list() {
     level=$1
     [[ ! "$level" =~ [0-9]+ ]] && level=3
-    find ~ -maxdepth $level -type d -name ".git" -print0 |
+    find ~ -maxdepth $level -path ~/Library -prune -o -type d -name ".git" -print0 |
     xargs -0 -I {} dirname {} 2>/dev/null |
     sort |
     egrep '(beu|bg-helper|chloop|input-helper|mocp|parse-helper|redis-helper|vlc-helper|yt-helper|dt-helper|fs-helper|settings-helper|jira-helper|aws-info-helper|easy-workflow-manager)'
