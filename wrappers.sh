@@ -205,9 +205,9 @@ yt-download() {
     PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/yt-download "$@"
 }
 
-yt-search() {
-    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/yt-search "$@"
-}
+# yt-search() {
+#     PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/yt-search "$@"
+# }
 
 jira-repl() {
     PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/jira-repl "$@"
@@ -261,13 +261,13 @@ ewm-tag-release() {
     PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ewm-tag-release "$@"
 }
 
-ph-goo() {
-    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ph-goo "$@"
-}
-
-ph-you() {
-    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ph-you "$@"
-}
+# ph-goo() {
+#     PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ph-goo "$@"
+# }
+#
+# ph-you() {
+#     PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ph-you "$@"
+# }
 
 ph-ddg() {
     PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ph-ddg "$@"
@@ -317,8 +317,8 @@ fi
 
 alias m=mocplayer
 alias b=beu-ipython
-alias v='yt-search'
-alias a='yt-search --audio-only'
-alias trending=beu-trending
-alias related=beu-related-to
+# alias v='yt-search'
+# alias a='yt-search --audio-only'
+# alias trending=beu-trending
+# alias related=beu-related-to
 alias pdfsearch='ph-goo --filetype pdf'
