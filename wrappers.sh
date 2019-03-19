@@ -293,6 +293,10 @@ beu-ipython() {
     PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/beu-ipython "$@"
 }
 
+ipython-in-beu() {
+    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ipython "$@"
+}
+
 # beu-trending() {
 #     PYTHONPATH=$HOME $HOME/venv/bin/beu-trending "$@"
 # }
