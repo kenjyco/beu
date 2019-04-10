@@ -225,6 +225,18 @@ ah-ssh-command-ec2() {
     PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ah-ssh-command-ec2 "$@"
 }
 
+ah-info-route53() {
+    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ah-info-route53 "$@"
+}
+
+ah-collection-update-route53() {
+    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ah-collection-update-route53 "$@"
+}
+
+ah-collection-update-s3() {
+    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ah-collection-update-s3 "$@"
+}
+
 ewm-new-branch-from-source() {
     PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ewm-new-branch-from-source "$@"
 }
