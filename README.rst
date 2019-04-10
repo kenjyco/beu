@@ -31,6 +31,8 @@ See the following docs:
 -  https://github.com/kenjyco/dt-helper/blob/master/README.md
 -  https://github.com/kenjyco/fs-helper/blob/master/README.md
 -  https://github.com/kenjyco/aws-info-helper/blob/master/README.md
+-  https://github.com/kenjyco/mongo-helper#usage
+-  https://github.com/kenjyco/sql-helper#usage
 -  https://github.com/kenjyco/vlc-helper/blob/master/README.md
 
 Install
@@ -119,6 +121,12 @@ The ``beu-ipython`` script is provided (with the ``b`` shortcut set in
 
    In [14]: beu.ewm
    Out[14]: <module 'easy_workflow_manager' from '/tmp/stuff/venv/lib/python3.5/site-packages/easy_workflow_manager/__init__.py'>
+
+   In [2]: beu.mh
+   Out[2]: <module 'mongo_helper' from '/tmp/stuff/venv/lib/python3.5/site-packages/mongo_helper/__init__.py'>
+
+   In [3]: beu.SQL
+   Out[3]: sql_helper.SQL
 
 Updating
 --------

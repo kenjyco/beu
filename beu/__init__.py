@@ -9,6 +9,7 @@ import settings_helper as sh
 import jira_helper as jh
 import aws_info_helper as ah
 import easy_workflow_manager as ewm
+import mongo_helper as mh
 
 try:
     import vlc_helper as vh
@@ -17,6 +18,7 @@ except ImportError:
 import moc
 import mocp_cli
 import chloop
+from sql_helper import SQL
 
 
 logger = fh.get_logger(__name__)

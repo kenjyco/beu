@@ -46,7 +46,7 @@ beu-repos-list() {
     find ~ -maxdepth $level -path ~/Library -prune -o -type d -name ".git" -print0 |
     xargs -0 -I {} dirname {} 2>/dev/null |
     sort |
-    egrep '(beu|bg-helper|chloop|input-helper|mocp|parse-helper|redis-helper|vlc-helper|yt-helper|dt-helper|fs-helper|settings-helper|jira-helper|aws-info-helper|easy-workflow-manager)'
+    egrep '(beu|bg-helper|chloop|input-helper|mocp|parse-helper|redis-helper|vlc-helper|yt-helper|dt-helper|fs-helper|settings-helper|jira-helper|aws-info-helper|easy-workflow-manager|mongo-helper|sql-helper)'
 }
 
 BEU_REPOS_LIST=$(beu-repos-list)
@@ -66,6 +66,8 @@ _REPO_SETTINGS_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep settings-helpe
 _REPO_JIRA_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep jira-helper$)
 _REPO_AWS_INFO_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep aws-info-helper$)
 _REPO_EASY_WORKFLOW_MANAGER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep easy-workflow-manager$)
+_REPO_MONGO_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep mongo-helper$)
+_REPO_SQL_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep sql-helper$)
 
 _get_beu_repos_base_dir() {
     for repo in $(beu-repos-list | tr '\n' '\0' | xargs -0); do
@@ -100,6 +102,8 @@ _beu-repos-diff-with-site-packages() {
     [[ -d "$_REPO_JIRA_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/jira_helper" "$_REPO_JIRA_HELPER/jira_helper"
     [[ -d "$_REPO_AWS_INFO_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/aws_info_helper" "$_REPO_AWS_INFO_HELPER/aws_info_helper"
     [[ -d "$_REPO_EASY_WORKFLOW_MANAGER" ]] && diff -r "$BEU_SITE_PACKAGES/easy_workflow_manager" "$_REPO_EASY_WORKFLOW_MANAGER/easy_workflow_manager"
+    [[ -d "$_REPO_MONGO_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/mongo_helper" "$_REPO_FS_HELPER/mongo_helper"
+    [[ -d "$_REPO_SQL_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/sql_helper" "$_REPO_FS_HELPER/sql_helper"
     if [[ -s "$_REPO_BEU/wrappers.sh" ]]; then
         _output=$(diff "$HOME/.beu/wrappers.sh" "$_REPO_BEU/wrappers.sh")
         [[ -n "$_output" ]] && echo diff "$HOME/.beu/wrappers.sh" "$_REPO_BEU/wrappers.sh" && echo "$_output"

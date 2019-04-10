@@ -30,6 +30,8 @@ setup(
         'jira-helper',
         'aws-info-helper',
         'easy-workflow-manager',
+        'mongo-helper',
+        'sql-helper',
         'click',
         'ipython',
     ],
