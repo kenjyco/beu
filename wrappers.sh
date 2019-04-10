@@ -102,8 +102,8 @@ _beu-repos-diff-with-site-packages() {
     [[ -d "$_REPO_JIRA_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/jira_helper" "$_REPO_JIRA_HELPER/jira_helper"
     [[ -d "$_REPO_AWS_INFO_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/aws_info_helper" "$_REPO_AWS_INFO_HELPER/aws_info_helper"
     [[ -d "$_REPO_EASY_WORKFLOW_MANAGER" ]] && diff -r "$BEU_SITE_PACKAGES/easy_workflow_manager" "$_REPO_EASY_WORKFLOW_MANAGER/easy_workflow_manager"
-    [[ -d "$_REPO_MONGO_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/mongo_helper" "$_REPO_FS_HELPER/mongo_helper"
-    [[ -d "$_REPO_SQL_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/sql_helper" "$_REPO_FS_HELPER/sql_helper"
+    [[ -d "$_REPO_MONGO_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/mongo_helper" "$_REPO_MONGO_HELPER/mongo_helper"
+    [[ -d "$_REPO_SQL_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/sql_helper" "$_REPO_SQL_HELPER/sql_helper"
     if [[ -s "$_REPO_BEU/wrappers.sh" ]]; then
         _output=$(diff "$HOME/.beu/wrappers.sh" "$_REPO_BEU/wrappers.sh")
         [[ -n "$_output" ]] && echo diff "$HOME/.beu/wrappers.sh" "$_REPO_BEU/wrappers.sh" && echo "$_output"
