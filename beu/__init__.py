@@ -12,11 +12,11 @@ import easy_workflow_manager as ewm
 import mongo_helper as mh
 
 try:
+    import moc
+    import mocp_cli
     import vlc_helper as vh
 except ImportError:
     pass
-import moc
-import mocp_cli
 import chloop
 from sql_helper import SQL
 

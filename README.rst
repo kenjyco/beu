@@ -52,6 +52,19 @@ Source the ``wrappers.sh`` file
 
    % source ~/.beu/wrappers.sh
 
+Mac Note
+^^^^^^^^
+
+VLC related things (vlc-helper package, system dbus, etc) are not
+installed since VLC cannot be controlled with dbus on mac
+
+Linux Cloud Note
+^^^^^^^^^^^^^^^^
+
+VLC related things (vlc-helper package, system dbus, etc) and MOC
+related things (mocp & mocp-cli packages, system moc) are not installed
+since you can’t watch videos or listen to audio.
+
 Usage
 -----
 

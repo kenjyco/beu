@@ -18,12 +18,10 @@ setup(
     install_requires=[
         'redis-helper',
         'input-helper',
-        'mocp',
         'chloop',
         'yt-helper',
         'parse-helper',
         'bg-helper',
-        'mocp-cli',
         'fs-helper',
         'settings-helper',
         'dt-helper',

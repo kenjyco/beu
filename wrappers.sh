@@ -6,6 +6,9 @@ elif [[ -d "$HOME/.beu/venv/lib/python3.7/site-packages" ]]; then
     BEU_SITE_PACKAGES="$HOME/.beu/venv/lib/python3.7/site-packages"
 fi
 
+CLOUD_INSTANCE=
+[[ -d /var/lib/cloud/instance ]] && CLOUD_INSTANCE=yes
+
 beu-site-packages() {
     cd "$BEU_SITE_PACKAGES"
 }
@@ -31,9 +34,11 @@ beu-update() {
         pip_args=(--upgrade --upgrade-strategy eager)
     fi
     if [[ $(uname) == 'Darwin' ]]; then
-        venv/bin/pip3 install ${pip_args[@]} beu
+        venv/bin/pip3 install ${pip_args[@]} beu mocp mocp-cli
+    elif [[ -z "$CLOUD_INSTANCE" ]]; then
+        venv/bin/pip3 install ${pip_args[@]} beu mocp mocp-cli vlc-helper
     else
-        venv/bin/pip3 install ${pip_args[@]} beu vlc-helper
+        venv/bin/pip3 install ${pip_args[@]} beu
     fi
     echo -e "\nSaving latest wrappers.sh"
     curl https://raw.githubusercontent.com/kenjyco/beu/master/wrappers.sh > wrappers.sh
@@ -289,10 +294,6 @@ ph-soup-explore() {
     PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ph-soup-explore "$@"
 }
 
-mocplayer() {
-    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/mocplayer "$@"
-}
-
 beu-ipython() {
     PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/beu-ipython "$@"
 }
@@ -301,7 +302,14 @@ ipython-in-beu() {
     PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ipython "$@"
 }
 
-if [[ $(uname) != 'Darwin' ]]; then
+if [[ $(uname) == 'Darwin' || -z "$CLOUD_INSTANCE" ]]; then
+    mocplayer() {
+        PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/mocplayer "$@"
+    }
+    alias m=mocplayer
+fi
+
+if [[ $(uname) != 'Darwin' && -z "$CLOUD_INSTANCE" ]]; then
     vlc-repl() {
         PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/vlc-repl "$@"
     }
@@ -311,5 +319,4 @@ if [[ $(uname) != 'Darwin' ]]; then
     }
 fi
 
-alias m=mocplayer
 alias b=beu-ipython

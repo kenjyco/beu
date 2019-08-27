@@ -25,6 +25,9 @@ if [[ $(uname) == 'Darwin' ]]; then
     }
 fi
 
+CLOUD_INSTANCE=
+[[ -d /var/lib/cloud/instance ]] && CLOUD_INSTANCE=yes
+
 if [[ -f /usr/bin/apt-get && -n "$(groups | grep sudo)" ]]; then
     echo -e "\nUpdating apt-get package listing"
     sudo apt-get update || exit 1
@@ -32,12 +35,14 @@ if [[ -f /usr/bin/apt-get && -n "$(groups | grep sudo)" ]]; then
     sudo apt-get install -y binutils-multiarch gcc g++ python3-dev python3-venv python3-pip python3-setuptools build-essential
     sudo apt-get install -y libav-tools
     [[ $? -ne 0 ]] && sudo apt-get install -y ffmpeg
-    sudo apt-get install -y redis-server moc sox rtmpdump
-    sudo apt-get install -y vlc imagemagick wmctrl
+    sudo apt-get install -y redis-server sox rtmpdump
     # Requirements for lxml
     sudo apt-get install -y libxml2 libxslt1.1 libxml2-dev libxslt1-dev zlib1g-dev
-    # Requirements for dbus-python
-    sudo apt-get install -y pkg-config libdbus-1-dev libdbus-glib-1-dev
+    if [[ -z "$CLOUD_INSTANCE" ]]; then
+        sudo apt-get install -y moc vlc imagemagick wmctrl
+        # Requirements for dbus-python
+        sudo apt-get install -y pkg-config libdbus-1-dev libdbus-glib-1-dev
+    fi
 elif [[ -f /usr/local/bin/brew ]]; then
     echo -e "\nUpdating homebrew package listing"
     brew update || exit 1
@@ -57,9 +62,11 @@ cd $HOME/.beu || exit 1
 echo -e "\nCreating $HOME/.beu/venv virtual environment and installing"
 python3 -m venv venv && venv/bin/pip3 install --upgrade pip wheel
 if [[ $(uname) == 'Darwin' ]]; then
-    venv/bin/pip3 install beu
+    venv/bin/pip3 install beu mocp mocp-cli
+elif [[ -z "$CLOUD_INSTANCE" ]]; then
+    venv/bin/pip3 install beu mocp mocp-cli vlc-helper
 else
-    venv/bin/pip3 install beu vlc-helper
+    venv/bin/pip3 install beu
 fi
 echo -e "\nSaving latest wrappers.sh"
 curl https://raw.githubusercontent.com/kenjyco/beu/master/wrappers.sh > wrappers.sh
