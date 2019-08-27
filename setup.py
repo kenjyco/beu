@@ -43,8 +43,6 @@ setup(
     entry_points={
         'console_scripts': [
             'beu-ipython=beu.scripts.shell:main',
-            'beu-trending=beu.scripts.trending:main',
-            'beu-related-to=beu.scripts.related_to:main',
         ],
     },
     classifiers=[

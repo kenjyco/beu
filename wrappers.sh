@@ -313,14 +313,6 @@ ipython-in-beu() {
     PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ipython "$@"
 }
 
-# beu-trending() {
-#     PYTHONPATH=$HOME $HOME/venv/bin/beu-trending "$@"
-# }
-#
-# beu-related-to() {
-#     PYTHONPATH=$HOME $HOME/venv/bin/beu-related-to "$@"
-# }
-
 if [[ $(uname) != 'Darwin' ]]; then
     vlc-repl() {
         PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/vlc-repl "$@"
@@ -335,6 +327,4 @@ alias m=mocplayer
 alias b=beu-ipython
 # alias v='yt-search'
 # alias a='yt-search --audio-only'
-# alias trending=beu-trending
-# alias related=beu-related-to
 alias pdfsearch='ph-goo --filetype pdf'
