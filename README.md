@@ -17,19 +17,19 @@ See the following docs:
 
 - <https://github.com/kenjyco/input-helper/blob/master/README.md#usage>
 - <https://github.com/kenjyco/bg-helper/blob/master/README.md#usage>
+- <https://github.com/kenjyco/settings-helper/blob/master/README.md>
 - <https://github.com/kenjyco/redis-helper/blob/master/README.md#intro>
 - <https://github.com/kenjyco/chloop/blob/master/README.md#usage>
 - <https://github.com/kenjyco/parse-helper/blob/master/README.md#usage>
 - <https://github.com/kenjyco/yt-helper/blob/master/README.md#usage>
-- <https://github.com/kenjyco/mocp/blob/master/README.md#usage>
-- <https://github.com/kenjyco/mocp-cli/blob/master/README.md#usage>
-- <https://github.com/kenjyco/settings-helper/blob/master/README.md>
 - <https://github.com/kenjyco/dt-helper/blob/master/README.md>
 - <https://github.com/kenjyco/fs-helper/blob/master/README.md>
 - <https://github.com/kenjyco/aws-info-helper/blob/master/README.md>
 - <https://github.com/kenjyco/mongo-helper#usage>
 - <https://github.com/kenjyco/sql-helper#usage>
-- <https://github.com/kenjyco/vlc-helper/blob/master/README.md>
+- <https://github.com/kenjyco/mocp/blob/master/README.md#usage>
+- <https://github.com/kenjyco/mocp-cli/blob/master/README.md#usage>
+- <https://github.com/kenjyco/vlc-helper/blob/master/README.md#usage>
 
 ## Install
 
