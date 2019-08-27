@@ -67,70 +67,71 @@ The `beu-ipython` script is provided (with the `b` shortcut set in
 % b --help
 Usage: beu-ipython [OPTIONS]
 
-  Start ipython with `beu` imported
+  Start ipython with `beu` and `pprint` imported
 
 Options:
-  --help  Show this message and exit.
+  --no-vi      Do not use vi editing mode
+  --no-colors  Do not use colors / syntax highlighting
+  --help       Show this message and exit.
 ```
 
 ```
 % b
-Python 3.5.2 (default, Nov 17 2016, 17:05:23)
+Python 3.6.8 (default, Jan 14 2019, 17:05:23)
 Type "copyright", "credits" or "license" for more information.
 
-IPython 5.3.0 -- An enhanced Interactive Python.
-?         -> Introduction and overview of IPython's features.
-%quickref -> Quick reference.
-help      -> Python's own help system.
-object?   -> Details about 'object', use 'object??' for extra details.
+IPython 7.6.0 -- An enhanced Interactive Python. Type '?' for help.
 
 In [1]: beu.ih
-Out[1]: <module 'input_helper' from '/tmp/stuff/venv/lib/python3.5/site-packages/input_helper/__init__.py'>
+Out[1]: <module 'input_helper' from '/tmp/stuff/venv/lib/python3.6/site-packages/input_helper/__init__.py'>
 
 In [2]: beu.bh
-Out[2]: <module 'bg_helper' from '/tmp/stuff/venv/lib/python3.5/site-packages/bg_helper/__init__.py'>
+Out[2]: <module 'bg_helper' from '/tmp/stuff/venv/lib/python3.6/site-packages/bg_helper/__init__.py'>
 
 In [3]: beu.rh
-Out[3]: <module 'redis_helper' from '/tmp/stuff/venv/lib/python3.5/site-packages/redis_helper/__init__.py'>
+Out[3]: <module 'redis_helper' from '/tmp/stuff/venv/lib/python3.6/site-packages/redis_helper/__init__.py'>
 
 In [4]: beu.chloop
-Out[4]: <module 'chloop' from '/tmp/stuff/venv/lib/python3.5/site-packages/chloop/__init__.py'>
+Out[4]: <module 'chloop' from '/tmp/stuff/venv/lib/python3.6/site-packages/chloop/__init__.py'>
 
 In [5]: beu.ph
-Out[5]: <module 'parse_helper' from '/tmp/stuff/venv/lib/python3.5/site-packages/parse_helper/__init__.py'>
+Out[5]: <module 'parse_helper' from '/tmp/stuff/venv/lib/python3.6/site-packages/parse_helper/__init__.py'>
 
 In [6]: beu.yh
-Out[6]: <module 'yt_helper' from '/tmp/stuff/venv/lib/python3.5/site-packages/yt_helper/__init__.py'>
+Out[6]: <module 'yt_helper' from '/tmp/stuff/venv/lib/python3.6/site-packages/yt_helper/__init__.py'>
 
-In [7]: beu.moc
-Out[7]: <module 'moc' from '/tmp/stuff/venv/lib/python3.5/site-packages/moc/__init__.py'>
+In [7]: beu.fh
+Out[7]: <module 'fs_helper' from '/tmp/stuff/venv/lib/python3.6/site-packages/fs_helper/__init__.py'>
 
-In [8]: beu.mocp_cli
-Out[8]: <module 'mocp_cli' from '/tmp/stuff/venv/lib/python3.5/site-packages/mocp_cli/__init__.py'>
+In [8]: beu.dh
+Out[8]: <module 'dt_helper' from '/tmp/stuff/venv/lib/python3.6/site-packages/dt_helper/__init__.py'>
 
-In [9]: beu.fh
-Out[9]: <module 'fs_helper' from '/tmp/stuff/venv/lib/python3.5/site-packages/fs_helper/__init__.py'>
+In [9]: beu.sh
+Out[9]: <module 'settings_helper' from '/tmp/stuff/venv/lib/python3.6/site-packages/settings_helper/__init__.py'>
 
-In [10]: beu.dh
-Out[10]: <module 'dt_helper' from '/tmp/stuff/venv/lib/python3.5/site-packages/dt_helper/__init__.py'>
+In [10]: beu.ah
+Out[10]: <module 'aws_info_helper' from '/tmp/stuff/venv/lib/python3.6/site-packages/aws_info_helper/__init__.py'>
 
-In [11]: beu.sh
-Out[11]: <module 'settings_helper' from '/tmp/stuff/venv/lib/python3.5/site-packages/settings_helper/__init__.py'>
+In [11]: beu.jh
+Out[11]: <module 'jira_helper' from '/tmp/stuff/venv/lib/python3.6//site-packages/jira_helper/__init__.py'>
 
-In [12]: beu.ah
-Out[12]: <module 'aws_info_helper' from '/tmp/stuff/venv/lib/python3.5/site-packages/aws_info_helper/__init__.py'>
+In [12]: beu.ewm
+Out[12]: <module 'easy_workflow_manager' from '/tmp/stuff/venv/lib/python3.6/site-packages/easy_workflow_manager/__init__.py'>
 
-In [13]: beu.jh
-Out[13]: <module 'jira_helper' from '/tmp/stuff/venv/lib/python3.5//site-packages/jira_helper/__init__.py'>
+In [13]: beu.mh
+Out[13]: <module 'mongo_helper' from '/tmp/stuff/venv/lib/python3.6/site-packages/mongo_helper/__init__.py'>
 
-In [14]: beu.ewm
-Out[14]: <module 'easy_workflow_manager' from '/tmp/stuff/venv/lib/python3.5/site-packages/easy_workflow_manager/__init__.py'>
+In [14]: beu.SQL
+Out[14]: sql_helper.SQL
 
-In [2]: beu.mh
-Out[2]: <module 'mongo_helper' from '/tmp/stuff/venv/lib/python3.5/site-packages/mongo_helper/__init__.py'>
+In [15]: beu.moc
+Out[15]: <module 'moc' from '/tmp/stuff/venv/lib/python3.6/site-packages/moc/__init__.py'>
 
-In [3]: beu.SQL
-Out[3]: sql_helper.SQL
+In [16]: beu.mocp_cli
+Out[16]: <module 'mocp_cli' from '/tmp/stuff/venv/lib/python3.6/site-packages/mocp_cli/__init__.py'>
+
+In [17]: beu.vh
+Out[17]: <module 'vlc_helper' from '/tmp/stuff/venv/lib/python3.6/site-packages/vlc_helper/__init__.py'>
 ```
 
 ## Updating
