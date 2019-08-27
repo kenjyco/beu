@@ -135,11 +135,8 @@ Use `beu-update` to get the latest changes
 You should be able to pass the `--help` option to any of the command/shortcuts
 listed below for more info.
 
-- Use `a` (`yt-search --audio-only`) to search for and download audio files
-- Use `v` (`yt-search`) to search for and download video files
 - Use `m` (`mocplayer`) to start the REPL to control audio playback and making
   annotations
-- Use `pdfsearch` (`ph-goo --filetype pdf`) to search for and download PDF files
 - Use `rh-shell` to explore Collection objects
 
 > Note: see the [wrappers.sh](https://raw.githubusercontent.com/kenjyco/beu/master/wrappers.sh)
