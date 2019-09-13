@@ -31,7 +31,6 @@ setup(
         'mongo-helper',
         'sql-helper',
         'click',
-        'ipython',
     ],
     include_package_data=True,
     package_dir={'': '.'},

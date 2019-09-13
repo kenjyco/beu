@@ -62,11 +62,11 @@ cd $HOME/.beu || exit 1
 echo -e "\nCreating $HOME/.beu/venv virtual environment and installing"
 python3 -m venv venv && venv/bin/pip3 install --upgrade pip wheel
 if [[ $(uname) == 'Darwin' ]]; then
-    venv/bin/pip3 install beu mocp mocp-cli
+    venv/bin/pip3 install beu ipython mocp mocp-cli
 elif [[ -z "$CLOUD_INSTANCE" ]]; then
-    venv/bin/pip3 install beu mocp mocp-cli vlc-helper
+    venv/bin/pip3 install beu ipython mocp mocp-cli vlc-helper
 else
-    venv/bin/pip3 install beu
+    venv/bin/pip3 install beu ipython
 fi
 echo -e "\nSaving latest wrappers.sh"
 curl https://raw.githubusercontent.com/kenjyco/beu/master/wrappers.sh > wrappers.sh
