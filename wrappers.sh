@@ -145,6 +145,28 @@ beu-repos-diff-since-lasttag() {
     fi
 }
 
+_beu-repos-diff() {
+    oldpwd=$(pwd)
+    for repo in $(echo $BEU_REPOS_LIST | tr ' ' '\n'); do
+        cd "$repo"
+        the_diff=$(git diff)
+        if [[ -n "$the_diff" ]]; then
+            echo -e "\n==============="
+            echo "$(pwd)"
+            echo "$the_diff"
+        fi
+    done
+    cd "$oldpwd"
+}
+
+beu-repos-diff() {
+    if [[ -n "$_use_colordiff" ]]; then
+        _beu-repos-diff | colordiff | less -rFX
+    else
+        _beu-repos-diff | less -FX
+    fi
+}
+
 beu-repos-commits-since-lasttag() {
     oldpwd=$(pwd)
     for repo in $(echo $BEU_REPOS_LIST | tr ' ' '\n'); do
