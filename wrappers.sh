@@ -138,7 +138,11 @@ _beu-repos-diff-since-lasttag() {
 }
 
 beu-repos-diff-since-lasttag() {
-    _beu-repos-diff-since-lasttag | colordiff | less -rFX
+    if [[ -n "$_use_colordiff" ]]; then
+        _beu-repos-diff-since-lasttag | colordiff | less -rFX
+    else
+        _beu-repos-diff-since-lasttag | less -FX
+    fi
 }
 
 beu-repos-commits-since-lasttag() {
