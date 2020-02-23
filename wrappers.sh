@@ -57,7 +57,7 @@ beu-update() {
 
 beu-repos-list() {
     level=$1
-    [[ ! "$level" =~ [0-9]+ ]] && level=3
+    [[ ! "$level" =~ [0-9]+ ]] && level=4
     find ~ -maxdepth $level -path ~/Library -prune -o -type d -name ".git" -print0 |
     xargs -0 -I {} dirname {} 2>/dev/null |
     sort |
