@@ -203,6 +203,109 @@ beu-repos-status() {
     cd "$oldpwd"
 }
 
+# -------------------- Wrappers to tools in ~/.beu/venv/bin  --------------------
+
+ah-collection-update-ec2() {
+    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ah-collection-update-ec2 "$@"
+}
+
+ah-collection-update-route53() {
+    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ah-collection-update-route53 "$@"
+}
+
+ah-collection-update-s3() {
+    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ah-collection-update-s3 "$@"
+}
+
+ah-info-ec2() {
+    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ah-info-ec2 "$@"
+}
+
+ah-info-route53() {
+    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ah-info-route53 "$@"
+}
+
+ah-ssh-command-ec2() {
+    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ah-ssh-command-ec2 "$@"
+}
+
+beu-ipython() {
+    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/beu-ipython "$@"
+}
+
+alias b=beu-ipython
+
+ipython-in-beu() {
+    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ipython "$@"
+}
+
+ewm-branch-from() {
+    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ewm-branch-from "$@"
+}
+
+ewm-clear-qa() {
+    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ewm-clear-qa "$@"
+}
+
+ewm-deploy-to-qa() {
+    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ewm-deploy-to-qa "$@"
+}
+
+ewm-new-branch-from-source() {
+    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ewm-new-branch-from-source "$@"
+}
+
+ewm-qa-to-source() {
+    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ewm-qa-to-source "$@"
+}
+
+ewm-repo-info() {
+    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ewm-repo-info "$@"
+}
+
+ewm-show-branches() {
+    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ewm-show-branches "$@"
+}
+
+ewm-show-qa() {
+    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ewm-show-qa "$@"
+}
+
+ewm-tag-release() {
+    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ewm-tag-release "$@"
+}
+
+ewm-update-branch() {
+    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ewm-update-branch "$@"
+}
+
+jira-repl() {
+    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/jira-repl "$@"
+}
+
+if [[ ($(uname) == "Darwin" || -z "$CLOUD_INSTANCE") && ! $(uname) =~ "MINGW" ]]; then
+    mocplayer() {
+        PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/mocplayer "$@"
+    }
+    alias m=mocplayer
+fi
+
+ph-ddg() {
+    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ph-ddg "$@"
+}
+
+ph-download-file-as() {
+    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ph-download-file-as "$@"
+}
+
+ph-download-files() {
+    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ph-download-files "$@"
+}
+
+ph-soup-explore() {
+    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ph-soup-explore "$@"
+}
+
 rh-download-examples() {
     PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/rh-download-examples "$@"
 }
@@ -219,105 +322,6 @@ rh-shell() {
     PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/rh-shell "$@"
 }
 
-yt-download() {
-    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/yt-download "$@"
-}
-
-jira-repl() {
-    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/jira-repl "$@"
-}
-
-ah-info-ec2() {
-    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ah-info-ec2 "$@"
-}
-
-ah-collection-update-ec2() {
-    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ah-collection-update-ec2 "$@"
-}
-
-ah-ssh-command-ec2() {
-    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ah-ssh-command-ec2 "$@"
-}
-
-ah-info-route53() {
-    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ah-info-route53 "$@"
-}
-
-ah-collection-update-route53() {
-    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ah-collection-update-route53 "$@"
-}
-
-ah-collection-update-s3() {
-    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ah-collection-update-s3 "$@"
-}
-
-ewm-new-branch-from-source() {
-    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ewm-new-branch-from-source "$@"
-}
-
-ewm-branch-from() {
-    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ewm-branch-from "$@"
-}
-
-ewm-deploy-to-qa() {
-    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ewm-deploy-to-qa "$@"
-}
-
-ewm-qa-to-source() {
-    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ewm-qa-to-source "$@"
-}
-
-ewm-clear-qa() {
-    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ewm-clear-qa "$@"
-}
-
-ewm-show-qa() {
-    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ewm-show-qa "$@"
-}
-
-ewm-show-branches() {
-    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ewm-show-branches "$@"
-}
-
-ewm-repo-info() {
-    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ewm-repo-info "$@"
-}
-
-ewm-tag-release() {
-    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ewm-tag-release "$@"
-}
-
-ph-ddg() {
-    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ph-ddg "$@"
-}
-
-ph-download-files() {
-    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ph-download-files "$@"
-}
-
-ph-download-file-as() {
-    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ph-download-file-as "$@"
-}
-
-ph-soup-explore() {
-    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ph-soup-explore "$@"
-}
-
-beu-ipython() {
-    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/beu-ipython "$@"
-}
-
-ipython-in-beu() {
-    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ipython "$@"
-}
-
-if [[ ($(uname) == "Darwin" || -z "$CLOUD_INSTANCE") && ! $(uname) =~ "MINGW" ]]; then
-    mocplayer() {
-        PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/mocplayer "$@"
-    }
-    alias m=mocplayer
-fi
-
 if [[ $(uname) != "Darwin" && -z "$CLOUD_INSTANCE" && ! $(uname) =~ "MINGW" ]]; then
     vlc-repl() {
         PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/vlc-repl "$@"
@@ -328,4 +332,6 @@ if [[ $(uname) != "Darwin" && -z "$CLOUD_INSTANCE" && ! $(uname) =~ "MINGW" ]]; 
     }
 fi
 
-alias b=beu-ipython
+yt-download() {
+    PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/yt-download "$@"
+}
