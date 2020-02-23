@@ -6,16 +6,29 @@ DIR="$(cd "$(dirname "$0")" && pwd)"
 CLOUD_INSTANCE=
 [[ -d /var/lib/cloud/instance ]] && CLOUD_INSTANCE=yes
 
-[[ ! -d "venv" ]] && python3 -m venv venv && venv/bin/pip3 install --upgrade pip wheel
-pip_args=(--upgrade)
-pip_version=$(venv/bin/pip3 --version | egrep -o 'pip (\d+)' | cut -c 5-)
-[[ -z "$pip_version" ]] && pip_version=$(venv/bin/pip3 --version | perl -pe 's/^pip\s+(\d+).*/$1/')
-[[ -z "$pip_version" ]] && pip_version=0
-[[ $pip_version -gt 9 ]] && pip_args=(--upgrade --upgrade-strategy eager)
-venv/bin/pip3 install -r requirements.txt ${pip_args[@]}
-    venv/bin/pip3 install ${pip_args[@]} mocp mocp-cli
-if [[ $(uname) == "Darwin" ]]; then
-elif [[ -z "$CLOUD_INSTANCE" ]]; then
-    venv/bin/pip3 install ${pip_args[@]} mocp mocp-cli vlc-helper
+cd "$DIR"
+pip_args=(--no-warn-script-location --upgrade --upgrade-strategy eager)
+PYTHON="python3"
+PIP="venv/bin/pip3"
+if [[ $(uname) =~ "MINGW" ]]; then
+    PYTHON="python"
+    PIP="venv/Scripts/pip"
 fi
-venv/bin/python3 setup.py develop
+if [[ "$1" == "clean" ]]; then
+    rm -rf venv
+    find . \( -name __pycache__ -o -name '.eggs' -o -name '*.egg-info' -o -name 'build' -o -name 'dist' \) -print0 |
+        xargs -0 rm -rf
+fi
+[[ ! -d venv ]] && $PYTHON -m venv venv
+PYTHON=$(dirname $PIP)/python
+$PYTHON -m pip install --upgrade pip wheel
+$PIP install -r requirements.txt ${pip_args[@]}
+$PYTHON setup.py develop
+
+if [[ $(uname) =~ "MINGW" ]]; then
+    $PIP install ${pip_args[@]} ipython
+elif [[ $(uname) == "Darwin" ]]; then
+    $PIP install ${pip_args[@]} ipython pdbpp mocp mocp-cli
+elif [[ -z "$CLOUD_INSTANCE" ]]; then
+    $PIP install ${pip_args[@]} ipython pdbpp mocp mocp-cli vlc-helper
+fi

@@ -18,6 +18,8 @@ beu-reinstall() {
     [[ ! -d "$HOME/.beu" ]] && mkdir -p "$HOME/.beu"
     cd "$HOME/.beu"
     rm -rf venv 2>/dev/null
+    find . \( -name '__pycache__' -o -name '.eggs' -o -name '*.egg-info' -o -name 'build' -o -name 'dist' \) -print0 |
+        xargs -0 rm -rf
     curl -o- https://raw.githubusercontent.com/kenjyco/beu/master/install.sh | bash
     cd "$oldpwd"
 }
@@ -26,20 +28,24 @@ beu-update() {
     [[ ! -d "$HOME/.beu/venv" ]] && echo "$HOME/.beu/venv does not exist" && return 1
     oldpwd=$(pwd)
     cd $HOME/.beu
-    pip_args=(--upgrade)
-    pip_version=$(venv/bin/pip3 --version | egrep -o 'pip (\d+)' | cut -c 5-)
-    [[ -z "$pip_version" ]] && pip_version=$(venv/bin/pip3 --version | perl -pe 's/^pip\s+(\d+).*/$1/')
-    [[ -z "$pip_version" ]] && pip_version=0
-    if [[ $pip_version -gt 9 ]]; then
-        pip_args=(--upgrade --upgrade-strategy eager)
+    pip_args=(--no-warn-script-location --upgrade --upgrade-strategy eager)
+    PYTHON="python3"
+    PIP="venv/bin/pip3"
+    if [[ $(uname) =~ "MINGW" ]]; then
+        PYTHON="python"
+        PIP="venv/Scripts/pip"
     fi
-    if [[ $(uname) == "Darwin" ]]; then
-        venv/bin/pip3 install ${pip_args[@]} beu mocp mocp-cli
+    PYTHON=$(dirname $PIP)/python
+    $PYTHON -m pip install --upgrade pip wheel
+
+    if [[ $(uname) =~ "MINGW" ]]; then
+        $PIP install ${pip_args[@]} beu ipython
+    elif [[ $(uname) == "Darwin" ]]; then
+        $PIP install ${pip_args[@]} beu ipython mocp mocp-cli
     elif [[ -z "$CLOUD_INSTANCE" ]]; then
-        venv/bin/pip3 install ${pip_args[@]} beu mocp mocp-cli vlc-helper
-    else
-        venv/bin/pip3 install ${pip_args[@]} beu
+        $PIP install ${pip_args[@]} beu ipython mocp mocp-cli vlc-helper
     fi
+
     echo -e "\nSaving latest wrappers.sh"
     curl https://raw.githubusercontent.com/kenjyco/beu/master/wrappers.sh > wrappers.sh
     cd "$oldpwd"
@@ -193,33 +199,6 @@ beu-repos-status() {
     cd "$oldpwd"
 }
 
-beu-repos-clean() {
-    for repo in $(echo $BEU_REPOS_LIST | tr ' ' '\n'); do
-        find "$repo" \( -name '.eggs' -o -name '*.egg-info' -o -name '__pycache__' \
-            -o -name 'build' -o -name 'dist' \) -print0 | xargs -0 rm -rfv
-    done
-}
-
-beu-repos-setup() {
-    oldpwd=$(pwd)
-    for repo in $(beu-repos-list | tr '\n' '\0' | xargs -0); do
-        cd "$repo"
-        echo -e "\n--------------------------------------------------\n$repo"
-        pip_args=(--upgrade)
-        if [[ ! -d "venv" ]]; then
-            echo "Creating venv at $(pwd)/venv..."
-            python3 -m venv venv && venv/bin/pip3 install pip wheel ${pip_args[@]}
-        fi
-        pip_version=$(venv/bin/pip3 --version | egrep -o 'pip (\d+)' | cut -c 5-)
-        [[ -z "$pip_version" ]] && pip_version=$(venv/bin/pip3 --version | perl -pe 's/^pip\s+(\d+).*/$1/')
-        [[ -z "$pip_version" ]] && pip_version=0;
-        [[ $pip_version -gt 9 ]] && pip_args=(--upgrade --upgrade-strategy eager)
-        [[ -f requirements.txt ]] && venv/bin/pip3 install -r requirements.txt ${pip_args[@]}
-        venv/bin/pip3 install ipython pdbpp ${pip_args[@]}
-    done
-    cd "$oldpwd"
-}
-
 rh-download-examples() {
     PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/rh-download-examples "$@"
 }
@@ -328,14 +307,14 @@ ipython-in-beu() {
     PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ipython "$@"
 }
 
-if [[ $(uname) == "Darwin" || -z "$CLOUD_INSTANCE" ]]; then
+if [[ ($(uname) == "Darwin" || -z "$CLOUD_INSTANCE") && ! $(uname) =~ "MINGW" ]]; then
     mocplayer() {
         PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/mocplayer "$@"
     }
     alias m=mocplayer
 fi
 
-if [[ $(uname) != "Darwin" && -z "$CLOUD_INSTANCE" ]]; then
+if [[ $(uname) != "Darwin" && -z "$CLOUD_INSTANCE" && ! $(uname) =~ "MINGW" ]]; then
     vlc-repl() {
         PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/vlc-repl "$@"
     }
