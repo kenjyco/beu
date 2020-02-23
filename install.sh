@@ -5,7 +5,7 @@ if [[ ! -f $HOME/.zshrc && ! -f $HOME/.bashrc && ! -f $HOME/.bash_profile ]]; th
     touch $HOME/.bash_profile
 fi
 
-if [[ $(uname) == 'Darwin' ]]; then
+if [[ $(uname) == "Darwin" ]]; then
     if [[ ! -f /usr/local/bin/brew ]]; then
         echo -e "\nInstalling homebrew"
         /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" || exit 1
@@ -61,8 +61,8 @@ fi
 cd $HOME/.beu || exit 1
 echo -e "\nCreating $HOME/.beu/venv virtual environment and installing"
 python3 -m venv venv && venv/bin/pip3 install --upgrade pip wheel
-if [[ $(uname) == 'Darwin' ]]; then
     venv/bin/pip3 install beu ipython mocp mocp-cli
+if [[ $(uname) == "Darwin" ]]; then
 elif [[ -z "$CLOUD_INSTANCE" ]]; then
     venv/bin/pip3 install beu ipython mocp mocp-cli vlc-helper
 else

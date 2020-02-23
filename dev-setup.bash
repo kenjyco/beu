@@ -13,8 +13,8 @@ pip_version=$(venv/bin/pip3 --version | egrep -o 'pip (\d+)' | cut -c 5-)
 [[ -z "$pip_version" ]] && pip_version=0
 [[ $pip_version -gt 9 ]] && pip_args=(--upgrade --upgrade-strategy eager)
 venv/bin/pip3 install -r requirements.txt ${pip_args[@]}
-if [[ $(uname) == 'Darwin' ]]; then
     venv/bin/pip3 install ${pip_args[@]} mocp mocp-cli
+if [[ $(uname) == "Darwin" ]]; then
 elif [[ -z "$CLOUD_INSTANCE" ]]; then
     venv/bin/pip3 install ${pip_args[@]} mocp mocp-cli vlc-helper
 fi

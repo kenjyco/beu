@@ -33,7 +33,7 @@ beu-update() {
     if [[ $pip_version -gt 9 ]]; then
         pip_args=(--upgrade --upgrade-strategy eager)
     fi
-    if [[ $(uname) == 'Darwin' ]]; then
+    if [[ $(uname) == "Darwin" ]]; then
         venv/bin/pip3 install ${pip_args[@]} beu mocp mocp-cli
     elif [[ -z "$CLOUD_INSTANCE" ]]; then
         venv/bin/pip3 install ${pip_args[@]} beu mocp mocp-cli vlc-helper
@@ -328,14 +328,14 @@ ipython-in-beu() {
     PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/ipython "$@"
 }
 
-if [[ $(uname) == 'Darwin' || -z "$CLOUD_INSTANCE" ]]; then
+if [[ $(uname) == "Darwin" || -z "$CLOUD_INSTANCE" ]]; then
     mocplayer() {
         PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/mocplayer "$@"
     }
     alias m=mocplayer
 fi
 
-if [[ $(uname) != 'Darwin' && -z "$CLOUD_INSTANCE" ]]; then
+if [[ $(uname) != "Darwin" && -z "$CLOUD_INSTANCE" ]]; then
     vlc-repl() {
         PYTHONPATH=$HOME/.beu $HOME/.beu/venv/bin/vlc-repl "$@"
     }
