@@ -55,13 +55,39 @@ beu-update() {
     cd "$oldpwd"
 }
 
+BEU_REPO_NAMES=(
+    aws-info-helper
+    beu
+    bg-helper
+    chloop
+    dt-helper
+    easy-workflow-manager
+    fs-helper
+    input-helper
+    jira-helper
+    mocp
+    mongo-helper
+    parse-helper
+    redis-helper
+    settings-helper
+    sql-helper
+    vlc-helper
+    yt-helper
+)
+
+beu-clone-all() {
+    for repo in "${BEU_REPO_NAMES[@]}"; do
+        git clone https://github.com/kenjyco/$repo ~/.beu/cloned_repos/$repo
+    done
+}
+
 beu-repos-list() {
     level=$1
     [[ ! "$level" =~ [0-9]+ ]] && level=4
-    find ~ -maxdepth $level -path ~/Library -prune -o -type d -name ".git" -print0 |
+    find ~ -maxdepth $level \( -path ~/Library -o -path ~/.beu \) -prune -o -type d -name ".git" -print0 |
     xargs -0 -I {} dirname {} 2>/dev/null |
     sort |
-    egrep '(aws-info-helper|beu|bg-helper|chloop|dt-helper|easy-workflow-manager|fs-helper|input-helper|jira-helper|mocp|mongo-helper|parse-helper|redis-helper|settings-helper|sql-helper|vlc-helper|yt-helper)'
+    egrep $(echo ${BEU_REPO_NAMES[@]} | tr ' ' '|')
 }
 
 BEU_REPOS_LIST=$(beu-repos-list)
