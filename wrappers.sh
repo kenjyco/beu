@@ -72,6 +72,7 @@ BEU_REPO_NAMES=(
     settings-helper
     sql-helper
     vlc-helper
+    webclient-helper
     yt-helper
 )
 
@@ -108,6 +109,7 @@ _REPO_REDIS_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep redis-helper$)
 _REPO_SETTINGS_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep settings-helper$)
 _REPO_SQL_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep sql-helper$)
 _REPO_VLC_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep vlc-helper$)
+_REPO_WEBCLIENT_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep webclient-helper$)
 _REPO_YT_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep yt-helper$)
 
 _get_beu_repos_base_dir() {
@@ -144,6 +146,7 @@ _beu-repos-diff-with-site-packages() {
     [[ -d "$_REPO_SETTINGS_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/settings_helper" "$_REPO_SETTINGS_HELPER/settings_helper"
     [[ -d "$_REPO_SQL_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/sql_helper" "$_REPO_SQL_HELPER/sql_helper"
     [[ -d "$_REPO_VLC_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/vlc_helper" "$_REPO_VLC_HELPER/vlc_helper"
+    [[ -d "$_REPO_WEBCLIENT_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/webclient_helper" "$_REPO_VLC_HELPER/webclient_helper"
     [[ -d "$_REPO_YT_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/yt_helper" "$_REPO_YT_HELPER/yt_helper"
     if [[ -s "$_REPO_BEU/wrappers.sh" ]]; then
         _output=$(diff "$HOME/.beu/wrappers.sh" "$_REPO_BEU/wrappers.sh")

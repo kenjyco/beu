@@ -12,4 +12,5 @@ parse-helper
 redis-helper
 settings-helper
 sql-helper
+webclient-helper
 yt-helper

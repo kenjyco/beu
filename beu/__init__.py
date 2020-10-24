@@ -10,6 +10,7 @@ import jira_helper as jh
 import aws_info_helper as ah
 import easy_workflow_manager as ewm
 import mongo_helper as mh
+import webclient_helper as wh
 
 try:
     import moc

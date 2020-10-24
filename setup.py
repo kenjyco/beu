@@ -30,6 +30,7 @@ setup(
         'redis-helper',
         'settings-helper',
         'sql-helper',
+        'webclient-helper',
         'yt-helper',
     ],
     include_package_data=True,

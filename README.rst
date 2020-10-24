@@ -29,6 +29,7 @@ See the following docs:
 -  https://github.com/kenjyco/dt-helper/blob/master/README.md
 -  https://github.com/kenjyco/fs-helper/blob/master/README.md
 -  https://github.com/kenjyco/aws-info-helper/blob/master/README.md
+-  https://github.com/kenjyco/webclient-helper/blob/master/README.md
 -  https://github.com/kenjyco/mongo-helper#usage
 -  https://github.com/kenjyco/sql-helper#usage
 -  https://github.com/kenjyco/mocp/blob/master/README.md#usage
@@ -141,6 +142,9 @@ The ``beu-ipython`` script is provided (with the ``b`` shortcut set in
 
    In [17]: beu.vh
    Out[17]: <module 'vlc_helper' from '/tmp/stuff/venv/lib/python3.6/site-packages/vlc_helper/__init__.py'>
+
+   In [18]: beu.wh
+   Out[18]: <module 'webclient_helper' from '/tmp/stuff/venv/lib/python3.6/site-packages/webclient_helper/__init__.py'>
 
 Updating
 --------
