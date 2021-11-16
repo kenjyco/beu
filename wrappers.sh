@@ -6,6 +6,8 @@ elif [[ -d "$HOME/.beu/venv/lib/python3.7/site-packages" ]]; then
     BEU_SITE_PACKAGES="$HOME/.beu/venv/lib/python3.7/site-packages"
 elif [[ -d "$HOME/.beu/venv/lib/python3.8/site-packages" ]]; then
     BEU_SITE_PACKAGES="$HOME/.beu/venv/lib/python3.8/site-packages"
+elif [[ -d "$HOME/.beu/venv/lib/python3.9/site-packages" ]]; then
+    BEU_SITE_PACKAGES="$HOME/.beu/venv/lib/python3.9/site-packages"
 elif [[ -d "$HOME/.beu/venv/Lib/site-packages" ]]; then
     BEU_SITE_PACKAGES="$HOME/.beu/venv/Lib/site-packages"
 fi
