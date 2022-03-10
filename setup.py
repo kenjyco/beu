@@ -4,6 +4,9 @@ from setuptools import setup, find_packages
 with open('README.rst', 'r') as fp:
     long_description = fp.read()
 
+with open('requirements.txt', 'r') as fp:
+    requirements = fp.read().splitlines()
+
 setup(
     name='beu',
     version='0.1.33',
@@ -15,24 +18,7 @@ setup(
     url='https://github.com/kenjyco/beu',
     download_url='https://github.com/kenjyco/beu/tarball/v0.1.33',
     packages=find_packages(),
-    install_requires=[
-        'aws-info-helper',
-        'bg-helper',
-        'chloop',
-        'click',
-        'dt-helper',
-        'easy-workflow-manager',
-        'fs-helper',
-        'input-helper',
-        'jira-helper',
-        'mongo-helper',
-        'parse-helper',
-        'redis-helper',
-        'settings-helper',
-        'sql-helper',
-        'webclient-helper',
-        'yt-helper',
-    ],
+    install_requires=requirements,
     include_package_data=True,
     package_dir={'': '.'},
     package_data={

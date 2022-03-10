@@ -1,4 +1,4 @@
-aws-info-helper
+aws-info-helper[redis]
 bg-helper
 chloop
 click
@@ -12,5 +12,5 @@ parse-helper
 redis-helper
 settings-helper
 sql-helper
-webclient-helper
+webclient-helper[bs4]
 yt-helper

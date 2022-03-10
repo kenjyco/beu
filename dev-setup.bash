@@ -22,13 +22,12 @@ fi
 [[ ! -d venv ]] && $PYTHON -m venv venv
 PYTHON=$(dirname $PIP)/python
 $PYTHON -m pip install --upgrade pip wheel
-$PIP install -r requirements.txt ${pip_args[@]}
-$PYTHON setup.py develop
-
-if [[ $(uname) =~ "MINGW" ]]; then
-    $PIP install ${pip_args[@]} ipython
-elif [[ $(uname) == "Darwin" ]]; then
-    $PIP install ${pip_args[@]} ipython pdbpp mocp mocp-cli
-elif [[ -z "$CLOUD_INSTANCE" ]]; then
-    $PIP install ${pip_args[@]} ipython pdbpp mocp mocp-cli vlc-helper
+extra_packages=(ipython)
+if [[ ! $(uname) =~ "MINGW" ]]; then
+    if [[ $(uname) == "Darwin" ]]; then
+        extra_packages+=(pdbpp mocp mocp-cli)
+    elif [[ -z "$CLOUD_INSTANCE" ]]; then
+        extra_packages+=(pdbpp mocp mocp-cli vlc-helper)
+    fi
 fi
+$PIP install ${extra_packages[@]} ${pip_args[@]} --editable .
