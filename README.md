@@ -122,8 +122,8 @@ Out[12]: <module 'easy_workflow_manager' from '/tmp/stuff/venv/lib/python3.6/sit
 In [13]: beu.mh
 Out[13]: <module 'mongo_helper' from '/tmp/stuff/venv/lib/python3.6/site-packages/mongo_helper/__init__.py'>
 
-In [14]: beu.SQL
-Out[14]: sql_helper.SQL
+In [14]: beu.sqh
+Out[14]: <module 'sql_helper' from '/tmp/stuff/venv/lib/python3.6/site-packages/sql_helper/__init__.py'>
 
 In [15]: beu.moc
 Out[15]: <module 'moc' from '/tmp/stuff/venv/lib/python3.6/site-packages/moc/__init__.py'>

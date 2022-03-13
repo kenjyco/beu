@@ -11,6 +11,7 @@ import aws_info_helper as ah
 import easy_workflow_manager as ewm
 import mongo_helper as mh
 import webclient_helper as wh
+import sql_helper as sqh
 
 try:
     import moc
@@ -19,7 +20,6 @@ try:
 except ImportError:
     pass
 import chloop
-from sql_helper import SQL
 
 
 logger = fh.get_logger(__name__)
