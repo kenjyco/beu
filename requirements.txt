@@ -1,11 +1,11 @@
-aws-info-helper[redis]
+aws-info-helper[redis-helper]
 bg-helper
 chloop
 click
 dt-helper
 easy-workflow-manager
 fs-helper
-input-helper
+input-helper[full]
 jira-helper
 mongo-helper
 parse-helper
@@ -13,4 +13,4 @@ redis-helper
 settings-helper
 sql-helper
 webclient-helper[bs4]
-yt-helper
+yt-helper[redis-helper]
