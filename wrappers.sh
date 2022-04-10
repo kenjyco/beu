@@ -70,6 +70,7 @@ BEU_REPO_NAMES=(
     input-helper
     jira-helper
     mocp
+    mocp-cli
     mongo-helper
     parse-helper
     redis-helper
