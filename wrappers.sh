@@ -73,9 +73,11 @@ BEU_REPO_NAMES=(
     mocp-cli
     mongo-helper
     parse-helper
+    readme-helper
     redis-helper
     settings-helper
     sql-helper
+    testing-helper
     vlc-helper
     webclient-helper
     yt-helper
@@ -110,9 +112,11 @@ _REPO_MOCP=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep mocp$)
 _REPO_MOCP_CLI=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep mocp-cli$)
 _REPO_MONGO_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep mongo-helper$)
 _REPO_PARSE_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep parse-helper$)
+_REPO_README_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep readme-helper$)
 _REPO_REDIS_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep redis-helper$)
 _REPO_SETTINGS_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep settings-helper$)
 _REPO_SQL_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep sql-helper$)
+_REPO_TESTING_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep testing-helper$)
 _REPO_VLC_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep vlc-helper$)
 _REPO_WEBCLIENT_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep webclient-helper$)
 _REPO_YT_HELPER=$(echo $BEU_REPOS_LIST | tr ' ' '\n' | grep yt-helper$)
@@ -147,9 +151,11 @@ _beu-repos-diff-with-site-packages() {
     [[ -d "$_REPO_MOCP_CLI" ]] && diff -r "$BEU_SITE_PACKAGES/mocp_cli" "$_REPO_MOCP_CLI/mocp_cli"
     [[ -d "$_REPO_MONGO_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/mongo_helper" "$_REPO_MONGO_HELPER/mongo_helper"
     [[ -d "$_REPO_PARSE_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/parse_helper" "$_REPO_PARSE_HELPER/parse_helper"
+    [[ -d "$_REPO_README_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/readme_helper" "$_REPO_README_HELPER/readme_helper"
     [[ -d "$_REPO_REDIS_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/redis_helper" "$_REPO_REDIS_HELPER/redis_helper"
     [[ -d "$_REPO_SETTINGS_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/settings_helper" "$_REPO_SETTINGS_HELPER/settings_helper"
     [[ -d "$_REPO_SQL_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/sql_helper" "$_REPO_SQL_HELPER/sql_helper"
+    [[ -d "$_REPO_TESTING_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/testing_helper" "$_REPO_TESTING_HELPER/testing_helper"
     [[ -d "$_REPO_VLC_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/vlc_helper" "$_REPO_VLC_HELPER/vlc_helper"
     [[ -d "$_REPO_WEBCLIENT_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/webclient_helper" "$_REPO_VLC_HELPER/webclient_helper"
     [[ -d "$_REPO_YT_HELPER" ]] && diff -r "$BEU_SITE_PACKAGES/yt_helper" "$_REPO_YT_HELPER/yt_helper"

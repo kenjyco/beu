@@ -7,7 +7,8 @@ complementary Python packages.
 -  There is a script to help you get all the system requirements
    installed
 -  The ``beu`` module auto-imports several relevant modules as their
-   preferred 2-character shortcuts for quick interaction
+   preferred 2-character (or 3-character) shortcuts for quick
+   interaction
 -  The ``beu-ipython`` command is a shortcut to start an ``ipython``
    session with the ``beu`` module imported before you see the shell
    prompt
@@ -32,6 +33,8 @@ See the following docs:
 -  https://github.com/kenjyco/webclient-helper/blob/master/README.md
 -  https://github.com/kenjyco/mongo-helper#usage
 -  https://github.com/kenjyco/sql-helper#usage
+-  https://github.com/kenjyco/readme-helper#usage
+-  https://github.com/kenjyco/testing-helper#usage
 -  https://github.com/kenjyco/mocp/blob/master/README.md#usage
 -  https://github.com/kenjyco/mocp-cli/blob/master/README.md#usage
 -  https://github.com/kenjyco/vlc-helper/blob/master/README.md#usage
@@ -131,8 +134,8 @@ The ``beu-ipython`` script is provided (with the ``b`` shortcut set in
    In [13]: beu.mh
    Out[13]: <module 'mongo_helper' from '/tmp/stuff/venv/lib/python3.6/site-packages/mongo_helper/__init__.py'>
 
-   In [14]: beu.SQL
-   Out[14]: sql_helper.SQL
+   In [14]: beu.sqh
+   Out[14]: <module 'sql_helper' from '/tmp/stuff/venv/lib/python3.6/site-packages/sql_helper/__init__.py'>
 
    In [15]: beu.moc
    Out[15]: <module 'moc' from '/tmp/stuff/venv/lib/python3.6/site-packages/moc/__init__.py'>
@@ -145,6 +148,12 @@ The ``beu-ipython`` script is provided (with the ``b`` shortcut set in
 
    In [18]: beu.wh
    Out[18]: <module 'webclient_helper' from '/tmp/stuff/venv/lib/python3.6/site-packages/webclient_helper/__init__.py'>
+
+   In [19]: beu.th
+   Out[19]: <module 'testing_helper' from '/tmp/stuff/venv/lib/python3.6/site-packages/testing_helper/__init__.py'>
+
+   In [20]: beu.rmh
+   Out[20]: <module 'readme_helper' from '/tmp/stuff/venv/lib/python3.6/site-packages/readme_helper/__init__.py'>
 
 Updating
 --------

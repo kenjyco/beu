@@ -11,7 +11,9 @@ import aws_info_helper as ah
 import easy_workflow_manager as ewm
 import mongo_helper as mh
 import webclient_helper as wh
+import testing_helper as th
 import sql_helper as sqh
+import readme_helper as rmh
 
 try:
     import moc

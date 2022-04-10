@@ -5,7 +5,7 @@ Python packages.
 
 - There is a script to help you get all the system requirements installed
 - The `beu` module auto-imports several relevant modules as their preferred
-  2-character shortcuts for quick interaction
+  2-character (or 3-character) shortcuts for quick interaction
 - The `beu-ipython` command is a shortcut to start an `ipython` session with the
   `beu` module imported before you see the shell prompt
 - The commands provided by the other packages are all installed to the same
@@ -28,6 +28,8 @@ See the following docs:
 - <https://github.com/kenjyco/webclient-helper/blob/master/README.md>
 - <https://github.com/kenjyco/mongo-helper#usage>
 - <https://github.com/kenjyco/sql-helper#usage>
+- <https://github.com/kenjyco/readme-helper#usage>
+- <https://github.com/kenjyco/testing-helper#usage>
 - <https://github.com/kenjyco/mocp/blob/master/README.md#usage>
 - <https://github.com/kenjyco/mocp-cli/blob/master/README.md#usage>
 - <https://github.com/kenjyco/vlc-helper/blob/master/README.md#usage>
@@ -136,6 +138,12 @@ Out[17]: <module 'vlc_helper' from '/tmp/stuff/venv/lib/python3.6/site-packages/
 
 In [18]: beu.wh
 Out[18]: <module 'webclient_helper' from '/tmp/stuff/venv/lib/python3.6/site-packages/webclient_helper/__init__.py'>
+
+In [19]: beu.th
+Out[19]: <module 'testing_helper' from '/tmp/stuff/venv/lib/python3.6/site-packages/testing_helper/__init__.py'>
+
+In [20]: beu.rmh
+Out[20]: <module 'readme_helper' from '/tmp/stuff/venv/lib/python3.6/site-packages/readme_helper/__init__.py'>
 ```
 
 ## Updating

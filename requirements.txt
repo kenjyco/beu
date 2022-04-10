@@ -9,8 +9,10 @@ input-helper[full]
 jira-helper
 mongo-helper
 parse-helper
+readme-helper
 redis-helper
 settings-helper
 sql-helper
+testing-helper
 webclient-helper[bs4]
 yt-helper[redis-helper]
