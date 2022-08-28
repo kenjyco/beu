@@ -19,7 +19,7 @@ try:
     import moc
     import mocp_cli
     import vlc_helper as vh
-except ImportError:
+except (ImportError, ModuleNotFoundError):
     pass
 import chloop
 
