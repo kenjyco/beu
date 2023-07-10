@@ -9,14 +9,14 @@ with open('requirements.txt', 'r') as fp:
 
 setup(
     name='beu',
-    version='0.1.35',
+    version='0.1.36',
     description='Beginner Express .:. Back End .:. Big Example .:. Brainstorm Effectively',
     long_description=long_description,
     author='Ken',
     author_email='kenjyco@gmail.com',
     license='MIT',
     url='https://github.com/kenjyco/beu',
-    download_url='https://github.com/kenjyco/beu/tarball/v0.1.35',
+    download_url='https://github.com/kenjyco/beu/tarball/v0.1.36',
     packages=find_packages(),
     install_requires=requirements,
     include_package_data=True,
