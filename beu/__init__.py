@@ -16,6 +16,12 @@ import sql_helper as sqh
 import readme_helper as rmh
 
 try:
+    ModuleNotFoundError
+except NameError:
+    class ModuleNotFoundError(ImportError):
+        pass
+
+try:
     import moc
     import mocp_cli
     import vlc_helper as vh
